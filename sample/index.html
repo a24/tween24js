@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Tween24 Sample</title>
+    <script src="http://code.createjs.com/createjs-2013.05.14.min.js"></script>
+    <script src="../js/tween24.js"></script>
+</head>
+<body style="margin: 0; padding: 0; background-color: #E0E0E0;">
+    <canvas id="main" width="500" height="500" style="background-color: #FFF;"></canvas>
+
+    <script>
+        // Init
+        var canvas = document.getElementById("main");
+        var stage = new createjs.Stage(canvas);
+
+        // Ticker
+        createjs.Ticker.useRAF = true;
+        createjs.Ticker.setFPS(60);
+        createjs.Ticker.addListener(function () {
+            stage.update();
+        });
+
+        // Create box
+        var box = new createjs.Shape();
+        box.graphics.beginFill("#006699");
+        box.graphics.drawRect(0, 0, 100, 100);
+        stage.addChild(box);
+
+        //--------------------------------------------------------------------------
+
+        //*
+        // Single Tween
+        Tween24.tween(box, 1, Ease24._6_ExpoInOut).xy(400, 400).alpha(0.5).delay(1).play();
+        //*/
+
+        /*
+        // Serial Tween
+        Tween24.serial(
+            Tween24.tween(box, 1, Ease24._6_ExpoInOut).x(400),
+            Tween24.tween(box, 1, Ease24._6_ExpoInOut).y(400),
+            Tween24.tween(box, 1, Ease24._6_ExpoInOut).x(0),
+            Tween24.tween(box, 1, Ease24._6_ExpoInOut).y(0)
+        ).play();
+        //*/
+
+        /*
+        // Parallel Tween
+        Tween24.parallel(
+            Tween24.tween(box, 1, Ease24._6_ExpoInOut).x(400),
+            Tween24.tween(box, 1, Ease24._3_CubicOutIn()).y(400)
+        ).play();
+        //*/
+
+        /*
+        // Wait & Func
+        Tween24.serial(
+            Tween24.wait(1),
+            Tween24.func(window, window.alert, "Tween24 for JavaScript!!")
+        ).play();
+        //*/
+
+
+    </script>
+</body>
+</html>

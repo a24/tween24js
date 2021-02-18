@@ -1,5 +1,6 @@
-import Ticker24 from "./Ticker24.js";
-import Ease24 from "./Ease24.js";
+import Ticker24 from "./core/Ticker24";
+import ObjectUpdater from "./core/updater/ObjectUpdater";
+import Ease24 from "./Ease24";
 /*
  TODO: 相対値
  TODO: 直前相対値
@@ -18,9 +19,13 @@ var Tween24 = /** @class */ (function () {
         this.time = NaN;
         this.delayTime = NaN;
         this.startTime = NaN;
+        // Updater
+        this.objectUpdater = null;
+        // Refer
         this.root = null;
         this.parent = null;
         this.next = null;
+        // Flag
         this.inited = false;
         this.isRoot = false;
         this.isContainerTween = false;
@@ -45,6 +50,7 @@ var Tween24 = /** @class */ (function () {
             Tween24.ease = new Ease24();
         if (!Tween24.ticker)
             Tween24.ticker = new Ticker24();
+        this.updaters = [];
     }
     Tween24.prototype.play = function () {
         this.root = this;
@@ -67,13 +73,11 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.pause = function () {
     };
     Tween24.prototype.__initParam = function () {
-        var target = this.target;
-        var startParam = this.startParam;
-        var targetParam = this.targetParam;
-        var diffParam = this.diffParam;
-        for (var p in targetParam) {
-            startParam[p] = target[p];
-            diffParam[p] = targetParam[p] - startParam[p];
+        if (this.updaters.length) {
+            for (var _i = 0, _a = this.updaters; _i < _a.length; _i++) {
+                var updater = _a[_i];
+                updater.init();
+            }
         }
     };
     Tween24.prototype.__update = function () {
@@ -121,11 +125,12 @@ var Tween24 = /** @class */ (function () {
                     this.__initParam();
                 }
                 // Update propety
-                var startParam = this.startParam;
-                var diffParam = this.diffParam;
                 var prog = this.easing ? this.easing(progress, 0, 1, 1) : progress;
-                for (var pn in startParam) {
-                    target[pn] = startParam[pn] + (diffParam[pn] * prog);
+                if (this.updaters.length) {
+                    for (var _i = 0, _a = this.updaters; _i < _a.length; _i++) {
+                        var updater = _a[_i];
+                        updater.update(prog);
+                    }
                 }
             }
             // Complete
@@ -177,11 +182,14 @@ var Tween24 = /** @class */ (function () {
         this.time = time;
         this.delayTime = 0;
         this.startTime = 0;
-        this.startParam = {};
-        this.targetParam = {};
-        this.diffParam = {};
         this.inited = false;
         this.isContainerTween = false;
+        if (target instanceof HTMLElement) {
+        }
+        else {
+            this.objectUpdater = new ObjectUpdater(target);
+            this.updaters.push(this.objectUpdater);
+        }
         return this;
     };
     Tween24.prototype.__initContainerTween = function (type, childTween) {
@@ -228,11 +236,17 @@ var Tween24 = /** @class */ (function () {
     // Propety
     //
     // ------------------------------------------
-    Tween24.prototype.x = function (value) { this.targetParam.x = value; return this; };
-    Tween24.prototype.y = function (value) { this.targetParam.y = value; return this; };
-    Tween24.prototype.xy = function (x, y) { this.targetParam.x = x; this.targetParam.y = y; return this; };
-    Tween24.prototype.alpha = function (value) { this.targetParam.alpha = value; return this; };
+    Tween24.prototype.x = function (value) { return this.__setPropety("x", value); };
+    Tween24.prototype.y = function (value) { return this.__setPropety("y", value); };
+    Tween24.prototype.xy = function (x, y) { return this.__setPropety("x", x).__setPropety("y", y); };
+    Tween24.prototype.alpha = function (value) { return this.__setPropety("alpha", value); };
     Tween24.prototype.delay = function (value) { this.delayTime += value; return this; };
+    Tween24.prototype.__setPropety = function (key, value) {
+        if (this.objectUpdater) {
+            this.objectUpdater.addProp(key, value);
+        }
+        return this;
+    };
     // ------------------------------------------
     //
     // Tween
@@ -294,7 +308,7 @@ var Tween24 = /** @class */ (function () {
         this.trace("[Tween24 " + message + "]");
     };
     // Static
-    Tween24.VERSION = "0.2.0";
+    Tween24.VERSION = "0.2.2";
     Tween24.TYPE_TWEEN = "tween";
     Tween24.TYPE_PROP = "prop";
     Tween24.TYPE_WAIT = "wait";

@@ -1,4 +1,6 @@
-import Ticker24 from "./Ticker24";
+import Ticker24 from "./core/Ticker24";
+import ObjectUpdater from "./core/updater/ObjectUpdater";
+import Updater from "./core/updater/Updater";
 import Ease24 from "./Ease24";
 
 /*
@@ -15,7 +17,7 @@ import Ease24 from "./Ease24";
 class Tween24 {
 
 	// Static
-    static readonly VERSION:string = "0.2.0";
+    static readonly VERSION:string = "0.2.2";
 	static readonly TYPE_TWEEN:string = "tween";
 	static readonly TYPE_PROP:string = "prop";
 	static readonly TYPE_WAIT:string = "wait";
@@ -34,14 +36,17 @@ class Tween24 {
 	private time:number = NaN;
 	private delayTime:number = NaN;
 	private startTime:number = NaN;
-	private startParam:any;
-	private targetParam:any;
-	private diffParam:any;
 
+    // Updater
+    private objectUpdater:ObjectUpdater|null = null;
+    private updaters:Updater[];
+
+    // Refer
 	private root:Tween24|null = null;
 	private parent:Tween24|null = null;
 	private next:Tween24|null = null;
 
+    // Flag
 	private inited:boolean = false;
 	private isRoot:boolean = false;
 	private isContainerTween:boolean = false;
@@ -71,6 +76,7 @@ class Tween24 {
 	constructor() {
         if (!Tween24.ease) Tween24.ease = new Ease24();
 		if (!Tween24.ticker) Tween24.ticker = new Ticker24();
+        this.updaters = [];
 	}
 
 	play() {
@@ -96,15 +102,11 @@ class Tween24 {
 
 
 	private __initParam() {
-		var target = this.target;
-		var startParam = this.startParam;
-		var targetParam = this.targetParam;
-		var diffParam = this.diffParam;
-
-		for (var p in targetParam) {
-			startParam[p] = target[p];
-			diffParam[p] = targetParam[p] - startParam[p];
-		}
+        if (this.updaters.length) {
+            for (const updater of this.updaters) {
+                updater.init();
+            }
+        }
 	}
 
     public __update() {
@@ -154,13 +156,12 @@ class Tween24 {
 				}
 
 				// Update propety
-				var startParam = this.startParam;
-				var diffParam = this.diffParam;
 				var prog = this.easing ? this.easing(progress, 0, 1, 1) : progress;
-
-				for (var pn in startParam) {
-					target[pn] = startParam[pn] + (diffParam[pn] * prog);
-				}
+                if (this.updaters.length) {
+                    for (const updater of this.updaters) {
+                        updater.update(prog);
+                    }
+                }
 			}
 
 			// Complete
@@ -214,11 +215,17 @@ class Tween24 {
         this.time = time;
         this.delayTime = 0;
         this.startTime = 0;
-        this.startParam = {};
-        this.targetParam = {};
-        this.diffParam = {};
         this.inited = false;
         this.isContainerTween = false;
+
+        if (target instanceof HTMLElement) {
+
+        }
+        else {
+            this.objectUpdater = new ObjectUpdater(target);
+            this.updaters.push(this.objectUpdater);
+        }
+
         return this;
     }
 
@@ -272,12 +279,18 @@ class Tween24 {
     //
     // ------------------------------------------
 	
-    x(value: number): Tween24 { this.targetParam.x = value; return this; }
-	y(value: number): Tween24 { this.targetParam.y = value; return this; }
-	xy(x: number, y: number): Tween24 { this.targetParam.x = x; this.targetParam.y = y; return this; }
-	alpha(value: number): Tween24 { this.targetParam.alpha = value; return this; }
+    x(value: number): Tween24 { return this.__setPropety("x", value); }
+	y(value: number): Tween24 { return this.__setPropety("y", value); }
+	xy(x: number, y: number): Tween24 { return this.__setPropety("x", x).__setPropety("y", y); }
+	alpha(value: number): Tween24 { return this.__setPropety("alpha", value); }
 	delay(value: number): Tween24 { this.delayTime += value; return this; }
 
+    private __setPropety(key:string, value:number):Tween24 {
+        if (this.objectUpdater){
+            this.objectUpdater.addProp(key, value);
+        }
+        return this;
+    }
 
 	// ------------------------------------------
 	//

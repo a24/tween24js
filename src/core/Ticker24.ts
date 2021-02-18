@@ -1,4 +1,4 @@
-import Tween24 from "./Tween24";
+import Tween24 from "../Tween24";
 
 export class Ticker24 {
 	fps:number;

@@ -1,0 +1,33 @@
+{
+  "name": "tween24",
+  "version": "1.0.0",
+  "description": "tween24.js =========",
+  "main": "Tween24.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack serve",
+    "dev": "webpack --mode development",
+    "build": "webpack --mode production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://a24@github.com/a24/tween24js.git"
+  },
+  "author": "a24",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/a24/tween24js/issues"
+  },
+  "homepage": "https://github.com/a24/tween24js#readme",
+  "dependencies": {
+    "ts-loader": "^8.0.17",
+    "typescript": "^4.1.5"
+  },
+  "devDependencies": {
+    "lite-server": "^2.6.1",
+    "webpack": "^5.21.2",
+    "webpack-cli": "^4.5.0",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "keywords": []
+}

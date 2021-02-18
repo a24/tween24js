@@ -7,7 +7,7 @@ class Ease24 {
      *
      * -----------------------------------------------------------------------------------------------
      */
-    static _Linear(t, b, c, d) {
+    static _Linear(t:number, b:number, c:number, d:number) {
         return c * t / d + b;
     }
 
@@ -18,19 +18,19 @@ class Ease24 {
      *
      * -----------------------------------------------------------------------------------------------
      */
-    static _1_SineIn(t, b, c, d) {
+    static _1_SineIn(t:number, b:number, c:number, d:number) {
         return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
     }
 
-    static _1_SineOut(t, b, c, d) {
+    static _1_SineOut(t:number, b:number, c:number, d:number) {
         return c * Math.sin(t / d * (Math.PI / 2)) + b;
     }
 
-    static _1_SineInOut(t, b, c, d) {
+    static _1_SineInOut(t:number, b:number, c:number, d:number) {
         return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
     }
 
-    static _1_SineOutIn(t, b, c, d) {
+    static _1_SineOutIn(t:number, b:number, c:number, d:number) {
         if (t < d / 2) return (c / 2) * Math.sin((t * 2) / d * (Math.PI / 2)) + b;
         return -(c / 2) * Math.cos((t * 2 - d) / d * (Math.PI / 2)) + (c / 2) + (b + c / 2);
     }
@@ -42,20 +42,20 @@ class Ease24 {
      *
      * -----------------------------------------------------------------------------------------------
      */
-    static _2_QuadIn(t, b, c, d) {
+    static _2_QuadIn(t:number, b:number, c:number, d:number) {
         return c * (t /= d) * t + b;
     }
 
-    static _2_QuadOut(t, b, c, d) {
+    static _2_QuadOut(t:number, b:number, c:number, d:number) {
         return -c * (t /= d) * (t - 2) + b;
     }
 
-    static _2_QuadInOut(t, b, c, d) {
+    static _2_QuadInOut(t:number, b:number, c:number, d:number) {
         if ((t /= d / 2) < 1) return c / 2 * t * t + b;
         return -c / 2 * ((--t) * (t - 2) - 1) + b;
     }
 
-    static _2_QuadOutIn(t, b, c, d) {
+    static _2_QuadOutIn(t:number, b:number, c:number, d:number) {
         if (t < d / 2) return -(c / 2) * (t = (t * 2 / d)) * (t - 2) + b;
         return (c / 2) * (t = (t * 2 - d) / d) * t + (b + c / 2);
     }
@@ -67,19 +67,19 @@ class Ease24 {
      *
      * -----------------------------------------------------------------------------------------------
      */
-    static _3_CubicIn(t, b, c, d) {
+    static _3_CubicIn(t:number, b:number, c:number, d:number) {
         return c * (t /= d) * t * t + b;
     }
 
-    static _3_CubicOut(t, b, c, d) {
+    static _3_CubicOut(t:number, b:number, c:number, d:number) {
         return c * ((t = t / d - 1) * t * t + 1) + b;
     }
 
-    static _3_CubicInOut(t, b, c, d) {
+    static _3_CubicInOut(t:number, b:number, c:number, d:number) {
         return ((t /= d / 2) < 1) ? c / 2 * t * t * t + b: c / 2 * ((t -= 2) * t * t + 2) + b;
     }
 
-    static _3_CubicOutIn(t, b, c, d) {
+    static _3_CubicOutIn(t:number, b:number, c:number, d:number) {
         return (t < d / 2)? c / 2 * ((t = t * 2 / d - 1) * t * t + 1) + b: c / 2 * (t = (t * 2 - d) / d) * t * t + b + c / 2;
     }
 
@@ -90,20 +90,20 @@ class Ease24 {
      *
      * -----------------------------------------------------------------------------------------------
      */
-    static _4_QuartIn(t, b, c, d) {
+    static _4_QuartIn(t:number, b:number, c:number, d:number) {
         return c * (t /= d) * t * t * t + b;
     }
 
-    static _4_QuartOut(t, b, c, d) {
+    static _4_QuartOut(t:number, b:number, c:number, d:number) {
         return -c * ((t = t / d - 1) * t * t * t - 1) + b;
     }
 
-    static _4_QuartInOut(t, b, c, d) {
+    static _4_QuartInOut(t:number, b:number, c:number, d:number) {
         if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
         return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
     }
 
-    static _4_QuartOutIn(t, b, c, d) {
+    static _4_QuartOutIn(t:number, b:number, c:number, d:number) {
         if (t < d / 2) return -(c / 2) * ((t = (t * 2) / d - 1) * t * t * t - 1) + b;
         return (c / 2) * (t = (t * 2 - d) / d) * t * t * t + (b + c / 2);
     }
@@ -115,20 +115,20 @@ class Ease24 {
      *
      * -----------------------------------------------------------------------------------------------
      */
-    static _5_QuintIn(t, b, c, d) {
+    static _5_QuintIn(t:number, b:number, c:number, d:number) {
         return c * (t /= d) * t * t * t * t + b;
     }
 
-    static _5_QuintOut(t, b, c, d) {
+    static _5_QuintOut(t:number, b:number, c:number, d:number) {
         return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
     }
 
-    static _5_QuintInOut(t, b, c, d) {
+    static _5_QuintInOut(t:number, b:number, c:number, d:number) {
         if ((t /= d / 2) < 1) return c / 2 * t * t * t * t * t + b;
         return c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
     }
 
-    static _5_QuintOutIn(t, b, c, d) {
+    static _5_QuintOutIn(t:number, b:number, c:number, d:number) {
         if (t < d / 2) return (c / 2) * ((t = (t * 2) / d - 1) * t * t * t * t + 1) + b;
         return (c / 2) * (t = (t * 2 - d) / d) * t * t * t * t + (b + c / 2);
     }
@@ -140,22 +140,22 @@ class Ease24 {
      *
      * -----------------------------------------------------------------------------------------------
      */
-    static _6_ExpoIn(t, b, c, d) {
+    static _6_ExpoIn(t:number, b:number, c:number, d:number) {
         return t == 0 ? b : c * Math.pow(2, 10 * (t / d - 1)) + b;
     }
 
-    static _6_ExpoOut(t, b, c, d) {
+    static _6_ExpoOut(t:number, b:number, c:number, d:number) {
         return t == d ? b + c : c * (1 - Math.pow(2, -10 * t / d)) + b;
     }
 
-    static _6_ExpoInOut(t, b, c, d) {
+    static _6_ExpoInOut(t:number, b:number, c:number, d:number) {
         if (t == 0) return b;
         if (t == d) return b + c;
         if ((t /= d / 2.0) < 1.0) return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
         return c / 2 * (2 - Math.pow(2, -10 * --t)) + b;
     }
 
-    static _6_ExpoOutIn(t, b, c, d) {
+    static _6_ExpoOutIn(t:number, b:number, c:number, d:number) {
         if (t < d / 2.0) return t * 2.0 == d ? b + c / 2.0 : c / 2.0 * (1 - Math.pow(2, -10 * t * 2.0 / d)) + b;
         return ((t * 2.0 - d) == 0)? b + c / 2.0 : c / 2.0 * Math.pow(2, 10 * ((t * 2 - d) / d - 1)) + b + c / 2.0;
     }
@@ -167,20 +167,20 @@ class Ease24 {
      *
      * -----------------------------------------------------------------------------------------------
      */
-    static _7_CircIn(t, b, c, d) {
+    static _7_CircIn(t:number, b:number, c:number, d:number) {
         return -c * (Math.sqrt(1 - (t /= d) * t) - 1) + b;
     }
 
-    static _7_CircOut(t, b, c, d) {
+    static _7_CircOut(t:number, b:number, c:number, d:number) {
         return c * Math.sqrt(1 - (t = t / d - 1) * t) + b;
     }
 
-    static _7_CircInOut(t, b, c, d) {
+    static _7_CircInOut(t:number, b:number, c:number, d:number) {
         if ((t /= d / 2) < 1) return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
         return c / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1) + b;
     }
 
-    static _7_CircOutIn(t, b, c, d) {
+    static _7_CircOutIn(t:number, b:number, c:number, d:number) {
         if (t < d / 2) return (c / 2) * Math.sqrt(1 - (t = (t * 2) / d - 1) * t) + b;
         return -(c / 2) * (Math.sqrt(1 - (t = (t * 2 - d) / d) * t) - 1) + (b + c / 2);
     }
@@ -192,27 +192,27 @@ class Ease24 {
      *
      * -----------------------------------------------------------------------------------------------
      */
-    static _BackInWith(overshoot) {
-        return function (t, b, c, d) {
+    static _BackInWith(overshoot:number) {
+        return function (t:number, b:number, c:number, d:number) {
             return c * (t /= d) * t * ((overshoot + 1) * t - overshoot) + b;
         }
     }
 
-    static _BackOutWith(overshoot) {
-        return function (t, b, c, d) {
+    static _BackOutWith(overshoot:number) {
+        return function (t:number, b:number, c:number, d:number) {
             return c * ((t = t / d - 1) * t * ((overshoot + 1) * t + overshoot) + 1) + b;
         }
     }
 
-    static _BackInOutWith(overshoot) {
-        return function (t, b, c, d) {
+    static _BackInOutWith(overshoot:number) {
+        return function (t:number, b:number, c:number, d:number) {
             if ((t /= d / 2) < 1) return c / 2 * (t * t * (((overshoot * 1.525) + 1) * t - overshoot * 1.525)) + b;
             return c / 2 * ((t -= 2) * t * (((overshoot * 1.525) + 1) * t + overshoot * 1.525) + 2) + b;
         }
     }
 
-    static _BackOutInWith(overshoot) {
-        return function (t, b, c, d) {
+    static _BackOutInWith(overshoot:number) {
+        return function (t:number, b:number, c:number, d:number) {
             if (t < d / 2) return (c / 2) * ((t = (t * 2) / d - 1) * t * ((overshoot + 1) * t + overshoot) + 1) + b;
             return (c / 2) * (t = (t * 2 - d) / d) * t * ((overshoot + 1) * t - overshoot) + (b + c / 2);
         }
@@ -230,21 +230,21 @@ class Ease24 {
      *
      * -----------------------------------------------------------------------------------------------
      */
-    static _BounceIn(t, b, c, d) {
+    static _BounceIn(t:number, b:number, c:number, d:number) {
         if ((t = (d - t) / d) < (1 / 2.75)) return c - (c * (7.5625 * t * t)) + b;
         if (t < (2 / 2.75))                 return c - (c * (7.5625 * (t -= (1.5 / 2.75)) * t + 0.75)) + b;
         if (t < (2.5 / 2.75))               return c - (c * (7.5625 * (t -= (2.25 / 2.75)) * t + 0.9375)) + b;
         return c - (c * (7.5625 * (t -= (2.625 / 2.75)) * t + 0.984375)) + b;
     }
 
-    static _BounceOut(t, b, c, d) {
+    static _BounceOut(t:number, b:number, c:number, d:number) {
         if ((t /= d) < (1 / 2.75)) return c * (7.5625 * t * t) + b;
         if (t < (2 / 2.75))        return c * (7.5625 * (t -= (1.5 / 2.75)) * t + 0.75) + b;
         if (t < (2.5 / 2.75))      return c * (7.5625 * (t -= (2.25 / 2.75)) * t + 0.9375) + b;
         return c * (7.5625 * (t -= (2.625 / 2.75)) * t + 0.984375) + b;
     }
 
-    static _BounceInOut(t, b, c, d) {
+    static _BounceInOut(t:number, b:number, c:number, d:number) {
         if (t < d / 2)
         {
             if ((t = (d - t * 2) / d) < (1 / 2.75)) return (c - (c * (7.5625 * t * t))) * 0.5 + b;
@@ -261,7 +261,7 @@ class Ease24 {
         }
     }
 
-    static _BounceOutIn(t, b, c, d) {
+    static _BounceOutIn(t:number, b:number, c:number, d:number) {
         if (t < d / 2) {
             if ((t = (t * 2) / d) < (1 / 2.75)) return (c / 2) * (7.5625 * t * t) + b;
             if (t < (2 / 2.75))                 return (c / 2) * (7.5625 * (t -= (1.5 / 2.75)) * t + 0.75) + b;
@@ -284,8 +284,8 @@ class Ease24 {
      *
      * -----------------------------------------------------------------------------------------------
      */
-    static _ElasticInWith(amplitude, period) {
-        return function (t, b, c, d) {
+    static _ElasticInWith(amplitude:number, period:number) {
+        return function (t:number, b:number, c:number, d:number) {
             t /= 1000;
             d /= 1000;
 
@@ -300,8 +300,8 @@ class Ease24 {
         }
     }
 
-    static _ElasticOutWith(amplitude, period) {
-        return function (t, b, c, d) {
+    static _ElasticOutWith(amplitude:number, period:number) {
+        return function (t:number, b:number, c:number, d:number) {
             t /= 1000;
             d /= 1000;
 
@@ -315,8 +315,8 @@ class Ease24 {
             return amplitude * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / period) + c + b;			}
     }
 
-    static _ElasticInOutWith(amplitude, period) {
-        return function (t, b, c, d) {
+    static _ElasticInOutWith(amplitude:number, period:number) {
+        return function (t:number, b:number, c:number, d:number) {
             t /= 1000;
             d /= 1000;
 
@@ -332,8 +332,8 @@ class Ease24 {
         }
     }
 
-    static _ElasticOutInWith(amplitude, period) {
-        return function (t, b, c, d) {
+    static _ElasticOutInWith(amplitude:number, period:number) {
+        return function (t:number, b:number, c:number, d:number) {
             t /= 1000;
             d /= 1000;
 
@@ -382,8 +382,8 @@ class Ease24 {
      * @param end 終点時の混合率
      * @return
      */
-    static _Blend(easeA, easeB, mixing, start, end) {
-        return function (t, b, c, d) {
+    static _Blend(easeA:Function, easeB:Function, mixing:Function, start:number, end:number) {
+        return function (t:number, b:number, c:number, d:number) {
             var v1  = easeA (t, b, c, d);
             var v2  = easeB (t, b, c, d);
             var v3  = mixing(t, b, c, d);
@@ -447,3 +447,5 @@ class Ease24 {
     constructor() {
     }
 }
+
+export default Ease24;

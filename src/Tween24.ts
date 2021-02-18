@@ -1,65 +1,85 @@
-/// <reference path="Ticker24.ts"/>
-/// <reference path="/Ease24.ts"/>
+import Ticker24 from "./Ticker24";
+import Ease24 from "./Ease24";
 
+/*
+ TODO: 相対値
+ TODO: 直前相対値
+ TODO: 関数トゥイーン
+ TODO: イベントハンドラ
+ TODO: 停止、一時停止
+ TODO: 回転、幅、高さ
+ TODO: スキップ
+ TODO: ループ
+ TODO: 複数オブジェクト指定
+ */
 class Tween24 {
 
 	// Static
-    static VERSION: string = "0.2.0";
-	static TYPE_TWEEN: string = "tween";
-	static TYPE_PROP: string = "prop";
-	static TYPE_WAIT: string = "wait";
-	static TYPE_SERIAL: string = "serial";
-	static TYPE_PARALLEL: string = "parallel";
-    static TYPE_FUNC: string = "func";
+    static readonly VERSION:string = "0.2.0";
+	static readonly TYPE_TWEEN:string = "tween";
+	static readonly TYPE_PROP:string = "prop";
+	static readonly TYPE_WAIT:string = "wait";
+	static readonly TYPE_SERIAL:string = "serial";
+	static readonly TYPE_PARALLEL:string = "parallel";
+    static readonly TYPE_FUNC:string = "func";
 
-	static ticker: tween24.core.Ticker24;
-    static ease: Ease24;
+	static ticker:Ticker24;
+    static ease:Ease24;
 
 	// Common
-	private target: any;
-	private easing: Function;
-	private type: string;
+	private target:any;
+	private easing:Function|null = null;
+	private type:string = "";
 
-	private time: number;
-	private delayTime: number;
-	private startTime: number;
-	private startParam: any;
-	private targetParam: any;
-	private diffParam: any;
+	private time:number = NaN;
+	private delayTime:number = NaN;
+	private startTime:number = NaN;
+	private startParam:any;
+	private targetParam:any;
+	private diffParam:any;
 
-	private root = null;
-	private parent = null;
-	private next = null;
-	private nextTween = null;
+	private root:Tween24|null = null;
+	private parent:Tween24|null = null;
+	private next:Tween24|null = null;
 
-	private inited: bool;
-	private isRoot: bool;
-	private isContainerTween: bool;
+	private inited:boolean = false;
+	private isRoot:boolean = false;
+	private isContainerTween:boolean = false;
 
-	// Container Tween
-	private childTween;
-	private firstTween;
-	private playingChildTween;
-	private numChildren;
-	private numCompleteChildren;
+    // Callback
+    // private onPlayFunc:Function;
+    // private onPlayArgs:Function;
+    // private onPauseFunc:Function;
+    // private onPauseArgs:Function;
+    // private onStopFunc:Function;
+    // private onStopArgs:Function;
+    // private onCompleteFunc:Function;
+    // private onCompleteArgs:Function;
+
+	// Container Tween    
+	private childTween:Tween24[]|null = null;
+	private firstTween:Tween24|null = null;
+	private playingChildTween:Tween24[]|null = null;
+	private numChildren:number = 0;
+	private numCompleteChildren:number = 0;
 
     // Action Tween
     private scope:any;
-    private func:Function;
-    private args:any[];
+    private func:Function|null = null;
+    private args:any[]|null = null;
 
 	constructor() {
         if (!Tween24.ease) Tween24.ease = new Ease24();
-		if (!Tween24.ticker) Tween24.ticker = new tween24.core.Ticker24();
+		if (!Tween24.ticker) Tween24.ticker = new Ticker24();
 	}
 
 	play() {
 		this.root = this;
 		this.isRoot = true;
 		Tween24.ticker.add(this);
-		this._play();
+		this.__play();
 	}
-	private _play() {
+	private __play() {
 		this.debugLog(this.type + " play");
 
 		if (!this.isRoot) {
@@ -75,7 +95,7 @@ class Tween24 {
 	}
 
 
-	private init() {
+	private __initParam() {
 		var target = this.target;
 		var startParam = this.startParam;
 		var targetParam = this.targetParam;
@@ -87,7 +107,7 @@ class Tween24 {
 		}
 	}
 
-    private update() {
+    public __update() {
         var progress = this.getProgress(this.time, this.startTime);
 
         // Delay
@@ -99,22 +119,28 @@ class Tween24 {
                 this.inited = true;
                 switch (this.type) {
                     case Tween24.TYPE_SERIAL:
-                        this.playingChildTween.push(this.firstTween);
-                        this.firstTween._play();
+                        if(this.playingChildTween && this.firstTween) {
+                            this.playingChildTween.push(this.firstTween);
+                            this.firstTween.__play();
+                        }
                         break;
                     case Tween24.TYPE_PARALLEL:
                         for (var i = 0; i < this.numChildren; i++) {
-                            var tween = this.childTween[i];
-                            this.playingChildTween.push(tween);
-                            tween._play();
+                            if (this.playingChildTween && this.childTween) {
+                                var tween = this.childTween[i];
+                                this.playingChildTween.push(tween);
+                                tween.__play();
+                            }
                         }
                         break;
                 }
             }
-			for (var i = 0; i < this.playingChildTween.length; i++) {
-				this.playingChildTween[i].update();
-			}
-			if (this.numChildren == this.numCompleteChildren) this.complete();
+            if (this.playingChildTween) {
+                for (var i = 0; i < this.playingChildTween.length; i++) {
+                    this.playingChildTween[i].__update();
+                }
+            }
+			if (this.numChildren == this.numCompleteChildren) this.__complete();
 		}
 
 		// Child
@@ -124,7 +150,7 @@ class Tween24 {
 				// Init
 				if (!this.inited) {
                     this.inited = true;
-                    this.init();
+                    this.__initParam();
 				}
 
 				// Update propety
@@ -141,33 +167,37 @@ class Tween24 {
 			if (progress >= 1) {
                 // Func
                 if (this.type == Tween24.TYPE_FUNC) {
-                    var func = this.func;
-                    var args = this.args;
-                    if (args) func.apply(this.scope, args);
-                    else func.apply(this.scope);
+                    if (this.func) {
+                        var func = this.func;
+                        var args = this.args;
+                        if (args) func.apply(this.scope, args);
+                        else func.apply(this.scope);
+                    }
                 }
 
                 // End
-                this.complete();
+                this.__complete();
             }
 		}
 	}
 
-    private complete() {
+    private __complete() {
 		this.debugLog(this.type + " complete");
 		if (this.isRoot) Tween24.ticker.remove(this);
-		if (this.parent) this.parent.completeChildTween(this);
+		if (this.parent) this.parent.__completeChildTween(this);
 	}
 
-	private completeChildTween(tween) {
+	private __completeChildTween(tween:Tween24) {
 		this.debugLog(this.type + " completeChildTween");
 		this.numCompleteChildren++;
-		this.removeItemFromArray(this.playingChildTween, tween);
-		var next = tween.next;
-		if (next) {
-			this.playingChildTween.push(next);
-			next.play();
-		}
+        if (this.playingChildTween) {
+            this.removeItemFromArray(this.playingChildTween, tween);
+            var next = tween.next;
+            if (next) {
+                this.playingChildTween.push(next);
+                next.play();
+            }
+        }
 	}
 
 
@@ -177,7 +207,7 @@ class Tween24 {
     //
     // ------------------------------------------
 
-    private initChildTween(type: string, target: any, time: number, easing: Function): Tween24 {
+    private __initChildTween(type:string, target:any, time:number, easing:(Function|null)): Tween24 {
         this.type = type;
         this.target = target;
         this.easing = easing || Ease24._Linear;
@@ -192,7 +222,7 @@ class Tween24 {
         return this;
     }
 
-    private initContainerTween(type, childTween): Tween24 {
+    private __initContainerTween(type:string, childTween:Tween24[]): Tween24 {
         this.type = type;
         this.time = 0;
         this.delayTime = 0;
@@ -222,7 +252,7 @@ class Tween24 {
         return this;
     }
 
-    private initActionTween(type:string, scope, func, args): Tween24 {
+    private __initActionTween(type:string, scope:any, func:Function, args:any[]): Tween24 {
         this.type = type;
         this.scope = scope;
         this.func = func;
@@ -255,23 +285,23 @@ class Tween24 {
 	//
 	// ------------------------------------------
 
-    static tween(target:any, time:number, easing:Function = null): Tween24 {
-    	return new Tween24().initChildTween(Tween24.TYPE_TWEEN, target, time, easing);
+    static tween(target:any, time:number, easing:(Function|null) = null): Tween24 {
+    	return new Tween24().__initChildTween(Tween24.TYPE_TWEEN, target, time, easing);
     }
     static prop(target:any): Tween24 {
-    	return new Tween24().initChildTween(Tween24.TYPE_PROP, target, 0, null);
+    	return new Tween24().__initChildTween(Tween24.TYPE_PROP, target, 0, null);
 	}
 	static wait(time:number): Tween24 {
-    	return new Tween24().initChildTween(Tween24.TYPE_WAIT, null, time, null);
+    	return new Tween24().__initChildTween(Tween24.TYPE_WAIT, null, time, null);
     }
-    static func = function (scope, func, ...args:any[]) {
-        return new Tween24().initActionTween(Tween24.TYPE_FUNC, scope, func, args);
+    static func = function (scope:any, func:Function, ...args:any[]) {
+        return new Tween24().__initActionTween(Tween24.TYPE_FUNC, scope, func, args);
     };
     static serial(...childTween:any[]): Tween24 {
-    	return new Tween24().initContainerTween(Tween24.TYPE_SERIAL, childTween);
+    	return new Tween24().__initContainerTween(Tween24.TYPE_SERIAL, childTween);
     }
 	static parallel(...childTween:any[]): Tween24 {
-    	return new Tween24().initContainerTween(Tween24.TYPE_PARALLEL, childTween);
+    	return new Tween24().__initContainerTween(Tween24.TYPE_PARALLEL, childTween);
     }
 
 
@@ -283,7 +313,7 @@ class Tween24 {
 
     getTime(): number { return Date.now() || new Date().getTime(); }
 
-    getProgress(time, startTime): number {
+    getProgress(time:number, startTime:number): number {
     	var nowTime = this.getTime();
     	if (nowTime < startTime) return -1;
     	else if (time == 0) return 1;
@@ -293,7 +323,7 @@ class Tween24 {
     	}
     }
 
-    removeItemFromArray(array, item) {
+    removeItemFromArray(array:any[], item:any) {
     	for (var i = 0; i < array.length; i++) {
     		var it = array[i];
     		if (item == it) {
@@ -302,11 +332,13 @@ class Tween24 {
     	}
     }
 
-    trace(value) {
+    trace(value:any) {
         console.log(value);
     }
 
-    debugLog(message) {
+    debugLog(message:any) {
     	this.trace("[Tween24 " + message + "]")
     }
 }
+
+export default Tween24;

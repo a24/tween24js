@@ -1,14 +1,16 @@
 module.exports = {
-    // mode: 'production',
-    mode: "development",
-    // target: ['web', 'es5'],
+    target: ['web'],
     devServer: {
-        open: true
+        contentBase: "./",
+        publicPath: "/dist/",
+        open: true,
+        openPage: "sample/index.html"
     },
-    entry: './src/Tween24.ts',
+    entry: './src/index.ts',
     output: {
         path: `${__dirname}/dist`,
-        filename: 'tween24.js'
+        filename: 'tween24.js',
+        libraryTarget: 'umd'
     },
     module: {
         rules: [

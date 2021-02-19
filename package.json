@@ -4,8 +4,7 @@
   "description": "tween24.js =========",
   "main": "Tween24.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack serve",
+    "start": "webpack serve --mode development",
     "dev": "webpack --mode development",
     "build": "webpack --mode production"
   },
@@ -24,7 +23,6 @@
     "typescript": "^4.1.5"
   },
   "devDependencies": {
-    "lite-server": "^2.6.1",
     "webpack": "^5.21.2",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"

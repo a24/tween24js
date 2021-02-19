@@ -1,6 +1,7 @@
 import Ticker24 from "./core/Ticker24";
-import ObjectUpdater from "./core/updater/ObjectUpdater";
 import Updater from "./core/updater/Updater";
+import ObjectUpdater from "./core/updater/ObjectUpdater";
+// import TransformMatrixUpdater from "./core/updater/TransformMatrixUpdater";
 import Ease24 from "./Ease24";
 
 /*

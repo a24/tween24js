@@ -206,6 +206,7 @@ class Tween24 {
 		this.debugLog(this.type + " complete");
 		if (this.isRoot) Tween24.ticker.remove(this);
 		if (this.parent) this.parent.__completeChildTween(this);
+        this.removeItemFromArray(Tween24._playingTweensByTarget.get(this.target), this);
         this.removeItemFromArray(Tween24._playingTweens, this);
 	}
 
@@ -357,13 +358,15 @@ class Tween24 {
     	}
     }
 
-    removeItemFromArray(array:any[], item:any) {
-    	for (var i = 0; i < array.length; i++) {
-    		var it = array[i];
-    		if (item == it) {
-    			array.splice(i, 1);
-    		}
-    	}
+    removeItemFromArray(array:any[]|undefined|null, item:any) {
+        if (array) {
+            for (var i = 0; i < array.length; i++) {
+                var it = array[i];
+                if (item == it) {
+                    array.splice(i, 1);
+                }
+            }
+        }
     }
 
     trace(value:any) {

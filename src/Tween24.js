@@ -177,6 +177,7 @@ var Tween24 = /** @class */ (function () {
             Tween24.ticker.remove(this);
         if (this.parent)
             this.parent.__completeChildTween(this);
+        this.removeItemFromArray(Tween24._playingTweensByTarget.get(this.target), this);
         this.removeItemFromArray(Tween24._playingTweens, this);
     };
     Tween24.prototype.__completeChildTween = function (tween) {
@@ -315,10 +316,12 @@ var Tween24 = /** @class */ (function () {
         }
     };
     Tween24.prototype.removeItemFromArray = function (array, item) {
-        for (var i = 0; i < array.length; i++) {
-            var it = array[i];
-            if (item == it) {
-                array.splice(i, 1);
+        if (array) {
+            for (var i = 0; i < array.length; i++) {
+                var it = array[i];
+                if (item == it) {
+                    array.splice(i, 1);
+                }
             }
         }
     };

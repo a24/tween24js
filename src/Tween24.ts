@@ -17,7 +17,7 @@ import Ease24 from "./Ease24";
 class Tween24 {
 
 	// Static
-    static readonly VERSION:string = "0.2.2";
+    static readonly VERSION:string = "0.2.3";
 	static readonly TYPE_TWEEN:string = "tween";
 	static readonly TYPE_PROP:string = "prop";
 	static readonly TYPE_WAIT:string = "wait";
@@ -27,6 +27,8 @@ class Tween24 {
 
 	static ticker:Ticker24;
     static ease:Ease24;
+    private static _playingTweens:Tween24[];
+    private static _playingTweensByTarget:Map<any, Tween24[]>;
 
 	// Common
 	private target:any;
@@ -76,6 +78,8 @@ class Tween24 {
 	constructor() {
         if (!Tween24.ease) Tween24.ease = new Ease24();
 		if (!Tween24.ticker) Tween24.ticker = new Ticker24();
+		if (!Tween24._playingTweensByTarget) Tween24._playingTweensByTarget = new Map<any, Tween24[]>();
+		if (!Tween24._playingTweens) Tween24._playingTweens = [];
         this.updaters = [];
 	}
 
@@ -85,21 +89,22 @@ class Tween24 {
 		Tween24.ticker.add(this);
 		this.__play();
 	}
+
 	private __play() {
 		this.debugLog(this.type + " play");
 
 		if (!this.isRoot) {
 			if (this.parent) this.root = this.parent.root || this.parent;
 		}
-
         this.startTime = this.getTime() + this.delayTime * 1000;
 	}
+
 	stop() {
 		if (this.isRoot) Tween24.ticker.remove(this);
 	}
+
 	pause() {
 	}
-
 
 	private __initParam() {
         if (this.updaters.length) {
@@ -107,6 +112,21 @@ class Tween24 {
                 updater.init();
             }
         }
+        
+        // Overwrite
+        const tweens:Tween24[]|undefined = Tween24._playingTweensByTarget.get(this.target);
+        if (tweens) {
+            for (const tween of tweens) {
+                if (this !== tween) {
+                    if (this.objectUpdater && tween.objectUpdater) tween.objectUpdater.overwrite(this.objectUpdater);
+                }
+            }
+            tweens.push(this);
+        }
+        else {
+            Tween24._playingTweensByTarget.set(this.target, [this]);
+        }
+        Tween24._playingTweens.push(this);
 	}
 
     public __update() {
@@ -186,6 +206,7 @@ class Tween24 {
 		this.debugLog(this.type + " complete");
 		if (this.isRoot) Tween24.ticker.remove(this);
 		if (this.parent) this.parent.__completeChildTween(this);
+        this.removeItemFromArray(Tween24._playingTweens, this);
 	}
 
 	private __completeChildTween(tween:Tween24) {

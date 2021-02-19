@@ -50,6 +50,10 @@ var Tween24 = /** @class */ (function () {
             Tween24.ease = new Ease24();
         if (!Tween24.ticker)
             Tween24.ticker = new Ticker24();
+        if (!Tween24._playingTweensByTarget)
+            Tween24._playingTweensByTarget = new Map();
+        if (!Tween24._playingTweens)
+            Tween24._playingTweens = [];
         this.updaters = [];
     }
     Tween24.prototype.play = function () {
@@ -79,6 +83,22 @@ var Tween24 = /** @class */ (function () {
                 updater.init();
             }
         }
+        // Overwrite
+        var tweens = Tween24._playingTweensByTarget.get(this.target);
+        if (tweens) {
+            for (var _b = 0, tweens_1 = tweens; _b < tweens_1.length; _b++) {
+                var tween = tweens_1[_b];
+                if (this !== tween) {
+                    if (this.objectUpdater && tween.objectUpdater)
+                        tween.objectUpdater.overwrite(this.objectUpdater);
+                }
+            }
+            tweens.push(this);
+        }
+        else {
+            Tween24._playingTweensByTarget.set(this.target, [this]);
+        }
+        Tween24._playingTweens.push(this);
     };
     Tween24.prototype.__update = function () {
         var progress = this.getProgress(this.time, this.startTime);
@@ -157,6 +177,7 @@ var Tween24 = /** @class */ (function () {
             Tween24.ticker.remove(this);
         if (this.parent)
             this.parent.__completeChildTween(this);
+        this.removeItemFromArray(Tween24._playingTweens, this);
     };
     Tween24.prototype.__completeChildTween = function (tween) {
         this.debugLog(this.type + " completeChildTween");
@@ -308,7 +329,7 @@ var Tween24 = /** @class */ (function () {
         this.trace("[Tween24 " + message + "]");
     };
     // Static
-    Tween24.VERSION = "0.2.2";
+    Tween24.VERSION = "0.2.3";
     Tween24.TYPE_TWEEN = "tween";
     Tween24.TYPE_PROP = "prop";
     Tween24.TYPE_WAIT = "wait";

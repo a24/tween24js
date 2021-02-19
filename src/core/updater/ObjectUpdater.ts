@@ -8,6 +8,7 @@ export class ObjectUpdater implements Updater {
 	private _startParam:{ [key:string]:number };
 	private _deltaParam:{ [key:string]:number };
 	private _key:string[];
+	private _tweenKey:string[]|null;
 
 	constructor(target:any) {
 		this._target = target;
@@ -15,6 +16,7 @@ export class ObjectUpdater implements Updater {
 		this._startParam = {};
 		this._deltaParam = {};
 		this._key = [];
+		this._tweenKey = null;
 	}
 
 	addProp(key:string, value:number) {
@@ -24,15 +26,29 @@ export class ObjectUpdater implements Updater {
 	}
 
 	init() {
-		for (const k of this._key) {
+		this._tweenKey = this._key.concat();
+		for (const k of this._tweenKey) {
 			this._startParam[k] = this._target[k];
 			this._deltaParam[k] = this._param[k] - this._target[k];
 		}
 	}
 
 	update(progress:number) {
-		for (const k of this._key) {
-			this._target[k] = this._startParam[k] + this._deltaParam[k] * progress;
+		if (this._tweenKey) {
+			for (const k of this._tweenKey) {
+				this._target[k] = this._startParam[k] + this._deltaParam[k] * progress;
+			}
+		}
+	}
+
+	overwrite(updater:ObjectUpdater):void {
+		const targetKey:string[]|null = updater._tweenKey;
+		if (this._tweenKey && targetKey) {
+			for (const k of targetKey) {
+				const i = this._tweenKey.indexOf(k);
+				if (i > -1) this._tweenKey.splice(i, 1);
+				console.log("overwrite: " + k);
+			}
 		}
 	}
 

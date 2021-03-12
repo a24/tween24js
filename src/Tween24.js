@@ -1,7 +1,10 @@
 import Ticker24 from "./core/Ticker24";
-import ObjectUpdater from "./core/updater/ObjectUpdater";
-// import TransformMatrixUpdater from "./core/updater/TransformMatrixUpdater";
+import ObjectUpdater from "./core/updaters/ObjectUpdater";
+import TransformUpdater from "./core/updaters/TransformUpdater";
 import Ease24 from "./Ease24";
+import ArrayUtil from "./utils/ArrayUtil";
+import TypeUtil from "./utils/TypeUtil";
+import HTMLUtil from "./utils/HTMLUtil";
 /*
  TODO: 相対値
  TODO: 直前相対値
@@ -22,6 +25,7 @@ var Tween24 = /** @class */ (function () {
         this.startTime = NaN;
         // Updater
         this.objectUpdater = null;
+        this.transformUpdater = null;
         // Refer
         this.root = null;
         this.parent = null;
@@ -78,20 +82,23 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.pause = function () {
     };
     Tween24.prototype.__initParam = function () {
+        var _a, _b;
         if (this.updaters.length) {
-            for (var _i = 0, _a = this.updaters; _i < _a.length; _i++) {
-                var updater = _a[_i];
+            for (var _i = 0, _c = this.updaters; _i < _c.length; _i++) {
+                var updater = _c[_i];
                 updater.init();
             }
         }
         // Overwrite
         var tweens = Tween24._playingTweensByTarget.get(this.target);
         if (tweens) {
-            for (var _b = 0, tweens_1 = tweens; _b < tweens_1.length; _b++) {
-                var tween = tweens_1[_b];
+            for (var _d = 0, tweens_1 = tweens; _d < tweens_1.length; _d++) {
+                var tween = tweens_1[_d];
                 if (this !== tween) {
-                    if (this.objectUpdater && tween.objectUpdater)
-                        tween.objectUpdater.overwrite(this.objectUpdater);
+                    if (this.objectUpdater)
+                        (_a = tween.objectUpdater) === null || _a === void 0 ? void 0 : _a.overwrite(this.objectUpdater);
+                    if (this.transformUpdater)
+                        (_b = tween.transformUpdater) === null || _b === void 0 ? void 0 : _b.overwrite(this.transformUpdater);
                 }
             }
             tweens.push(this);
@@ -102,13 +109,14 @@ var Tween24 = /** @class */ (function () {
         Tween24._playingTweens.push(this);
     };
     Tween24.prototype.__update = function () {
+        var _a, _b;
         var progress = this.getProgress(this.time, this.startTime);
         // Delay
         if (progress < 0)
             return;
         // Container
         if (this.isContainerTween) {
-            if (!this.inited) {
+            if (this.inited == false) {
                 this.inited = true;
                 switch (this.type) {
                     case Tween24.TYPE_SERIAL:
@@ -148,11 +156,13 @@ var Tween24 = /** @class */ (function () {
                 // Update propety
                 var prog = this.easing ? this.easing(progress, 0, 1, 1) : progress;
                 if (this.updaters.length) {
-                    for (var _i = 0, _a = this.updaters; _i < _a.length; _i++) {
-                        var updater = _a[_i];
+                    for (var _i = 0, _c = this.updaters; _i < _c.length; _i++) {
+                        var updater = _c[_i];
                         updater.update(prog);
                     }
                 }
+                (_a = this.objectUpdater) === null || _a === void 0 ? void 0 : _a.update(prog);
+                (_b = this.transformUpdater) === null || _b === void 0 ? void 0 : _b.update(prog);
             }
             // Complete
             if (progress >= 1) {
@@ -178,14 +188,14 @@ var Tween24 = /** @class */ (function () {
             Tween24.ticker.remove(this);
         if (this.parent)
             this.parent.__completeChildTween(this);
-        this.removeItemFromArray(Tween24._playingTweensByTarget.get(this.target), this);
-        this.removeItemFromArray(Tween24._playingTweens, this);
+        ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this.target), this);
+        ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
     };
     Tween24.prototype.__completeChildTween = function (tween) {
         this.debugLog(this.type + " completeChildTween");
         this.numCompleteChildren++;
         if (this.playingChildTween) {
-            this.removeItemFromArray(this.playingChildTween, tween);
+            ArrayUtil.removeItemFromArray(this.playingChildTween, tween);
             var next = tween.next;
             if (next) {
                 this.playingChildTween.push(next);
@@ -200,16 +210,19 @@ var Tween24 = /** @class */ (function () {
     // ------------------------------------------
     Tween24.prototype.__initChildTween = function (type, target, time, easing) {
         this.type = type;
-        this.target = target;
         this.easing = easing || Ease24._Linear;
         this.time = time;
         this.delayTime = 0;
         this.startTime = 0;
         this.inited = false;
         this.isContainerTween = false;
-        if (target instanceof HTMLElement) {
+        if (TypeUtil.isString(target)) {
+            this.target = HTMLUtil.getHTMLElement(target)[0];
+            this.transformUpdater = new TransformUpdater(this.target);
+            this.updaters.push(this.transformUpdater);
         }
         else {
+            this.target = target;
             this.objectUpdater = new ObjectUpdater(target);
             this.updaters.push(this.objectUpdater);
         }
@@ -263,10 +276,17 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.y = function (value) { return this.__setPropety("y", value); };
     Tween24.prototype.xy = function (x, y) { return this.__setPropety("x", x).__setPropety("y", y); };
     Tween24.prototype.alpha = function (value) { return this.__setPropety("alpha", value); };
+    Tween24.prototype.scaleX = function (value) { return this.__setPropety("scaleX", value); };
+    Tween24.prototype.scaleY = function (value) { return this.__setPropety("scaleY", value); };
+    Tween24.prototype.scale = function (scale) { return this.__setPropety("scaleX", scale).__setPropety("scaleY", scale); };
+    Tween24.prototype.rotation = function (value) { return this.__setPropety("rotation", value); };
     Tween24.prototype.delay = function (value) { this.delayTime += value; return this; };
     Tween24.prototype.__setPropety = function (key, value) {
         if (this.objectUpdater) {
             this.objectUpdater.addProp(key, value);
+        }
+        else if (this.transformUpdater) {
+            this.transformUpdater.addProp(key, value);
         }
         return this;
     };
@@ -314,16 +334,6 @@ var Tween24 = /** @class */ (function () {
         else {
             var progress = (nowTime - startTime) / (time * 1000);
             return (progress > 1) ? 1 : progress;
-        }
-    };
-    Tween24.prototype.removeItemFromArray = function (array, item) {
-        if (array) {
-            for (var i = 0; i < array.length; i++) {
-                var it = array[i];
-                if (item == it) {
-                    array.splice(i, 1);
-                }
-            }
         }
     };
     Tween24.prototype.trace = function (value) {

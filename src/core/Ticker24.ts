@@ -1,4 +1,5 @@
 import Tween24 from "../Tween24";
+import ArrayUtil from "../utils/ArrayUtil";
 
 export class Ticker24 {
 	fps:number;
@@ -12,7 +13,6 @@ export class Ticker24 {
 		this.timer = null;
 		this.running = false;
 	}
-
 	start() {
 		this.running = true;
 		var self = this;
@@ -28,7 +28,7 @@ export class Ticker24 {
 	}
 	remove(tween:Tween24) {
 		var allTweens = this.allTweens;
-		this.removeItemFromArray(allTweens, tween);
+		ArrayUtil.removeItemFromArray(allTweens, tween);
 		if (!allTweens.length) {
 			this.stop();
 			//trace("[Ticker stop]");
@@ -37,15 +37,6 @@ export class Ticker24 {
 	update() {
 		for (var i = 0; i < this.allTweens.length; i++) {
 			this.allTweens[i].__update();
-		}
-	}
-
-	removeItemFromArray(array:any[], item:any) {
-		for (var i = 0; i < array.length; i++) {
-			var it = array[i];
-			if (item == it) {
-				array.splice(i, 1);
-			}
 		}
 	}
 }

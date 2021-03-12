@@ -1,3 +1,4 @@
+import ArrayUtil from "../utils/ArrayUtil";
 var Ticker24 = /** @class */ (function () {
     function Ticker24() {
         this.fps = 60;
@@ -22,7 +23,7 @@ var Ticker24 = /** @class */ (function () {
     };
     Ticker24.prototype.remove = function (tween) {
         var allTweens = this.allTweens;
-        this.removeItemFromArray(allTweens, tween);
+        ArrayUtil.removeItemFromArray(allTweens, tween);
         if (!allTweens.length) {
             this.stop();
             //trace("[Ticker stop]");
@@ -31,14 +32,6 @@ var Ticker24 = /** @class */ (function () {
     Ticker24.prototype.update = function () {
         for (var i = 0; i < this.allTweens.length; i++) {
             this.allTweens[i].__update();
-        }
-    };
-    Ticker24.prototype.removeItemFromArray = function (array, item) {
-        for (var i = 0; i < array.length; i++) {
-            var it = array[i];
-            if (item == it) {
-                array.splice(i, 1);
-            }
         }
     };
     return Ticker24;

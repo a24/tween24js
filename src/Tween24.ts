@@ -1,8 +1,11 @@
 import Ticker24 from "./core/Ticker24";
-import Updater from "./core/updater/Updater";
-import ObjectUpdater from "./core/updater/ObjectUpdater";
-// import TransformMatrixUpdater from "./core/updater/TransformMatrixUpdater";
+import Updater from "./core/updaters/Updater";
+import ObjectUpdater from "./core/updaters/ObjectUpdater";
+import TransformUpdater from "./core/updaters/TransformUpdater";
 import Ease24 from "./Ease24";
+import ArrayUtil from "./utils/ArrayUtil";
+import TypeUtil from "./utils/TypeUtil";
+import HTMLUtil from "./utils/HTMLUtil";
 
 /*
  TODO: 相対値
@@ -42,6 +45,7 @@ class Tween24 {
 
     // Updater
     private objectUpdater:ObjectUpdater|null = null;
+    private transformUpdater:TransformUpdater|null = null;
     private updaters:Updater[];
 
     // Refer
@@ -119,7 +123,8 @@ class Tween24 {
         if (tweens) {
             for (const tween of tweens) {
                 if (this !== tween) {
-                    if (this.objectUpdater && tween.objectUpdater) tween.objectUpdater.overwrite(this.objectUpdater);
+                    if (this.objectUpdater)    tween.objectUpdater?.overwrite(this.objectUpdater);
+                    if (this.transformUpdater) tween.transformUpdater?.overwrite(this.transformUpdater);
                 }
             }
             tweens.push(this);
@@ -138,7 +143,7 @@ class Tween24 {
 
 		// Container
 		if (this.isContainerTween) {
-            if (!this.inited) {
+            if (this.inited == false) {
                 this.inited = true;
                 switch (this.type) {
                     case Tween24.TYPE_SERIAL:
@@ -183,6 +188,8 @@ class Tween24 {
                         updater.update(prog);
                     }
                 }
+                this.objectUpdater?.update(prog);
+                this.transformUpdater?.update(prog);
 			}
 
 			// Complete
@@ -207,15 +214,15 @@ class Tween24 {
 		this.debugLog(this.type + " complete");
 		if (this.isRoot) Tween24.ticker.remove(this);
 		if (this.parent) this.parent.__completeChildTween(this);
-        this.removeItemFromArray(Tween24._playingTweensByTarget.get(this.target), this);
-        this.removeItemFromArray(Tween24._playingTweens, this);
+        ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this.target), this);
+        ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
 	}
 
 	private __completeChildTween(tween:Tween24) {
 		this.debugLog(this.type + " completeChildTween");
 		this.numCompleteChildren++;
         if (this.playingChildTween) {
-            this.removeItemFromArray(this.playingChildTween, tween);
+            ArrayUtil.removeItemFromArray(this.playingChildTween, tween);
             var next = tween.next;
             if (next) {
                 this.playingChildTween.push(next);
@@ -233,7 +240,6 @@ class Tween24 {
 
     private __initChildTween(type:string, target:any, time:number, easing:(Function|null)): Tween24 {
         this.type = type;
-        this.target = target;
         this.easing = easing || Ease24._Linear;
         this.time = time;
         this.delayTime = 0;
@@ -241,10 +247,13 @@ class Tween24 {
         this.inited = false;
         this.isContainerTween = false;
 
-        if (target instanceof HTMLElement) {
-
+        if (TypeUtil.isString(target)) {
+            this.target = HTMLUtil.getHTMLElement(target)[0];
+            this.transformUpdater = new TransformUpdater(this.target);
+            this.updaters.push(this.transformUpdater);
         }
         else {
+            this.target = target;
             this.objectUpdater = new ObjectUpdater(target);
             this.updaters.push(this.objectUpdater);
         }
@@ -306,11 +315,18 @@ class Tween24 {
 	y(value: number): Tween24 { return this.__setPropety("y", value); }
 	xy(x: number, y: number): Tween24 { return this.__setPropety("x", x).__setPropety("y", y); }
 	alpha(value: number): Tween24 { return this.__setPropety("alpha", value); }
+	scaleX(value: number): Tween24 { return this.__setPropety("scaleX", value); }
+	scaleY(value: number): Tween24 { return this.__setPropety("scaleY", value); }
+	scale(scale: number): Tween24 { return this.__setPropety("scaleX", scale).__setPropety("scaleY", scale); }
+	rotation(value: number): Tween24 { return this.__setPropety("rotation", value); }
 	delay(value: number): Tween24 { this.delayTime += value; return this; }
 
     private __setPropety(key:string, value:number):Tween24 {
         if (this.objectUpdater){
             this.objectUpdater.addProp(key, value);
+        }
+        else if (this.transformUpdater) {
+            this.transformUpdater.addProp(key, value);
         }
         return this;
     }
@@ -357,17 +373,6 @@ class Tween24 {
     		var progress = (nowTime - startTime) / (time * 1000);
     		return (progress > 1) ? 1 : progress;
     	}
-    }
-
-    removeItemFromArray(array:any[]|undefined|null, item:any) {
-        if (array) {
-            for (var i = 0; i < array.length; i++) {
-                var it = array[i];
-                if (item == it) {
-                    array.splice(i, 1);
-                }
-            }
-        }
     }
 
     trace(value:any) {

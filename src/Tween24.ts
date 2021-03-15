@@ -7,17 +7,6 @@ import ArrayUtil from "./utils/ArrayUtil";
 import TypeUtil from "./utils/TypeUtil";
 import HTMLUtil from "./utils/HTMLUtil";
 
-/*
- TODO: 相対値
- TODO: 直前相対値
- TODO: 関数トゥイーン
- TODO: イベントハンドラ
- TODO: 停止、一時停止
- TODO: 回転、幅、高さ
- TODO: スキップ
- TODO: ループ
- TODO: 複数オブジェクト指定
- */
 class Tween24 {
 
 	// Static
@@ -311,15 +300,20 @@ class Tween24 {
     //
     // ------------------------------------------
 	
-    x(value: number): Tween24 { return this.__setPropety("x", value); }
-	y(value: number): Tween24 { return this.__setPropety("y", value); }
-	xy(x: number, y: number): Tween24 { return this.__setPropety("x", x).__setPropety("y", y); }
-	alpha(value: number): Tween24 { return this.__setPropety("alpha", value); }
-	scaleX(value: number): Tween24 { return this.__setPropety("scaleX", value); }
-	scaleY(value: number): Tween24 { return this.__setPropety("scaleY", value); }
-	scale(scale: number): Tween24 { return this.__setPropety("scaleX", scale).__setPropety("scaleY", scale); }
+    x       (value: number): Tween24 { return this.__setPropety("x", value); }
+	y       (value: number): Tween24 { return this.__setPropety("y", value); }
+	xy      (x: number, y: number): Tween24 { return this.__setPropety("x", x).__setPropety("y", y); }
+	alpha   (value: number): Tween24 { return this.__setPropety("alpha", value); }
+	scaleX  (value: number): Tween24 { return this.__setPropety("scaleX", value); }
+	scaleY  (value: number): Tween24 { return this.__setPropety("scaleY", value); }
+	scale   (scale: number): Tween24 { return this.__setPropety("scaleX", scale).__setPropety("scaleY", scale); }
+	scaleXY (scaleX: number, scaleY: number): Tween24 { return this.__setPropety("scaleX", scaleX).__setPropety("scaleY", scaleY); }
+	skewX   (value: number): Tween24 { return this.__setPropety("skewX", value); }
+	skewY   (value: number): Tween24 { return this.__setPropety("skewY", value); }
+	skew    (skew: number): Tween24 { return this.__setPropety("skewX", skew).__setPropety("skewY", skew); }
+	skewXY  (skewX: number, skewY: number): Tween24 { return this.__setPropety("skewX", skewX).__setPropety("skewY", skewY); }
 	rotation(value: number): Tween24 { return this.__setPropety("rotation", value); }
-	delay(value: number): Tween24 { this.delayTime += value; return this; }
+	delay   (value: number): Tween24 { this.delayTime += value; return this; }
 
     private __setPropety(key:string, value:number):Tween24 {
         if (this.objectUpdater){

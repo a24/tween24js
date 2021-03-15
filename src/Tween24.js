@@ -5,17 +5,6 @@ import Ease24 from "./Ease24";
 import ArrayUtil from "./utils/ArrayUtil";
 import TypeUtil from "./utils/TypeUtil";
 import HTMLUtil from "./utils/HTMLUtil";
-/*
- TODO: 相対値
- TODO: 直前相対値
- TODO: 関数トゥイーン
- TODO: イベントハンドラ
- TODO: 停止、一時停止
- TODO: 回転、幅、高さ
- TODO: スキップ
- TODO: ループ
- TODO: 複数オブジェクト指定
- */
 var Tween24 = /** @class */ (function () {
     function Tween24() {
         this.easing = null;
@@ -279,6 +268,11 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.scaleX = function (value) { return this.__setPropety("scaleX", value); };
     Tween24.prototype.scaleY = function (value) { return this.__setPropety("scaleY", value); };
     Tween24.prototype.scale = function (scale) { return this.__setPropety("scaleX", scale).__setPropety("scaleY", scale); };
+    Tween24.prototype.scaleXY = function (scaleX, scaleY) { return this.__setPropety("scaleX", scaleX).__setPropety("scaleY", scaleY); };
+    Tween24.prototype.skewX = function (value) { return this.__setPropety("skewX", value); };
+    Tween24.prototype.skewY = function (value) { return this.__setPropety("skewY", value); };
+    Tween24.prototype.skew = function (skew) { return this.__setPropety("skewX", skew).__setPropety("skewY", skew); };
+    Tween24.prototype.skewXY = function (skewX, skewY) { return this.__setPropety("skewX", skewX).__setPropety("skewY", skewY); };
     Tween24.prototype.rotation = function (value) { return this.__setPropety("rotation", value); };
     Tween24.prototype.delay = function (value) { this.delayTime += value; return this; };
     Tween24.prototype.__setPropety = function (key, value) {

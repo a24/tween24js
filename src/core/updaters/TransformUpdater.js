@@ -93,20 +93,22 @@ var TransformUpdater = /** @class */ (function () {
         TransformUpdater._chache.set(this._target, this._matrix);
     };
     TransformUpdater.prototype.overwrite = function (updater) {
-        if (updater._updateX)
-            this._updateX = false;
-        if (updater._updateY)
-            this._updateY = false;
-        if (updater._updateScaleX)
-            this._updateScaleX = false;
-        if (updater._updateScaleY)
-            this._updateScaleY = false;
-        if (updater._updateSkewX)
-            this._updateSkewX = false;
-        if (updater._updateSkewY)
-            this._updateSkewY = false;
-        if (updater._updateRotation)
-            this._updateRotation = false;
+        if (this._target == updater._target) {
+            if (updater._updateX)
+                this._updateX = false;
+            if (updater._updateY)
+                this._updateY = false;
+            if (updater._updateScaleX)
+                this._updateScaleX = false;
+            if (updater._updateScaleY)
+                this._updateScaleY = false;
+            if (updater._updateSkewX)
+                this._updateSkewX = false;
+            if (updater._updateSkewY)
+                this._updateSkewY = false;
+            if (updater._updateRotation)
+                this._updateRotation = false;
+        }
     };
     TransformUpdater.prototype.complete = function () {
         TransformUpdater._chache.delete(this._target);

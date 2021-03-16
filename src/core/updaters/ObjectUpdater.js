@@ -29,14 +29,15 @@ var ObjectUpdater = /** @class */ (function () {
         }
     };
     ObjectUpdater.prototype.overwrite = function (updater) {
-        var targetKey = updater._tweenKey;
-        if (this._tweenKey && targetKey) {
-            for (var _i = 0, targetKey_1 = targetKey; _i < targetKey_1.length; _i++) {
-                var k = targetKey_1[_i];
-                var i = this._tweenKey.indexOf(k);
-                if (i > -1)
-                    this._tweenKey.splice(i, 1);
-                console.log("overwrite: " + k);
+        if (this._target == updater._target) {
+            var targetKey = updater._tweenKey;
+            if (this._tweenKey && targetKey) {
+                for (var _i = 0, targetKey_1 = targetKey; _i < targetKey_1.length; _i++) {
+                    var k = targetKey_1[_i];
+                    var i = this._tweenKey.indexOf(k);
+                    if (i > -1)
+                        this._tweenKey.splice(i, 1);
+                }
             }
         }
     };

@@ -42,12 +42,13 @@ export class ObjectUpdater implements Updater {
 	}
 
 	overwrite(updater:ObjectUpdater):void {
-		const targetKey:string[]|null = updater._tweenKey;
-		if (this._tweenKey && targetKey) {
-			for (const k of targetKey) {
-				const i = this._tweenKey.indexOf(k);
-				if (i > -1) this._tweenKey.splice(i, 1);
-				console.log("overwrite: " + k);
+		if (this._target == updater._target) {
+			const targetKey:string[]|null = updater._tweenKey;
+			if (this._tweenKey && targetKey) {
+				for (const k of targetKey) {
+					const i = this._tweenKey.indexOf(k);
+					if (i > -1) this._tweenKey.splice(i, 1);
+				}
 			}
 		}
 	}

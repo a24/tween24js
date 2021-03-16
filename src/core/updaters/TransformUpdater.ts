@@ -1,3 +1,4 @@
+import { transform } from "../../../node_modules/typescript/lib/typescript";
 import Matrix from "../../geom/Matrix";
 import HTMLUtil from "../../utils/HTMLUtil";
 import ParamUpdater from "./ParamUpdater";
@@ -102,13 +103,15 @@ export class TransformUpdater implements Updater {
 	}
 
 	overwrite(updater: TransformUpdater) {
-		if (updater._updateX       ) this._updateX        = false;
-		if (updater._updateY       ) this._updateY        = false;
-		if (updater._updateScaleX  ) this._updateScaleX   = false;
-		if (updater._updateScaleY  ) this._updateScaleY   = false;
-		if (updater._updateSkewX   ) this._updateSkewX    = false;
-		if (updater._updateSkewY   ) this._updateSkewY    = false;
-		if (updater._updateRotation) this._updateRotation = false;
+		if (this._target == updater._target) {
+			if (updater._updateX       ) this._updateX        = false;
+			if (updater._updateY       ) this._updateY        = false;
+			if (updater._updateScaleX  ) this._updateScaleX   = false;
+			if (updater._updateScaleY  ) this._updateScaleY   = false;
+			if (updater._updateSkewX   ) this._updateSkewX    = false;
+			if (updater._updateSkewY   ) this._updateSkewY    = false;
+			if (updater._updateRotation) this._updateRotation = false;
+		}
 	}
 
 	complete() {

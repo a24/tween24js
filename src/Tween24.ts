@@ -4,13 +4,14 @@ import ObjectUpdater from "./core/updaters/ObjectUpdater";
 import TransformUpdater from "./core/updaters/TransformUpdater";
 import Ease24 from "./Ease24";
 import ArrayUtil from "./utils/ArrayUtil";
-import TypeUtil from "./utils/TypeUtil";
+import ClassUtil from "./utils/ClassUtil";
 import HTMLUtil from "./utils/HTMLUtil";
+import MultiUpdater from "./core/updaters/MultiUpdater";
 
 class Tween24 {
 
 	// Static
-    static readonly VERSION:string = "0.2.3";
+    static readonly VERSION:string = "0.3.0";
 	static readonly TYPE_TWEEN:string = "tween";
 	static readonly TYPE_PROP:string = "prop";
 	static readonly TYPE_WAIT:string = "wait";
@@ -24,7 +25,8 @@ class Tween24 {
     private static _playingTweensByTarget:Map<any, Tween24[]>;
 
 	// Common
-	private target:any;
+	private _singleTarget:any|null;
+	private _multiTarget:any[]|null = null;
 	private easing:Function|null = null;
 	private type:string = "";
 
@@ -34,7 +36,9 @@ class Tween24 {
 
     // Updater
     private objectUpdater:ObjectUpdater|null = null;
+    private objectMultiUpdater:MultiUpdater|null = null;
     private transformUpdater:TransformUpdater|null = null;
+    private transformMultiUpdater:MultiUpdater|null = null;
     private updaters:Updater[];
 
     // Refer
@@ -97,8 +101,8 @@ class Tween24 {
 		if (this.isRoot) Tween24.ticker.remove(this);
 	}
 
-	pause() {
-	}
+	// pause() {
+	// }
 
 	private __initParam() {
         if (this.updaters.length) {
@@ -108,21 +112,39 @@ class Tween24 {
         }
         
         // Overwrite
-        const tweens:Tween24[]|undefined = Tween24._playingTweensByTarget.get(this.target);
+        if (this._singleTarget)
+            this.overwrite(this._singleTarget);
+        else if (this._multiTarget) {
+            for (const target of this._multiTarget) {
+                this.overwrite(target);
+            }
+        }
+        Tween24._playingTweens.push(this);
+	}
+
+    private overwrite(target:any) {
+        let tweens:Tween24[]|undefined = Tween24._playingTweensByTarget.get(target);
         if (tweens) {
             for (const tween of tweens) {
                 if (this !== tween) {
-                    if (this.objectUpdater)    tween.objectUpdater?.overwrite(this.objectUpdater);
-                    if (this.transformUpdater) tween.transformUpdater?.overwrite(this.transformUpdater);
+                    if (this._singleTarget) {
+                        if (this.objectUpdater)    (tween.objectMultiUpdater   ||tween.objectUpdater   )?.overwrite(this.objectUpdater);
+                        if (this.transformUpdater) (tween.transformMultiUpdater||tween.transformUpdater)?.overwrite(this.transformUpdater);
+                    }
+                    else if (this._multiTarget) {
+                        if      (tween.objectMultiUpdater)    this.objectMultiUpdater   ?.overwriteMultiTo(tween.objectMultiUpdater);
+                        else if (tween.objectUpdater)         this.objectMultiUpdater   ?.overwriteTo     (tween.objectUpdater);
+                        if      (tween.transformMultiUpdater) this.transformMultiUpdater?.overwriteMultiTo(tween.transformMultiUpdater);
+                        else if (tween.transformUpdater)      this.transformMultiUpdater?.overwriteTo     (tween.transformUpdater);
+                    }
                 }
             }
             tweens.push(this);
         }
         else {
-            Tween24._playingTweensByTarget.set(this.target, [this]);
+            Tween24._playingTweensByTarget.set(target, [this]);
         }
-        Tween24._playingTweens.push(this);
-	}
+    }
 
     public __update() {
         var progress = this.getProgress(this.time, this.startTime);
@@ -162,8 +184,7 @@ class Tween24 {
 
 		// Child
 		else {
-			var target = this.target;
-			if (target) {
+			if (this._singleTarget || this._multiTarget) {
 				// Init
 				if (!this.inited) {
                     this.inited = true;
@@ -177,8 +198,6 @@ class Tween24 {
                         updater.update(prog);
                     }
                 }
-                this.objectUpdater?.update(prog);
-                this.transformUpdater?.update(prog);
 			}
 
 			// Complete
@@ -203,7 +222,7 @@ class Tween24 {
 		this.debugLog(this.type + " complete");
 		if (this.isRoot) Tween24.ticker.remove(this);
 		if (this.parent) this.parent.__completeChildTween(this);
-        ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this.target), this);
+        ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this._singleTarget), this);
         ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
 	}
 
@@ -228,21 +247,48 @@ class Tween24 {
     // ------------------------------------------
 
     private __initChildTween(type:string, target:any, time:number, easing:(Function|null)): Tween24 {
-        this.type = type;
-        this.easing = easing || Ease24._Linear;
-        this.time = time;
+        this.type      = type;
+        this.easing    = easing || Ease24._Linear;
+        this.time      = time;
         this.delayTime = 0;
         this.startTime = 0;
-        this.inited = false;
+        this.inited    = false;
         this.isContainerTween = false;
 
-        if (TypeUtil.isString(target)) {
-            this.target = HTMLUtil.getHTMLElement(target)[0];
-            this.transformUpdater = new TransformUpdater(this.target);
-            this.updaters.push(this.transformUpdater);
+        if (Array.isArray(target)) {
+            if (ClassUtil.isString(target[0])) {
+                this._multiTarget = [];
+                for (const t of target)
+                    this._multiTarget = this._multiTarget.concat(HTMLUtil.getHTMLElement(t));
+                this.transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
+                this.updaters.push(this.transformMultiUpdater);
+            }
+            else if (target[0] instanceof HTMLElement) {
+                this._multiTarget = target;
+                this.transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
+                this.updaters.push(this.transformMultiUpdater);
+            }
+            else {
+                this._multiTarget = target;
+                this.objectMultiUpdater = new MultiUpdater(this._multiTarget, ObjectUpdater.name);
+                this.updaters.push(this.objectMultiUpdater);
+            }
+        }
+        else if (ClassUtil.isString(target)) {
+            const t:HTMLElement[] = HTMLUtil.getHTMLElement(target);
+            if (t.length == 1) {
+                this._singleTarget = t[0];
+                this.transformUpdater = new TransformUpdater(this._singleTarget);
+                this.updaters.push(this.transformUpdater);
+            }
+            else {
+                this._multiTarget = t;
+                this.transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
+                this.updaters.push(this.transformMultiUpdater);
+            }
         }
         else {
-            this.target = target;
+            this._singleTarget = target;
             this.objectUpdater = new ObjectUpdater(target);
             this.updaters.push(this.objectUpdater);
         }
@@ -251,16 +297,15 @@ class Tween24 {
     }
 
     private __initContainerTween(type:string, childTween:Tween24[]): Tween24 {
-        this.type = type;
-        this.time = 0;
-        this.delayTime = 0;
+        this.type       = type;
+        this.time       = 0;
+        this.delayTime  = 0;
         this.childTween = childTween;
         this.firstTween = this.childTween[0];
-        this.playingChildTween = [];
-
-        this.numChildren = childTween.length;
+        this.playingChildTween   = [];
+        this.numChildren         = childTween.length;
         this.numCompleteChildren = 0;
-        this.isContainerTween = true;
+        this.isContainerTween    = true;
 
         var prev = this.firstTween;
         var next;
@@ -281,14 +326,14 @@ class Tween24 {
     }
 
     private __initActionTween(type:string, scope:any, func:Function, args:any[]): Tween24 {
-        this.type = type;
-        this.scope = scope;
-        this.func = func;
-        this.args = args;
-        this.time = 0;
+        this.type      = type;
+        this.scope     = scope;
+        this.func      = func;
+        this.args      = args;
+        this.time      = 0;
         this.delayTime = 0;
         this.startTime = 0;
-        this.inited = false;
+        this.inited    = false;
         this.isContainerTween = false;
         return this;
     }
@@ -316,11 +361,13 @@ class Tween24 {
 	delay   (value: number): Tween24 { this.delayTime += value; return this; }
 
     private __setPropety(key:string, value:number):Tween24 {
-        if (this.objectUpdater){
-            this.objectUpdater.addProp(key, value);
+        if (this._singleTarget) {
+            if      (this.objectUpdater)    this.objectUpdater   .addProp(key, value);
+            else if (this.transformUpdater) this.transformUpdater.addProp(key, value);
         }
-        else if (this.transformUpdater) {
-            this.transformUpdater.addProp(key, value);
+        else if (this._multiTarget) {
+            if      (this.objectMultiUpdater)    this.objectMultiUpdater   .addProp(key, value);
+            else if (this.transformMultiUpdater) this.transformMultiUpdater.addProp(key, value);
         }
         return this;
     }

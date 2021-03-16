@@ -219,7 +219,7 @@ var Tween24 = /** @class */ (function () {
     // Init
     //
     // ------------------------------------------
-    Tween24.prototype.__initChildTween = function (type, target, time, easing) {
+    Tween24.prototype.__initChildTween = function (type, target, time, easing, params) {
         this.type = type;
         this.easing = easing || Ease24._Linear;
         this.time = time;
@@ -265,6 +265,11 @@ var Tween24 = /** @class */ (function () {
             this._singleTarget = target;
             this.objectUpdater = new ObjectUpdater(target);
             this.updaters.push(this.objectUpdater);
+        }
+        if (params) {
+            for (var key in params) {
+                this.__setPropety(key, params[key]);
+            }
         }
         return this;
     };
@@ -346,15 +351,17 @@ var Tween24 = /** @class */ (function () {
     // Tween
     //
     // ------------------------------------------
-    Tween24.tween = function (target, time, easing) {
+    Tween24.tween = function (target, time, easing, params) {
         if (easing === void 0) { easing = null; }
-        return new Tween24().__initChildTween(Tween24.TYPE_TWEEN, target, time, easing);
+        if (params === void 0) { params = null; }
+        return new Tween24().__initChildTween(Tween24.TYPE_TWEEN, target, time, easing, params);
     };
-    Tween24.prop = function (target) {
-        return new Tween24().__initChildTween(Tween24.TYPE_PROP, target, 0, null);
+    Tween24.prop = function (target, params) {
+        if (params === void 0) { params = null; }
+        return new Tween24().__initChildTween(Tween24.TYPE_PROP, target, 0, null, params);
     };
     Tween24.wait = function (time) {
-        return new Tween24().__initChildTween(Tween24.TYPE_WAIT, null, time, null);
+        return new Tween24().__initChildTween(Tween24.TYPE_WAIT, null, time, null, null);
     };
     Tween24.serial = function () {
         var childTween = [];

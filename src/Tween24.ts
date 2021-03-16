@@ -246,7 +246,7 @@ class Tween24 {
     //
     // ------------------------------------------
 
-    private __initChildTween(type:string, target:any, time:number, easing:(Function|null)): Tween24 {
+    private __initChildTween(type:string, target:any, time:number, easing:Function|null, params:{[key:string]:number}|null): Tween24 {
         this.type      = type;
         this.easing    = easing || Ease24._Linear;
         this.time      = time;
@@ -291,6 +291,12 @@ class Tween24 {
             this._singleTarget = target;
             this.objectUpdater = new ObjectUpdater(target);
             this.updaters.push(this.objectUpdater);
+        }
+
+        if (params) {
+            for (const key in params) {
+                this.__setPropety(key, params[key]);
+            }
         }
 
         return this;
@@ -378,14 +384,14 @@ class Tween24 {
 	//
 	// ------------------------------------------
 
-    static tween(target:any, time:number, easing:(Function|null) = null): Tween24 {
-    	return new Tween24().__initChildTween(Tween24.TYPE_TWEEN, target, time, easing);
+    static tween(target:any, time:number, easing:Function|null = null, params:{[key:string]:number}|null = null): Tween24 {
+    	return new Tween24().__initChildTween(Tween24.TYPE_TWEEN, target, time, easing, params);
     }
-    static prop(target:any): Tween24 {
-    	return new Tween24().__initChildTween(Tween24.TYPE_PROP, target, 0, null);
+    static prop(target:any, params:{[key:string]:number}|null = null): Tween24 {
+    	return new Tween24().__initChildTween(Tween24.TYPE_PROP, target, 0, null, params);
 	}
 	static wait(time:number): Tween24 {
-    	return new Tween24().__initChildTween(Tween24.TYPE_WAIT, null, time, null);
+    	return new Tween24().__initChildTween(Tween24.TYPE_WAIT, null, time, null ,null);
     }
     static func = function (scope:any, func:Function, ...args:any[]) {
         return new Tween24().__initActionTween(Tween24.TYPE_FUNC, scope, func, args);

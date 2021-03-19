@@ -7,6 +7,8 @@ import ArrayUtil from "./utils/ArrayUtil";
 import ClassUtil from "./utils/ClassUtil";
 import HTMLUtil from "./utils/HTMLUtil";
 import MultiUpdater from "./core/updaters/MultiUpdater";
+import FunctionExecuter from "./core/FunctionExecuter";
+import Tween24Event from "./core/Tween24Event";
 
 class Tween24 {
 
@@ -39,7 +41,7 @@ class Tween24 {
     private objectMultiUpdater:MultiUpdater|null = null;
     private transformUpdater:TransformUpdater|null = null;
     private transformMultiUpdater:MultiUpdater|null = null;
-    private updaters:Updater[];
+    private updaters:Updater[]|null = null;
 
     // Refer
 	private root:Tween24|null = null;
@@ -51,15 +53,8 @@ class Tween24 {
 	private isRoot:boolean = false;
 	private isContainerTween:boolean = false;
 
-    // Callback
-    // private onPlayFunc:Function;
-    // private onPlayArgs:Function;
-    // private onPauseFunc:Function;
-    // private onPauseArgs:Function;
-    // private onStopFunc:Function;
-    // private onStopArgs:Function;
-    // private onCompleteFunc:Function;
-    // private onCompleteArgs:Function;
+    // Action & Callback
+    private functionExecuters:{[key:string]:FunctionExecuter}|null = null;
 
 	// Container Tween    
 	private childTween:Tween24[]|null = null;
@@ -68,22 +63,17 @@ class Tween24 {
 	private numChildren:number = 0;
 	private numCompleteChildren:number = 0;
 
-    // Action Tween
-    private scope:any;
-    private func:Function|null = null;
-    private args:any[]|null = null;
-
 	constructor() {
-        if (!Tween24.ease) Tween24.ease = new Ease24();
-		if (!Tween24.ticker) Tween24.ticker = new Ticker24();
-		if (!Tween24._playingTweensByTarget) Tween24._playingTweensByTarget = new Map<any, Tween24[]>();
-		if (!Tween24._playingTweens) Tween24._playingTweens = [];
-        this.updaters = [];
+        Tween24.ease ||= new Ease24();
+		Tween24.ticker ||= new Ticker24();
+		Tween24._playingTweens ||= [];
+		Tween24._playingTweensByTarget ||= new Map<any, Tween24[]>();
 	}
 
 	play() {
 		this.root = this;
 		this.isRoot = true;
+        this.inited = false;
 		Tween24.ticker.add(this);
 		this.__play();
 	}
@@ -92,20 +82,23 @@ class Tween24 {
 		this.debugLog(this.type + " play");
 
 		if (!this.isRoot) {
-			if (this.parent) this.root = this.parent.root || this.parent;
+			this.root = this.parent?.root || this.parent;
 		}
+
         this.startTime = this.getTime() + this.delayTime * 1000;
+        this.functionExecute(Tween24Event.PLAY);
 	}
 
 	stop() {
-		if (this.isRoot) Tween24.ticker.remove(this);
+		this.__tweenStop();
+        this.functionExecute(Tween24Event.STOP);
 	}
 
 	// pause() {
 	// }
 
 	private __initParam() {
-        if (this.updaters.length) {
+        if (this.updaters?.length) {
             for (const updater of this.updaters) {
                 updater.init();
             }
@@ -152,7 +145,7 @@ class Tween24 {
         // Delay
         if (progress < 0) return;
 
-		// Container
+		// Container Tween
 		if (this.isContainerTween) {
             if (this.inited == false) {
                 this.inited = true;
@@ -173,43 +166,51 @@ class Tween24 {
                         }
                         break;
                 }
+                this.functionExecute(Tween24Event.INIT);
             }
+            // Update
             if (this.playingChildTween) {
                 for (var i = 0; i < this.playingChildTween.length; i++) {
                     this.playingChildTween[i].__update();
                 }
             }
+            this.functionExecute(Tween24Event.UPDATE);
 			if (this.numChildren == this.numCompleteChildren) this.__complete();
 		}
 
-		// Child
+		// Child Tween
 		else {
 			if (this._singleTarget || this._multiTarget) {
 				// Init
 				if (!this.inited) {
                     this.inited = true;
                     this.__initParam();
+                    this.functionExecute(Tween24Event.INIT);
 				}
 
 				// Update propety
 				var prog = this.easing ? this.easing(progress, 0, 1, 1) : progress;
-                if (this.updaters.length) {
+                if (this.updaters?.length) {
                     for (const updater of this.updaters) {
                         updater.update(prog);
                     }
                 }
+                this.functionExecute(Tween24Event.UPDATE);
 			}
+            else {
+				// Init
+				if (!this.inited) {
+                    this.inited = true;
+                    this.functionExecute(Tween24Event.INIT);
+				}
+                this.functionExecute(Tween24Event.UPDATE);
+            }
 
 			// Complete
 			if (progress >= 1) {
                 // Func
                 if (this.type == Tween24.TYPE_FUNC) {
-                    if (this.func) {
-                        var func = this.func;
-                        var args = this.args;
-                        if (args) func.apply(this.scope, args);
-                        else func.apply(this.scope);
-                    }
+                    this.functionExecute(Tween24.TYPE_FUNC);
                 }
 
                 // End
@@ -220,8 +221,13 @@ class Tween24 {
 
     private __complete() {
 		this.debugLog(this.type + " complete");
-		if (this.isRoot) Tween24.ticker.remove(this);
+		this.__tweenStop();
 		if (this.parent) this.parent.__completeChildTween(this);
+        this.functionExecute(Tween24Event.COMPLATE);
+	}
+
+    private __tweenStop() {
+		if (this.isRoot) Tween24.ticker.remove(this);
         ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this._singleTarget), this);
         ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
 	}
@@ -253,6 +259,7 @@ class Tween24 {
         this.delayTime = 0;
         this.startTime = 0;
         this.inited    = false;
+        this.updaters  = [];
         this.isContainerTween = false;
 
         if (Array.isArray(target)) {
@@ -331,16 +338,17 @@ class Tween24 {
         return this;
     }
 
-    private __initActionTween(type:string, scope:any, func:Function, args:any[]): Tween24 {
+    private __initActionTween(type:string, scope:any, func:Function, args:any[]) {
         this.type      = type;
-        this.scope     = scope;
-        this.func      = func;
-        this.args      = args;
         this.time      = 0;
         this.delayTime = 0;
         this.startTime = 0;
         this.inited    = false;
         this.isContainerTween = false;
+
+        switch (this.type) {
+            case Tween24.TYPE_FUNC: this.setFunctionExecute(Tween24.TYPE_FUNC, scope, func, args);
+        }
         return this;
     }
 
@@ -366,6 +374,13 @@ class Tween24 {
 	rotation(value: number): Tween24 { return this.__setPropety("rotation", value); }
 	delay   (value: number): Tween24 { this.delayTime += value; return this; }
 
+    onPlay    (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.PLAY    , scope, func, args); }
+    onInit    (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.INIT    , scope, func, args); }
+    onUpdate  (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.UPDATE  , scope, func, args); }
+    onPause   (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.PAUSE   , scope, func, args); }
+    onStop    (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.STOP    , scope, func, args); }
+    onComplate(scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.COMPLATE, scope, func, args); }
+
     private __setPropety(key:string, value:number):Tween24 {
         if (this._singleTarget) {
             if      (this.objectUpdater)    this.objectUpdater   .addProp(key, value);
@@ -376,6 +391,18 @@ class Tween24 {
             else if (this.transformMultiUpdater) this.transformMultiUpdater.addProp(key, value);
         }
         return this;
+    }
+
+    private setFunctionExecute(key:string, scope:any, func:Function, args:any[]):Tween24 {
+        this.functionExecuters ||= {};
+        this.functionExecuters[key] = new FunctionExecuter(scope, func, args);
+        return this;
+    }
+
+    private functionExecute(key:string) {
+        if (this.functionExecuters) {
+            this.functionExecuters[key]?.execute();
+        }
     }
 
 	// ------------------------------------------

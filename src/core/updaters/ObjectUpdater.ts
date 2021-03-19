@@ -4,9 +4,9 @@ import Updater from "./Updater";
 export class ObjectUpdater implements Updater {
 
 	private _target:any;
-	private _param:{ [key:string]:number };
-	private _startParam:{ [key:string]:number };
-	private _deltaParam:{ [key:string]:number };
+	private _param:{[key:string]:number};
+	private _startParam:{[key:string]:number};
+	private _deltaParam:{[key:string]:number};
 	private _key:string[];
 	private _tweenKey:string[]|null;
 

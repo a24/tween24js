@@ -6,6 +6,8 @@ import ArrayUtil from "./utils/ArrayUtil";
 import ClassUtil from "./utils/ClassUtil";
 import HTMLUtil from "./utils/HTMLUtil";
 import MultiUpdater from "./core/updaters/MultiUpdater";
+import FunctionExecuter from "./core/FunctionExecuter";
+import Tween24Event from "./core/Tween24Event";
 var Tween24 = /** @class */ (function () {
     function Tween24() {
         this._multiTarget = null;
@@ -19,6 +21,7 @@ var Tween24 = /** @class */ (function () {
         this.objectMultiUpdater = null;
         this.transformUpdater = null;
         this.transformMultiUpdater = null;
+        this.updaters = null;
         // Refer
         this.root = null;
         this.parent = null;
@@ -27,57 +30,46 @@ var Tween24 = /** @class */ (function () {
         this.inited = false;
         this.isRoot = false;
         this.isContainerTween = false;
-        // Callback
-        // private onPlayFunc:Function;
-        // private onPlayArgs:Function;
-        // private onPauseFunc:Function;
-        // private onPauseArgs:Function;
-        // private onStopFunc:Function;
-        // private onStopArgs:Function;
-        // private onCompleteFunc:Function;
-        // private onCompleteArgs:Function;
+        // Action & Callback
+        this.functionExecuters = null;
         // Container Tween    
         this.childTween = null;
         this.firstTween = null;
         this.playingChildTween = null;
         this.numChildren = 0;
         this.numCompleteChildren = 0;
-        this.func = null;
-        this.args = null;
-        if (!Tween24.ease)
-            Tween24.ease = new Ease24();
-        if (!Tween24.ticker)
-            Tween24.ticker = new Ticker24();
-        if (!Tween24._playingTweensByTarget)
-            Tween24._playingTweensByTarget = new Map();
-        if (!Tween24._playingTweens)
-            Tween24._playingTweens = [];
-        this.updaters = [];
+        Tween24.ease || (Tween24.ease = new Ease24());
+        Tween24.ticker || (Tween24.ticker = new Ticker24());
+        Tween24._playingTweens || (Tween24._playingTweens = []);
+        Tween24._playingTweensByTarget || (Tween24._playingTweensByTarget = new Map());
     }
     Tween24.prototype.play = function () {
         this.root = this;
         this.isRoot = true;
+        this.inited = false;
         Tween24.ticker.add(this);
         this.__play();
     };
     Tween24.prototype.__play = function () {
+        var _a;
         this.debugLog(this.type + " play");
         if (!this.isRoot) {
-            if (this.parent)
-                this.root = this.parent.root || this.parent;
+            this.root = ((_a = this.parent) === null || _a === void 0 ? void 0 : _a.root) || this.parent;
         }
         this.startTime = this.getTime() + this.delayTime * 1000;
+        this.functionExecute(Tween24Event.PLAY);
     };
     Tween24.prototype.stop = function () {
-        if (this.isRoot)
-            Tween24.ticker.remove(this);
+        this.__tweenStop();
+        this.functionExecute(Tween24Event.STOP);
     };
     // pause() {
     // }
     Tween24.prototype.__initParam = function () {
-        if (this.updaters.length) {
-            for (var _i = 0, _a = this.updaters; _i < _a.length; _i++) {
-                var updater = _a[_i];
+        var _a;
+        if ((_a = this.updaters) === null || _a === void 0 ? void 0 : _a.length) {
+            for (var _i = 0, _b = this.updaters; _i < _b.length; _i++) {
+                var updater = _b[_i];
                 updater.init();
             }
         }
@@ -85,8 +77,8 @@ var Tween24 = /** @class */ (function () {
         if (this._singleTarget)
             this.overwrite(this._singleTarget);
         else if (this._multiTarget) {
-            for (var _b = 0, _c = this._multiTarget; _b < _c.length; _b++) {
-                var target = _c[_b];
+            for (var _c = 0, _d = this._multiTarget; _c < _d.length; _c++) {
+                var target = _d[_c];
                 this.overwrite(target);
             }
         }
@@ -124,11 +116,12 @@ var Tween24 = /** @class */ (function () {
         }
     };
     Tween24.prototype.__update = function () {
+        var _a;
         var progress = this.getProgress(this.time, this.startTime);
         // Delay
         if (progress < 0)
             return;
-        // Container
+        // Container Tween
         if (this.isContainerTween) {
             if (this.inited == false) {
                 this.inited = true;
@@ -149,44 +142,50 @@ var Tween24 = /** @class */ (function () {
                         }
                         break;
                 }
+                this.functionExecute(Tween24Event.INIT);
             }
+            // Update
             if (this.playingChildTween) {
                 for (var i = 0; i < this.playingChildTween.length; i++) {
                     this.playingChildTween[i].__update();
                 }
             }
+            this.functionExecute(Tween24Event.UPDATE);
             if (this.numChildren == this.numCompleteChildren)
                 this.__complete();
         }
-        // Child
+        // Child Tween
         else {
             if (this._singleTarget || this._multiTarget) {
                 // Init
                 if (!this.inited) {
                     this.inited = true;
                     this.__initParam();
+                    this.functionExecute(Tween24Event.INIT);
                 }
                 // Update propety
                 var prog = this.easing ? this.easing(progress, 0, 1, 1) : progress;
-                if (this.updaters.length) {
-                    for (var _i = 0, _a = this.updaters; _i < _a.length; _i++) {
-                        var updater = _a[_i];
+                if ((_a = this.updaters) === null || _a === void 0 ? void 0 : _a.length) {
+                    for (var _i = 0, _b = this.updaters; _i < _b.length; _i++) {
+                        var updater = _b[_i];
                         updater.update(prog);
                     }
                 }
+                this.functionExecute(Tween24Event.UPDATE);
+            }
+            else {
+                // Init
+                if (!this.inited) {
+                    this.inited = true;
+                    this.functionExecute(Tween24Event.INIT);
+                }
+                this.functionExecute(Tween24Event.UPDATE);
             }
             // Complete
             if (progress >= 1) {
                 // Func
                 if (this.type == Tween24.TYPE_FUNC) {
-                    if (this.func) {
-                        var func = this.func;
-                        var args = this.args;
-                        if (args)
-                            func.apply(this.scope, args);
-                        else
-                            func.apply(this.scope);
-                    }
+                    this.functionExecute(Tween24.TYPE_FUNC);
                 }
                 // End
                 this.__complete();
@@ -195,10 +194,14 @@ var Tween24 = /** @class */ (function () {
     };
     Tween24.prototype.__complete = function () {
         this.debugLog(this.type + " complete");
-        if (this.isRoot)
-            Tween24.ticker.remove(this);
+        this.__tweenStop();
         if (this.parent)
             this.parent.__completeChildTween(this);
+        this.functionExecute(Tween24Event.COMPLATE);
+    };
+    Tween24.prototype.__tweenStop = function () {
+        if (this.isRoot)
+            Tween24.ticker.remove(this);
         ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this._singleTarget), this);
         ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
     };
@@ -226,6 +229,7 @@ var Tween24 = /** @class */ (function () {
         this.delayTime = 0;
         this.startTime = 0;
         this.inited = false;
+        this.updaters = [];
         this.isContainerTween = false;
         if (Array.isArray(target)) {
             if (ClassUtil.isString(target[0])) {
@@ -302,14 +306,14 @@ var Tween24 = /** @class */ (function () {
     };
     Tween24.prototype.__initActionTween = function (type, scope, func, args) {
         this.type = type;
-        this.scope = scope;
-        this.func = func;
-        this.args = args;
         this.time = 0;
         this.delayTime = 0;
         this.startTime = 0;
         this.inited = false;
         this.isContainerTween = false;
+        switch (this.type) {
+            case Tween24.TYPE_FUNC: this.setFunctionExecute(Tween24.TYPE_FUNC, scope, func, args);
+        }
         return this;
     };
     // ------------------------------------------
@@ -331,6 +335,48 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.skewXY = function (skewX, skewY) { return this.__setPropety("skewX", skewX).__setPropety("skewY", skewY); };
     Tween24.prototype.rotation = function (value) { return this.__setPropety("rotation", value); };
     Tween24.prototype.delay = function (value) { this.delayTime += value; return this; };
+    Tween24.prototype.onPlay = function (scope, func) {
+        var args = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            args[_i - 2] = arguments[_i];
+        }
+        return this.setFunctionExecute(Tween24Event.PLAY, scope, func, args);
+    };
+    Tween24.prototype.onInit = function (scope, func) {
+        var args = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            args[_i - 2] = arguments[_i];
+        }
+        return this.setFunctionExecute(Tween24Event.INIT, scope, func, args);
+    };
+    Tween24.prototype.onUpdate = function (scope, func) {
+        var args = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            args[_i - 2] = arguments[_i];
+        }
+        return this.setFunctionExecute(Tween24Event.UPDATE, scope, func, args);
+    };
+    Tween24.prototype.onPause = function (scope, func) {
+        var args = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            args[_i - 2] = arguments[_i];
+        }
+        return this.setFunctionExecute(Tween24Event.PAUSE, scope, func, args);
+    };
+    Tween24.prototype.onStop = function (scope, func) {
+        var args = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            args[_i - 2] = arguments[_i];
+        }
+        return this.setFunctionExecute(Tween24Event.STOP, scope, func, args);
+    };
+    Tween24.prototype.onComplate = function (scope, func) {
+        var args = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            args[_i - 2] = arguments[_i];
+        }
+        return this.setFunctionExecute(Tween24Event.COMPLATE, scope, func, args);
+    };
     Tween24.prototype.__setPropety = function (key, value) {
         if (this._singleTarget) {
             if (this.objectUpdater)
@@ -345,6 +391,17 @@ var Tween24 = /** @class */ (function () {
                 this.transformMultiUpdater.addProp(key, value);
         }
         return this;
+    };
+    Tween24.prototype.setFunctionExecute = function (key, scope, func, args) {
+        this.functionExecuters || (this.functionExecuters = {});
+        this.functionExecuters[key] = new FunctionExecuter(scope, func, args);
+        return this;
+    };
+    Tween24.prototype.functionExecute = function (key) {
+        var _a;
+        if (this.functionExecuters) {
+            (_a = this.functionExecuters[key]) === null || _a === void 0 ? void 0 : _a.execute();
+        }
     };
     // ------------------------------------------
     //

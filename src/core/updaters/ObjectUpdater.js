@@ -8,23 +8,24 @@ var ObjectUpdater = /** @class */ (function () {
         this._tweenKey = null;
     }
     ObjectUpdater.prototype.addProp = function (key, value) {
-        var k = key;
-        this._param[k] = value;
-        this._key.push(k);
+        this._param[key] = value;
+        this._key.push(key);
+    };
+    ObjectUpdater.prototype.addPropStr = function (key, value) {
     };
     ObjectUpdater.prototype.init = function () {
         this._tweenKey = this._key.concat();
         for (var _i = 0, _a = this._tweenKey; _i < _a.length; _i++) {
-            var k = _a[_i];
-            this._startParam[k] = this._target[k];
-            this._deltaParam[k] = this._param[k] - this._target[k];
+            var key = _a[_i];
+            this._startParam[key] = this._target[key];
+            this._deltaParam[key] = this._param[key] - this._target[key];
         }
     };
     ObjectUpdater.prototype.update = function (progress) {
         if (this._tweenKey) {
             for (var _i = 0, _a = this._tweenKey; _i < _a.length; _i++) {
-                var k = _a[_i];
-                this._target[k] = this._startParam[k] + this._deltaParam[k] * progress;
+                var key = _a[_i];
+                this._target[key] = this._startParam[key] + this._deltaParam[key] * progress;
             }
         }
     };
@@ -33,8 +34,8 @@ var ObjectUpdater = /** @class */ (function () {
             var targetKey = updater._tweenKey;
             if (this._tweenKey && targetKey) {
                 for (var _i = 0, targetKey_1 = targetKey; _i < targetKey_1.length; _i++) {
-                    var k = targetKey_1[_i];
-                    var i = this._tweenKey.indexOf(k);
+                    var key = targetKey_1[_i];
+                    var i = this._tweenKey.indexOf(key);
                     if (i > -1)
                         this._tweenKey.splice(i, 1);
                 }

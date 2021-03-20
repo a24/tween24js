@@ -70,6 +70,8 @@ var TransformUpdater = /** @class */ (function () {
                 break;
         }
     };
+    TransformUpdater.prototype.addPropStr = function (key, value) {
+    };
     TransformUpdater.prototype.update = function (progress) {
         var chache = TransformUpdater._chache.get(this._target);
         if (chache && chache != this._matrix)

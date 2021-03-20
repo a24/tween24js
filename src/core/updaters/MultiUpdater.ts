@@ -1,5 +1,6 @@
-import Tween24 from "../../Tween24";
+
 import ObjectUpdater from "./ObjectUpdater";
+import StyleUpdater from "./StyleUpdater";
 import TransformUpdater from "./TransformUpdater";
 import Updater from "./Updater";
 
@@ -24,7 +25,8 @@ export class MultiUpdater implements Updater {
 		let updater:Updater;
 		switch (UpdaterType) {
 			case TransformUpdater.name : updater = new TransformUpdater(target); break;
-			default                    : updater = new ObjectUpdater(target);
+			case StyleUpdater    .name : updater = new StyleUpdater    (target); break;
+			default                    : updater = new ObjectUpdater   (target);
 		}
 		return updater;
 	}
@@ -32,6 +34,12 @@ export class MultiUpdater implements Updater {
 	addProp(key:string, value:number) {
 		for (const updater of this._updaters) {
 			updater.addProp(key, value);
+		}
+	}
+	
+	addPropStr(key:string, value:string) {
+		for (const updater of this._updaters) {
+			updater.addPropStr(key, value);
 		}
 	}
 

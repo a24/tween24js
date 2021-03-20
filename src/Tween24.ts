@@ -9,6 +9,7 @@ import HTMLUtil from "./utils/HTMLUtil";
 import MultiUpdater from "./core/updaters/MultiUpdater";
 import FunctionExecuter from "./core/FunctionExecuter";
 import Tween24Event from "./core/Tween24Event";
+import StyleUpdater from "./core/updaters/StyleUpdater";
 
 class Tween24 {
 
@@ -41,6 +42,8 @@ class Tween24 {
     private objectMultiUpdater:MultiUpdater|null = null;
     private transformUpdater:TransformUpdater|null = null;
     private transformMultiUpdater:MultiUpdater|null = null;
+    private styleUpdater:StyleUpdater|null = null;
+    private styleMultiUpdater:MultiUpdater|null = null;
     private updaters:Updater[]|null = null;
 
     // Refer
@@ -121,14 +124,17 @@ class Tween24 {
             for (const tween of tweens) {
                 if (this !== tween) {
                     if (this._singleTarget) {
-                        if (this.objectUpdater)    (tween.objectMultiUpdater   ||tween.objectUpdater   )?.overwrite(this.objectUpdater);
+                        if (this.objectUpdater   ) (tween.objectMultiUpdater   ||tween.objectUpdater   )?.overwrite(this.objectUpdater);
                         if (this.transformUpdater) (tween.transformMultiUpdater||tween.transformUpdater)?.overwrite(this.transformUpdater);
+                        if (this.styleUpdater    ) (tween.styleMultiUpdater    ||tween.styleUpdater    )?.overwrite(this.styleUpdater);
                     }
                     else if (this._multiTarget) {
-                        if      (tween.objectMultiUpdater)    this.objectMultiUpdater   ?.overwriteMultiTo(tween.objectMultiUpdater);
-                        else if (tween.objectUpdater)         this.objectMultiUpdater   ?.overwriteTo     (tween.objectUpdater);
+                        if      (tween.objectMultiUpdater   ) this.objectMultiUpdater   ?.overwriteMultiTo(tween.objectMultiUpdater);
+                        else if (tween.objectUpdater        ) this.objectMultiUpdater   ?.overwriteTo     (tween.objectUpdater);
                         if      (tween.transformMultiUpdater) this.transformMultiUpdater?.overwriteMultiTo(tween.transformMultiUpdater);
-                        else if (tween.transformUpdater)      this.transformMultiUpdater?.overwriteTo     (tween.transformUpdater);
+                        else if (tween.transformUpdater     ) this.transformMultiUpdater?.overwriteTo     (tween.transformUpdater);
+                        if      (tween.styleMultiUpdater    ) this.styleMultiUpdater    ?.overwriteMultiTo(tween.styleMultiUpdater);
+                        else if (tween.styleUpdater         ) this.styleMultiUpdater    ?.overwriteTo     (tween.styleUpdater);
                     }
                 }
             }
@@ -374,6 +380,8 @@ class Tween24 {
 	rotation(value: number): Tween24 { return this.__setPropety("rotation", value); }
 	delay   (value: number): Tween24 { this.delayTime += value; return this; }
 
+    style   (name: string, value: number|string): Tween24 { return this.__setStyle(name, value); }
+
     onPlay    (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.PLAY    , scope, func, args); }
     onInit    (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.INIT    , scope, func, args); }
     onUpdate  (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.UPDATE  , scope, func, args); }
@@ -383,12 +391,30 @@ class Tween24 {
 
     private __setPropety(key:string, value:number):Tween24 {
         if (this._singleTarget) {
-            if      (this.objectUpdater)    this.objectUpdater   .addProp(key, value);
+            if      (this.objectUpdater   ) this.objectUpdater   .addProp(key, value);
             else if (this.transformUpdater) this.transformUpdater.addProp(key, value);
         }
         else if (this._multiTarget) {
-            if      (this.objectMultiUpdater)    this.objectMultiUpdater   .addProp(key, value);
+            if      (this.objectMultiUpdater   ) this.objectMultiUpdater   .addProp(key, value);
             else if (this.transformMultiUpdater) this.transformMultiUpdater.addProp(key, value);
+        }
+        return this;
+    }
+
+    private __setStyle(name: string, value: number|string):Tween24 {
+        if (this._singleTarget) {
+            if (!this.styleUpdater) {
+                this.styleUpdater = new StyleUpdater(this._singleTarget);
+                this.updaters?.push(this.styleUpdater);
+            }
+            this.styleUpdater.addPropStr(name, value as string);
+        }
+        else if (this._multiTarget) {
+            if (!this.styleMultiUpdater) {
+                this.styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.name);
+                this.updaters?.push(this.styleMultiUpdater);
+            }
+            this.styleMultiUpdater.addPropStr(name, value as string);
         }
         return this;
     }

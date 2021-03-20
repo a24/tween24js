@@ -35,8 +35,11 @@ var HTMLUtil = /** @class */ (function () {
     HTMLUtil.setTransformMatrix = function (element, transform) {
         HTMLUtil.setStyleProp(element, "transform", transform);
     };
+    HTMLUtil.getStyle = function (element) {
+        return window.getComputedStyle(element);
+    };
     HTMLUtil.getTransformMatrix = function (element) {
-        var t = window.getComputedStyle(element).transform;
+        var t = HTMLUtil.getStyle(element).transform;
         return t != "none" ? t : "matrix(1, 0, 0, 1, 0, 0)";
     };
     return HTMLUtil;

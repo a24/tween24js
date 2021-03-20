@@ -35,8 +35,12 @@ export class HTMLUtil {
         HTMLUtil.setStyleProp(element, "transform", transform);
     }
 
+    static getStyle(element:HTMLElement):CSSStyleDeclaration {
+        return window.getComputedStyle(element);
+    }
+
     static getTransformMatrix(element:HTMLElement):string {
-        const t:string = window.getComputedStyle(element).transform;
+        const t:string = HTMLUtil.getStyle(element).transform;
         return t != "none" ? t : "matrix(1, 0, 0, 1, 0, 0)";
     }
 }

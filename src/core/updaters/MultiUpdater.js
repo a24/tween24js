@@ -1,4 +1,5 @@
 import ObjectUpdater from "./ObjectUpdater";
+import StyleUpdater from "./StyleUpdater";
 import TransformUpdater from "./TransformUpdater";
 var MultiUpdater = /** @class */ (function () {
     function MultiUpdater(targets, UpdaterType) {
@@ -18,6 +19,9 @@ var MultiUpdater = /** @class */ (function () {
             case TransformUpdater.name:
                 updater = new TransformUpdater(target);
                 break;
+            case StyleUpdater.name:
+                updater = new StyleUpdater(target);
+                break;
             default: updater = new ObjectUpdater(target);
         }
         return updater;
@@ -26,6 +30,12 @@ var MultiUpdater = /** @class */ (function () {
         for (var _i = 0, _a = this._updaters; _i < _a.length; _i++) {
             var updater = _a[_i];
             updater.addProp(key, value);
+        }
+    };
+    MultiUpdater.prototype.addPropStr = function (key, value) {
+        for (var _i = 0, _a = this._updaters; _i < _a.length; _i++) {
+            var updater = _a[_i];
+            updater.addPropStr(key, value);
         }
     };
     MultiUpdater.prototype.init = function () {

@@ -8,6 +8,7 @@ import HTMLUtil from "./utils/HTMLUtil";
 import MultiUpdater from "./core/updaters/MultiUpdater";
 import FunctionExecuter from "./core/FunctionExecuter";
 import Tween24Event from "./core/Tween24Event";
+import StyleUpdater from "./core/updaters/StyleUpdater";
 var Tween24 = /** @class */ (function () {
     function Tween24() {
         this._multiTarget = null;
@@ -21,6 +22,8 @@ var Tween24 = /** @class */ (function () {
         this.objectMultiUpdater = null;
         this.transformUpdater = null;
         this.transformMultiUpdater = null;
+        this.styleUpdater = null;
+        this.styleMultiUpdater = null;
         this.updaters = null;
         // Refer
         this.root = null;
@@ -85,7 +88,7 @@ var Tween24 = /** @class */ (function () {
         Tween24._playingTweens.push(this);
     };
     Tween24.prototype.overwrite = function (target) {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         var tweens = Tween24._playingTweensByTarget.get(target);
         if (tweens) {
             for (var _i = 0, tweens_1 = tweens; _i < tweens_1.length; _i++) {
@@ -96,16 +99,22 @@ var Tween24 = /** @class */ (function () {
                             (_a = (tween.objectMultiUpdater || tween.objectUpdater)) === null || _a === void 0 ? void 0 : _a.overwrite(this.objectUpdater);
                         if (this.transformUpdater)
                             (_b = (tween.transformMultiUpdater || tween.transformUpdater)) === null || _b === void 0 ? void 0 : _b.overwrite(this.transformUpdater);
+                        if (this.styleUpdater)
+                            (_c = (tween.styleMultiUpdater || tween.styleUpdater)) === null || _c === void 0 ? void 0 : _c.overwrite(this.styleUpdater);
                     }
                     else if (this._multiTarget) {
                         if (tween.objectMultiUpdater)
-                            (_c = this.objectMultiUpdater) === null || _c === void 0 ? void 0 : _c.overwriteMultiTo(tween.objectMultiUpdater);
+                            (_d = this.objectMultiUpdater) === null || _d === void 0 ? void 0 : _d.overwriteMultiTo(tween.objectMultiUpdater);
                         else if (tween.objectUpdater)
-                            (_d = this.objectMultiUpdater) === null || _d === void 0 ? void 0 : _d.overwriteTo(tween.objectUpdater);
+                            (_e = this.objectMultiUpdater) === null || _e === void 0 ? void 0 : _e.overwriteTo(tween.objectUpdater);
                         if (tween.transformMultiUpdater)
-                            (_e = this.transformMultiUpdater) === null || _e === void 0 ? void 0 : _e.overwriteMultiTo(tween.transformMultiUpdater);
+                            (_f = this.transformMultiUpdater) === null || _f === void 0 ? void 0 : _f.overwriteMultiTo(tween.transformMultiUpdater);
                         else if (tween.transformUpdater)
-                            (_f = this.transformMultiUpdater) === null || _f === void 0 ? void 0 : _f.overwriteTo(tween.transformUpdater);
+                            (_g = this.transformMultiUpdater) === null || _g === void 0 ? void 0 : _g.overwriteTo(tween.transformUpdater);
+                        if (tween.styleMultiUpdater)
+                            (_h = this.styleMultiUpdater) === null || _h === void 0 ? void 0 : _h.overwriteMultiTo(tween.styleMultiUpdater);
+                        else if (tween.styleUpdater)
+                            (_j = this.styleMultiUpdater) === null || _j === void 0 ? void 0 : _j.overwriteTo(tween.styleUpdater);
                     }
                 }
             }
@@ -335,6 +344,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.skewXY = function (skewX, skewY) { return this.__setPropety("skewX", skewX).__setPropety("skewY", skewY); };
     Tween24.prototype.rotation = function (value) { return this.__setPropety("rotation", value); };
     Tween24.prototype.delay = function (value) { this.delayTime += value; return this; };
+    Tween24.prototype.style = function (name, value) { return this.__setStyle(name, value); };
     Tween24.prototype.onPlay = function (scope, func) {
         var args = [];
         for (var _i = 2; _i < arguments.length; _i++) {
@@ -389,6 +399,24 @@ var Tween24 = /** @class */ (function () {
                 this.objectMultiUpdater.addProp(key, value);
             else if (this.transformMultiUpdater)
                 this.transformMultiUpdater.addProp(key, value);
+        }
+        return this;
+    };
+    Tween24.prototype.__setStyle = function (name, value) {
+        var _a, _b;
+        if (this._singleTarget) {
+            if (!this.styleUpdater) {
+                this.styleUpdater = new StyleUpdater(this._singleTarget);
+                (_a = this.updaters) === null || _a === void 0 ? void 0 : _a.push(this.styleUpdater);
+            }
+            this.styleUpdater.addPropStr(name, value);
+        }
+        else if (this._multiTarget) {
+            if (!this.styleMultiUpdater) {
+                this.styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.name);
+                (_b = this.updaters) === null || _b === void 0 ? void 0 : _b.push(this.styleMultiUpdater);
+            }
+            this.styleMultiUpdater.addPropStr(name, value);
         }
         return this;
     };

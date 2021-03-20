@@ -1,4 +1,3 @@
-import Tween24 from "../../Tween24";
 import Updater from "./Updater";
 
 export class ObjectUpdater implements Updater {
@@ -20,23 +19,25 @@ export class ObjectUpdater implements Updater {
 	}
 
 	addProp(key:string, value:number) {
-		let k:string = key;
-		this._param[k] = value;
-		this._key.push(k);
+		this._param[key] = value;
+		this._key.push(key);
+	}
+	
+	addPropStr(key:string, value:string) {
 	}
 
 	init() {
 		this._tweenKey = this._key.concat();
-		for (const k of this._tweenKey) {
-			this._startParam[k] = this._target[k];
-			this._deltaParam[k] = this._param[k] - this._target[k];
+		for (const key of this._tweenKey) {
+			this._startParam[key] = this._target[key];
+			this._deltaParam[key] = this._param[key] - this._target[key];
 		}
 	}
 
 	update(progress:number) {
 		if (this._tweenKey) {
-			for (const k of this._tweenKey) {
-				this._target[k] = this._startParam[k] + this._deltaParam[k] * progress;
+			for (const key of this._tweenKey) {
+				this._target[key] = this._startParam[key] + this._deltaParam[key] * progress;
 			}
 		}
 	}
@@ -45,8 +46,8 @@ export class ObjectUpdater implements Updater {
 		if (this._target == updater._target) {
 			const targetKey:string[]|null = updater._tweenKey;
 			if (this._tweenKey && targetKey) {
-				for (const k of targetKey) {
-					const i = this._tweenKey.indexOf(k);
+				for (const key of targetKey) {
+					const i = this._tweenKey.indexOf(key);
 					if (i > -1) this._tweenKey.splice(i, 1);
 				}
 			}
@@ -54,7 +55,6 @@ export class ObjectUpdater implements Updater {
 	}
 
 	complete() {
-		
 	}
 }
 

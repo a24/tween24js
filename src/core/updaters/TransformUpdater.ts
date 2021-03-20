@@ -1,4 +1,3 @@
-import { transform } from "../../../node_modules/typescript/lib/typescript";
 import Matrix from "../../geom/Matrix";
 import HTMLUtil from "../../utils/HTMLUtil";
 import ParamUpdater from "./ParamUpdater";
@@ -82,6 +81,9 @@ export class TransformUpdater implements Updater {
 			case "skewY"   : p = this._skewY    = new ParamUpdater(key, value); break;
 			case "rotation": p = this._rotation = new ParamUpdater(key, value); break;
 		}
+	}
+	
+	addPropStr(key:string, value:string) {
 	}
 
 	update(progress: number) {

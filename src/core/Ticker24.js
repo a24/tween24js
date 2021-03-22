@@ -26,7 +26,6 @@ var Ticker24 = /** @class */ (function () {
         ArrayUtil.removeItemFromArray(allTweens, tween);
         if (!allTweens.length) {
             this.stop();
-            //trace("[Ticker stop]");
         }
     };
     Ticker24.prototype.update = function () {

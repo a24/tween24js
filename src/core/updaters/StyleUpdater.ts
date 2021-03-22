@@ -1,16 +1,16 @@
-import HTMLUtil from "../../utils/HTMLUtil";
+import Updater      from "./Updater";
 import ParamUpdater from "./ParamUpdater";
-import Updater from "./Updater";
+import HTMLUtil     from "../../utils/HTMLUtil";
 
 export class StyleUpdater implements Updater {
 
 	static readonly PARAM_REG:RegExp = new RegExp(/^[0-9.]{1,99}/);
 	static readonly UNIT_REG :RegExp = new RegExp(/[^0-9.]./);
 
-	private _target: HTMLElement;
-	private _param: {[key:string]:ParamUpdater};
-	private _key: string[];
-	private _unit: {[key:string]:string};
+	private _target  : HTMLElement;
+	private _param   : {[key:string]:ParamUpdater};
+	private _key     : string[];
+	private _unit    : {[key:string]:string};
 	private _tweenKey: string[]|null;
 
 	constructor(target:any) {

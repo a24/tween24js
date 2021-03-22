@@ -1,9 +1,9 @@
 export class ParamUpdater {
-	key: string;
+	key   : string;
 	target: number;
-	start: number;
-	delta: number;
-	value: number;
+	start : number;
+	delta : number;
+	value : number;
 
 	constructor(key:string, value:number) {
 		this.key    = key;

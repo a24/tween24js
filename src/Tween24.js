@@ -1,16 +1,18 @@
 import Ticker24 from "./core/Ticker24";
+import Ease24 from "./Ease24";
+import Tween24Event from "./core/Tween24Event";
 import ObjectUpdater from "./core/updaters/ObjectUpdater";
 import TransformUpdater from "./core/updaters/TransformUpdater";
-import Ease24 from "./Ease24";
+import FunctionExecuter from "./core/FunctionExecuter";
+import StyleUpdater from "./core/updaters/StyleUpdater";
+import MultiUpdater from "./core/updaters/MultiUpdater";
 import ArrayUtil from "./utils/ArrayUtil";
 import ClassUtil from "./utils/ClassUtil";
 import HTMLUtil from "./utils/HTMLUtil";
-import MultiUpdater from "./core/updaters/MultiUpdater";
-import FunctionExecuter from "./core/FunctionExecuter";
-import Tween24Event from "./core/Tween24Event";
-import StyleUpdater from "./core/updaters/StyleUpdater";
 var Tween24 = /** @class */ (function () {
     function Tween24() {
+        // Common
+        this._singleTarget = null;
         this._multiTarget = null;
         this.easing = null;
         this.type = "";
@@ -24,7 +26,7 @@ var Tween24 = /** @class */ (function () {
         this.transformMultiUpdater = null;
         this.styleUpdater = null;
         this.styleMultiUpdater = null;
-        this.updaters = null;
+        this.allUpdaters = null;
         // Refer
         this.root = null;
         this.parent = null;
@@ -35,7 +37,7 @@ var Tween24 = /** @class */ (function () {
         this.isContainerTween = false;
         // Action & Callback
         this.functionExecuters = null;
-        // Container Tween    
+        // Container Tween
         this.childTween = null;
         this.firstTween = null;
         this.playingChildTween = null;
@@ -70,8 +72,8 @@ var Tween24 = /** @class */ (function () {
     // }
     Tween24.prototype.__initParam = function () {
         var _a;
-        if ((_a = this.updaters) === null || _a === void 0 ? void 0 : _a.length) {
-            for (var _i = 0, _b = this.updaters; _i < _b.length; _i++) {
+        if ((_a = this.allUpdaters) === null || _a === void 0 ? void 0 : _a.length) {
+            for (var _i = 0, _b = this.allUpdaters; _i < _b.length; _i++) {
                 var updater = _b[_i];
                 updater.init();
             }
@@ -174,8 +176,8 @@ var Tween24 = /** @class */ (function () {
                 }
                 // Update propety
                 var prog = this.easing ? this.easing(progress, 0, 1, 1) : progress;
-                if ((_a = this.updaters) === null || _a === void 0 ? void 0 : _a.length) {
-                    for (var _i = 0, _b = this.updaters; _i < _b.length; _i++) {
+                if ((_a = this.allUpdaters) === null || _a === void 0 ? void 0 : _a.length) {
+                    for (var _i = 0, _b = this.allUpdaters; _i < _b.length; _i++) {
                         var updater = _b[_i];
                         updater.update(prog);
                     }
@@ -238,7 +240,7 @@ var Tween24 = /** @class */ (function () {
         this.delayTime = 0;
         this.startTime = 0;
         this.inited = false;
-        this.updaters = [];
+        this.allUpdaters = [];
         this.isContainerTween = false;
         if (Array.isArray(target)) {
             if (ClassUtil.isString(target[0])) {
@@ -248,17 +250,17 @@ var Tween24 = /** @class */ (function () {
                     this._multiTarget = this._multiTarget.concat(HTMLUtil.getHTMLElement(t));
                 }
                 this.transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
-                this.updaters.push(this.transformMultiUpdater);
+                this.allUpdaters.push(this.transformMultiUpdater);
             }
             else if (target[0] instanceof HTMLElement) {
                 this._multiTarget = target;
                 this.transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
-                this.updaters.push(this.transformMultiUpdater);
+                this.allUpdaters.push(this.transformMultiUpdater);
             }
             else {
                 this._multiTarget = target;
                 this.objectMultiUpdater = new MultiUpdater(this._multiTarget, ObjectUpdater.name);
-                this.updaters.push(this.objectMultiUpdater);
+                this.allUpdaters.push(this.objectMultiUpdater);
             }
         }
         else if (ClassUtil.isString(target)) {
@@ -266,18 +268,18 @@ var Tween24 = /** @class */ (function () {
             if (t.length == 1) {
                 this._singleTarget = t[0];
                 this.transformUpdater = new TransformUpdater(this._singleTarget);
-                this.updaters.push(this.transformUpdater);
+                this.allUpdaters.push(this.transformUpdater);
             }
             else {
                 this._multiTarget = t;
                 this.transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
-                this.updaters.push(this.transformMultiUpdater);
+                this.allUpdaters.push(this.transformMultiUpdater);
             }
         }
         else {
             this._singleTarget = target;
             this.objectUpdater = new ObjectUpdater(target);
-            this.updaters.push(this.objectUpdater);
+            this.allUpdaters.push(this.objectUpdater);
         }
         if (params) {
             for (var key in params) {
@@ -407,14 +409,14 @@ var Tween24 = /** @class */ (function () {
         if (this._singleTarget) {
             if (!this.styleUpdater) {
                 this.styleUpdater = new StyleUpdater(this._singleTarget);
-                (_a = this.updaters) === null || _a === void 0 ? void 0 : _a.push(this.styleUpdater);
+                (_a = this.allUpdaters) === null || _a === void 0 ? void 0 : _a.push(this.styleUpdater);
             }
             this.styleUpdater.addPropStr(name, value);
         }
         else if (this._multiTarget) {
             if (!this.styleMultiUpdater) {
                 this.styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.name);
-                (_b = this.updaters) === null || _b === void 0 ? void 0 : _b.push(this.styleMultiUpdater);
+                (_b = this.allUpdaters) === null || _b === void 0 ? void 0 : _b.push(this.styleMultiUpdater);
             }
             this.styleMultiUpdater.addPropStr(name, value);
         }

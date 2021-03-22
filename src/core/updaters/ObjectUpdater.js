@@ -1,11 +1,11 @@
 var ObjectUpdater = /** @class */ (function () {
     function ObjectUpdater(target) {
         this._target = target;
+        this._key = [];
+        this._tweenKey = null;
         this._param = {};
         this._startParam = {};
         this._deltaParam = {};
-        this._key = [];
-        this._tweenKey = null;
     }
     ObjectUpdater.prototype.addProp = function (key, value) {
         this._param[key] = value;

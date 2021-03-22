@@ -1,55 +1,55 @@
 var Ease24 = /** @class */ (function () {
-    //    static _Linear = this.linear;
+    //	static _Linear = this.linear;
     //
-    //    static _1_SineIn = sineIn;
-    //    static _1_SineOut = sineOut;
-    //    static _1_SineInOut = sineInOut;
-    //    static _1_SineOutIn = sineOutIn;
+    //	static _1_SineIn = sineIn;
+    //	static _1_SineOut = sineOut;
+    //	static _1_SineInOut = sineInOut;
+    //	static _1_SineOutIn = sineOutIn;
     //
-    //    static _2_QuadIn = quadIn;
-    //    static _2_QuadOut = quadOut;
-    //    static _2_QuadInOut = quadInOut;
-    //    static _2_QuadOutIn = quadOutIn;
+    //	static _2_QuadIn = quadIn;
+    //	static _2_QuadOut = quadOut;
+    //	static _2_QuadInOut = quadInOut;
+    //	static _2_QuadOutIn = quadOutIn;
     //
-    //    static _3_CubicIn = cubicIn;
-    //    static _3_CubicOut  = cubicOut;
-    //    static _3_CubicInOut = cubicInOut;
-    //    static _3_CubicOutIn = cubicOutIn;
+    //	static _3_CubicIn = cubicIn;
+    //	static _3_CubicOut  = cubicOut;
+    //	static _3_CubicInOut = cubicInOut;
+    //	static _3_CubicOutIn = cubicOutIn;
     //
-    //    static _4_QuartIn = quartIn;
-    //    static _4_QuartOut  = quartOut;
-    //    static _4_QuartInOut = quartInOut;
-    //    static _4_QuartOutIn = quartOutIn;
+    //	static _4_QuartIn = quartIn;
+    //	static _4_QuartOut  = quartOut;
+    //	static _4_QuartInOut = quartInOut;
+    //	static _4_QuartOutIn = quartOutIn;
     //
-    //    static _5_QuintIn = quintIn;
-    //    static _5_QuintOut  = quintOut;
-    //    static _5_QuintInOut = quintInOut;
-    //    static _5_QuintOutIn = quintOutIn;
+    //	static _5_QuintIn = quintIn;
+    //	static _5_QuintOut  = quintOut;
+    //	static _5_QuintInOut = quintInOut;
+    //	static _5_QuintOutIn = quintOutIn;
     //
-    //    static _6_ExpoIn = expoIn;
-    //    static _6_ExpoOut = expoOut;
-    //    static _6_ExpoInOut = expoInOut;
-    //    static _6_ExpoOutIn = expoOutIn;
+    //	static _6_ExpoIn = expoIn;
+    //	static _6_ExpoOut = expoOut;
+    //	static _6_ExpoInOut = expoInOut;
+    //	static _6_ExpoOutIn = expoOutIn;
     //
-    //    static _7_CircIn = circIn;
-    //    static _7_CircOut = circOut;
-    //    static _7_CircInOut = circInOut;
-    //    static _7_CircOutIn = circOutIn;
+    //	static _7_CircIn = circIn;
+    //	static _7_CircOut = circOut;
+    //	static _7_CircInOut = circInOut;
+    //	static _7_CircOutIn = circOutIn;
     //
-    //    static _BackIn   = _BackInWith(1.70158);
-    //    static _BackOut  = _BackOutWith(1.70158);
-    //    static _BackInOut = _BackInOutWith(1.70158);
-    //    static _BackOutIn = _BackOutInWith(1.70158);
+    //	static _BackIn   = _BackInWith(1.70158);
+    //	static _BackOut  = _BackOutWith(1.70158);
+    //	static _BackInOut = _BackInOutWith(1.70158);
+    //	static _BackOutIn = _BackOutInWith(1.70158);
     //
-    //    static _BounceIn = bounceIn;
-    //    static _BounceOut = bounceOut;
-    //    static _BounceInOut = bounceInOut;
-    //    static _BounceOutIn = bounceOutIn;
+    //	static _BounceIn = bounceIn;
+    //	static _BounceOut = bounceOut;
+    //	static _BounceInOut = bounceInOut;
+    //	static _BounceOutIn = bounceOutIn;
     //
-    //    static _ElasticIn = _ElasticInWith();
-    //    static _ElasticOut  = _ElasticOutWith();
-    //    static _ElasticInOut = _ElasticInOutWith();
-    //    static _ElasticOutIn = _ElasticOutInWith();
+    //	static _ElasticIn = _ElasticInWith();
+    //	static _ElasticOut  = _ElasticOutWith();
+    //	static _ElasticInOut = _ElasticInOutWith();
+    //	static _ElasticOutIn = _ElasticOutInWith();
     function Ease24() {
     }
     /*

@@ -2,20 +2,21 @@ import Updater from "./Updater";
 
 export class ObjectUpdater implements Updater {
 
-	private _target:any;
-	private _param:{[key:string]:number};
-	private _startParam:{[key:string]:number};
-	private _deltaParam:{[key:string]:number};
-	private _key:string[];
+	private _target  :any;
+	private _key     :string[];
 	private _tweenKey:string[]|null;
 
+	private _param     :{[key:string]:number};
+	private _startParam:{[key:string]:number};
+	private _deltaParam:{[key:string]:number};
+
 	constructor(target:any) {
-		this._target = target;
-		this._param = {};
+		this._target     = target;
+		this._key        = [];
+		this._tweenKey   = null;
+		this._param      = {};
 		this._startParam = {};
 		this._deltaParam = {};
-		this._key = [];
-		this._tweenKey = null;
 	}
 
 	addProp(key:string, value:number) {

@@ -1,8 +1,7 @@
-
-import ObjectUpdater from "./ObjectUpdater";
-import StyleUpdater from "./StyleUpdater";
+import Updater          from "./Updater";
+import ObjectUpdater    from "./ObjectUpdater";
+import StyleUpdater     from "./StyleUpdater";
 import TransformUpdater from "./TransformUpdater";
-import Updater from "./Updater";
 
 export class MultiUpdater implements Updater {
 

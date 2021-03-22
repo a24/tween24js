@@ -1,11 +1,11 @@
-import Tween24 from "../Tween24";
+import Tween24   from "../Tween24";
 import ArrayUtil from "../utils/ArrayUtil";
 
 export class Ticker24 {
-	fps:number;
+	fps      :number;
 	allTweens:Tween24[];
-	timer:NodeJS.Timeout|null;
-	running:boolean;
+	timer    :NodeJS.Timeout|null;
+	running  :boolean;
 
 	constructor() {
 		this.fps = 60;
@@ -31,7 +31,6 @@ export class Ticker24 {
 		ArrayUtil.removeItemFromArray(allTweens, tween);
 		if (!allTweens.length) {
 			this.stop();
-			//trace("[Ticker stop]");
 		}
 	}
 	update() {

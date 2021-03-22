@@ -1,5 +1,5 @@
-import HTMLUtil from "../../utils/HTMLUtil";
 import ParamUpdater from "./ParamUpdater";
+import HTMLUtil from "../../utils/HTMLUtil";
 var StyleUpdater = /** @class */ (function () {
     function StyleUpdater(target) {
         this._target = target;

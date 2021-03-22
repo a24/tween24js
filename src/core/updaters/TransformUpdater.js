@@ -1,6 +1,6 @@
 import Matrix from "../../geom/Matrix";
-import HTMLUtil from "../../utils/HTMLUtil";
 import ParamUpdater from "./ParamUpdater";
+import HTMLUtil from "../../utils/HTMLUtil";
 var TransformUpdater = /** @class */ (function () {
     function TransformUpdater(target) {
         if (!TransformUpdater._chache)

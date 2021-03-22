@@ -1,27 +1,29 @@
-import Matrix from "../../geom/Matrix";
-import HTMLUtil from "../../utils/HTMLUtil";
+import Matrix       from "../../geom/Matrix";
+import Updater      from "./Updater";
 import ParamUpdater from "./ParamUpdater";
-import Updater from "./Updater";
+import HTMLUtil     from "../../utils/HTMLUtil";
 
 export class TransformUpdater implements Updater {
-    private static _chache:Map<HTMLElement, Matrix>;
+	private static _chache:Map<HTMLElement, Matrix>;
 
 	private _target: HTMLElement;
-	private _x: ParamUpdater|null;
-	private _y: ParamUpdater|null;
-	private _scaleX: ParamUpdater|null;
-	private _scaleY: ParamUpdater|null;
-	private _skewX: ParamUpdater|null;
-	private _skewY: ParamUpdater|null;
-	private _rotation: ParamUpdater|null;
-	private _updateX: boolean;
-	private _updateY: boolean;
-	private _updateScaleX: boolean;
-	private _updateScaleY: boolean;
-	private _updateSkewX: boolean;
-	private _updateSkewY: boolean;
-	private _updateRotation: boolean;
 	private _matrix: Matrix;
+
+	private _x       : ParamUpdater|null;
+	private _y       : ParamUpdater|null;
+	private _scaleX  : ParamUpdater|null;
+	private _scaleY  : ParamUpdater|null;
+	private _skewX   : ParamUpdater|null;
+	private _skewY   : ParamUpdater|null;
+	private _rotation: ParamUpdater|null;
+
+	private _updateX       : boolean;
+	private _updateY       : boolean;
+	private _updateScaleX  : boolean;
+	private _updateScaleY  : boolean;
+	private _updateSkewX   : boolean;
+	private _updateSkewY   : boolean;
+	private _updateRotation: boolean;
 
 	constructor(target: any) {
 		if (!TransformUpdater._chache) TransformUpdater._chache = new Map<HTMLElement, Matrix>();

@@ -1,55 +1,4 @@
 var Ease24 = /** @class */ (function () {
-    //	static _Linear = this.linear;
-    //
-    //	static _1_SineIn = sineIn;
-    //	static _1_SineOut = sineOut;
-    //	static _1_SineInOut = sineInOut;
-    //	static _1_SineOutIn = sineOutIn;
-    //
-    //	static _2_QuadIn = quadIn;
-    //	static _2_QuadOut = quadOut;
-    //	static _2_QuadInOut = quadInOut;
-    //	static _2_QuadOutIn = quadOutIn;
-    //
-    //	static _3_CubicIn = cubicIn;
-    //	static _3_CubicOut  = cubicOut;
-    //	static _3_CubicInOut = cubicInOut;
-    //	static _3_CubicOutIn = cubicOutIn;
-    //
-    //	static _4_QuartIn = quartIn;
-    //	static _4_QuartOut  = quartOut;
-    //	static _4_QuartInOut = quartInOut;
-    //	static _4_QuartOutIn = quartOutIn;
-    //
-    //	static _5_QuintIn = quintIn;
-    //	static _5_QuintOut  = quintOut;
-    //	static _5_QuintInOut = quintInOut;
-    //	static _5_QuintOutIn = quintOutIn;
-    //
-    //	static _6_ExpoIn = expoIn;
-    //	static _6_ExpoOut = expoOut;
-    //	static _6_ExpoInOut = expoInOut;
-    //	static _6_ExpoOutIn = expoOutIn;
-    //
-    //	static _7_CircIn = circIn;
-    //	static _7_CircOut = circOut;
-    //	static _7_CircInOut = circInOut;
-    //	static _7_CircOutIn = circOutIn;
-    //
-    //	static _BackIn   = _BackInWith(1.70158);
-    //	static _BackOut  = _BackOutWith(1.70158);
-    //	static _BackInOut = _BackInOutWith(1.70158);
-    //	static _BackOutIn = _BackOutInWith(1.70158);
-    //
-    //	static _BounceIn = bounceIn;
-    //	static _BounceOut = bounceOut;
-    //	static _BounceInOut = bounceInOut;
-    //	static _BounceOutIn = bounceOutIn;
-    //
-    //	static _ElasticIn = _ElasticInWith();
-    //	static _ElasticOut  = _ElasticOutWith();
-    //	static _ElasticInOut = _ElasticInOutWith();
-    //	static _ElasticOutIn = _ElasticOutInWith();
     function Ease24() {
     }
     /*
@@ -58,6 +7,11 @@ var Ease24 = /** @class */ (function () {
      * LINER EASING
      *
      * -----------------------------------------------------------------------------------------------
+    */
+    /**
+     * Linear easing.
+     * @static
+     * @memberof Ease24
      */
     Ease24._Linear = function (t, b, c, d) {
         return c * t / d + b;
@@ -69,15 +23,35 @@ var Ease24 = /** @class */ (function () {
      *
      * -----------------------------------------------------------------------------------------------
      */
+    /**
+     * Sine easing-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._1_SineIn = function (t, b, c, d) {
         return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
     };
+    /**
+     * Sine easing-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._1_SineOut = function (t, b, c, d) {
         return c * Math.sin(t / d * (Math.PI / 2)) + b;
     };
+    /**
+     * Sine easing-in-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._1_SineInOut = function (t, b, c, d) {
         return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
     };
+    /**
+     * Sine easing-out-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._1_SineOutIn = function (t, b, c, d) {
         if (t < d / 2)
             return (c / 2) * Math.sin((t * 2) / d * (Math.PI / 2)) + b;
@@ -90,17 +64,37 @@ var Ease24 = /** @class */ (function () {
      *
      * -----------------------------------------------------------------------------------------------
      */
+    /**
+     * Quad easing-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._2_QuadIn = function (t, b, c, d) {
         return c * (t /= d) * t + b;
     };
+    /**
+     * Quad easing-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._2_QuadOut = function (t, b, c, d) {
         return -c * (t /= d) * (t - 2) + b;
     };
+    /**
+     * Quad easing-in-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._2_QuadInOut = function (t, b, c, d) {
         if ((t /= d / 2) < 1)
             return c / 2 * t * t + b;
         return -c / 2 * ((--t) * (t - 2) - 1) + b;
     };
+    /**
+     * Quad easing-out-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._2_QuadOutIn = function (t, b, c, d) {
         if (t < d / 2)
             return -(c / 2) * (t = (t * 2 / d)) * (t - 2) + b;
@@ -113,15 +107,35 @@ var Ease24 = /** @class */ (function () {
      *
      * -----------------------------------------------------------------------------------------------
      */
+    /**
+     * Cubic easing-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._3_CubicIn = function (t, b, c, d) {
         return c * (t /= d) * t * t + b;
     };
+    /**
+     * Cubic easing-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._3_CubicOut = function (t, b, c, d) {
         return c * ((t = t / d - 1) * t * t + 1) + b;
     };
+    /**
+     * Cubic easing-in-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._3_CubicInOut = function (t, b, c, d) {
         return ((t /= d / 2) < 1) ? c / 2 * t * t * t + b : c / 2 * ((t -= 2) * t * t + 2) + b;
     };
+    /**
+     * Cubic easing-out-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._3_CubicOutIn = function (t, b, c, d) {
         return (t < d / 2) ? c / 2 * ((t = t * 2 / d - 1) * t * t + 1) + b : c / 2 * (t = (t * 2 - d) / d) * t * t + b + c / 2;
     };
@@ -132,17 +146,37 @@ var Ease24 = /** @class */ (function () {
      *
      * -----------------------------------------------------------------------------------------------
      */
+    /**
+     * Quart easing-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._4_QuartIn = function (t, b, c, d) {
         return c * (t /= d) * t * t * t + b;
     };
+    /**
+     * Quart easing-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._4_QuartOut = function (t, b, c, d) {
         return -c * ((t = t / d - 1) * t * t * t - 1) + b;
     };
+    /**
+     * Quart easing-in-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._4_QuartInOut = function (t, b, c, d) {
         if ((t /= d / 2) < 1)
             return c / 2 * t * t * t * t + b;
         return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
     };
+    /**
+     * Quart easing-out-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._4_QuartOutIn = function (t, b, c, d) {
         if (t < d / 2)
             return -(c / 2) * ((t = (t * 2) / d - 1) * t * t * t - 1) + b;
@@ -155,17 +189,37 @@ var Ease24 = /** @class */ (function () {
      *
      * -----------------------------------------------------------------------------------------------
      */
+    /**
+     * Quint easing-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._5_QuintIn = function (t, b, c, d) {
         return c * (t /= d) * t * t * t * t + b;
     };
+    /**
+     * Quint easing-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._5_QuintOut = function (t, b, c, d) {
         return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
     };
+    /**
+     * Quint easing-in-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._5_QuintInOut = function (t, b, c, d) {
         if ((t /= d / 2) < 1)
             return c / 2 * t * t * t * t * t + b;
         return c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
     };
+    /**
+     * Quint easing-out-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._5_QuintOutIn = function (t, b, c, d) {
         if (t < d / 2)
             return (c / 2) * ((t = (t * 2) / d - 1) * t * t * t * t + 1) + b;
@@ -178,12 +232,27 @@ var Ease24 = /** @class */ (function () {
      *
      * -----------------------------------------------------------------------------------------------
      */
+    /**
+     * Expo easing-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._6_ExpoIn = function (t, b, c, d) {
         return t == 0 ? b : c * Math.pow(2, 10 * (t / d - 1)) + b;
     };
+    /**
+     * Expo easing-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._6_ExpoOut = function (t, b, c, d) {
         return t == d ? b + c : c * (1 - Math.pow(2, -10 * t / d)) + b;
     };
+    /**
+     * Expo easing-in-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._6_ExpoInOut = function (t, b, c, d) {
         if (t == 0)
             return b;
@@ -193,6 +262,11 @@ var Ease24 = /** @class */ (function () {
             return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
         return c / 2 * (2 - Math.pow(2, -10 * --t)) + b;
     };
+    /**
+     * Expo easing-out-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._6_ExpoOutIn = function (t, b, c, d) {
         if (t < d / 2.0)
             return t * 2.0 == d ? b + c / 2.0 : c / 2.0 * (1 - Math.pow(2, -10 * t * 2.0 / d)) + b;
@@ -205,17 +279,37 @@ var Ease24 = /** @class */ (function () {
      *
      * -----------------------------------------------------------------------------------------------
      */
+    /**
+     * Circ easing-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._7_CircIn = function (t, b, c, d) {
         return -c * (Math.sqrt(1 - (t /= d) * t) - 1) + b;
     };
+    /**
+     * Circ easing-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._7_CircOut = function (t, b, c, d) {
         return c * Math.sqrt(1 - (t = t / d - 1) * t) + b;
     };
+    /**
+     * Circ easing-in-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._7_CircInOut = function (t, b, c, d) {
         if ((t /= d / 2) < 1)
             return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
         return c / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1) + b;
     };
+    /**
+     * Circ easing-out-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._7_CircOutIn = function (t, b, c, d) {
         if (t < d / 2)
             return (c / 2) * Math.sqrt(1 - (t = (t * 2) / d - 1) * t) + b;
@@ -228,24 +322,52 @@ var Ease24 = /** @class */ (function () {
      *
      * -----------------------------------------------------------------------------------------------
      */
+    /**
+     * Back easing-in with overshoot.
+     * @static
+     * @param {number} [overshoot=1.70158] オーバー値（デフォルト値：1.70158）
+     * @memberof Ease24
+     */
     Ease24._BackInWith = function (overshoot) {
+        if (overshoot === void 0) { overshoot = 1.70158; }
         return function (t, b, c, d) {
             return c * (t /= d) * t * ((overshoot + 1) * t - overshoot) + b;
         };
     };
+    /**
+     * Back easing-out with overshoot.
+     * @static
+     * @param {number} [overshoot=1.70158] オーバー値（デフォルト値：1.70158）
+     * @memberof Ease24
+     */
     Ease24._BackOutWith = function (overshoot) {
+        if (overshoot === void 0) { overshoot = 1.70158; }
         return function (t, b, c, d) {
             return c * ((t = t / d - 1) * t * ((overshoot + 1) * t + overshoot) + 1) + b;
         };
     };
+    /**
+     * Back easing-in-out with overshoot.
+     * @static
+     * @param {number} [overshoot=1.70158] オーバー値（デフォルト値：1.70158）
+     * @memberof Ease24
+     */
     Ease24._BackInOutWith = function (overshoot) {
+        if (overshoot === void 0) { overshoot = 1.70158; }
         return function (t, b, c, d) {
             if ((t /= d / 2) < 1)
                 return c / 2 * (t * t * (((overshoot * 1.525) + 1) * t - overshoot * 1.525)) + b;
             return c / 2 * ((t -= 2) * t * (((overshoot * 1.525) + 1) * t + overshoot * 1.525) + 2) + b;
         };
     };
+    /**
+     * Back easing-out-in with overshoot.
+     * @static
+     * @param {number} [overshoot=1.70158] オーバー値（デフォルト値：1.70158）
+     * @memberof Ease24
+     */
     Ease24._BackOutInWith = function (overshoot) {
+        if (overshoot === void 0) { overshoot = 1.70158; }
         return function (t, b, c, d) {
             if (t < d / 2)
                 return (c / 2) * ((t = (t * 2) / d - 1) * t * ((overshoot + 1) * t + overshoot) + 1) + b;
@@ -259,6 +381,11 @@ var Ease24 = /** @class */ (function () {
      *
      * -----------------------------------------------------------------------------------------------
      */
+    /**
+     * Bounce easing-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._BounceIn = function (t, b, c, d) {
         if ((t = (d - t) / d) < (1 / 2.75))
             return c - (c * (7.5625 * t * t)) + b;
@@ -268,6 +395,11 @@ var Ease24 = /** @class */ (function () {
             return c - (c * (7.5625 * (t -= (2.25 / 2.75)) * t + 0.9375)) + b;
         return c - (c * (7.5625 * (t -= (2.625 / 2.75)) * t + 0.984375)) + b;
     };
+    /**
+     * Bounce easing-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._BounceOut = function (t, b, c, d) {
         if ((t /= d) < (1 / 2.75))
             return c * (7.5625 * t * t) + b;
@@ -277,6 +409,11 @@ var Ease24 = /** @class */ (function () {
             return c * (7.5625 * (t -= (2.25 / 2.75)) * t + 0.9375) + b;
         return c * (7.5625 * (t -= (2.625 / 2.75)) * t + 0.984375) + b;
     };
+    /**
+     * Bounce easing-in-out.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._BounceInOut = function (t, b, c, d) {
         if (t < d / 2) {
             if ((t = (d - t * 2) / d) < (1 / 2.75))
@@ -297,6 +434,11 @@ var Ease24 = /** @class */ (function () {
             return (c * (7.5625 * (t -= (2.625 / 2.75)) * t + 0.984375)) * 0.5 + c * 0.5 + b;
         }
     };
+    /**
+     * Bounce easing-out-in.
+     * @static
+     * @memberof Ease24
+     */
     Ease24._BounceOutIn = function (t, b, c, d) {
         if (t < d / 2) {
             if ((t = (t * 2) / d) < (1 / 2.75))
@@ -324,7 +466,16 @@ var Ease24 = /** @class */ (function () {
      *
      * -----------------------------------------------------------------------------------------------
      */
+    /**
+     * Elastic easing-in with amplitude & period.
+     * @static
+     * @param {number} amplitude 振幅の大きさ（デフォルト値：0）
+     * @param {number} period 振幅の周期（デフォルト値：0）
+     * @memberof Ease24
+     */
     Ease24._ElasticInWith = function (amplitude, period) {
+        if (amplitude === void 0) { amplitude = 0; }
+        if (period === void 0) { period = 0; }
         return function (t, b, c, d) {
             t /= 1000;
             d /= 1000;
@@ -344,7 +495,16 @@ var Ease24 = /** @class */ (function () {
             return -(amplitude * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / period)) + b;
         };
     };
+    /**
+     * Elastic easing-out with amplitude & period.
+     * @static
+     * @param {number} amplitude 振幅の大きさ（デフォルト値：0）
+     * @param {number} period 振幅の周期（デフォルト値：0）
+     * @memberof Ease24
+     */
     Ease24._ElasticOutWith = function (amplitude, period) {
+        if (amplitude === void 0) { amplitude = 0; }
+        if (period === void 0) { period = 0; }
         return function (t, b, c, d) {
             t /= 1000;
             d /= 1000;
@@ -364,7 +524,16 @@ var Ease24 = /** @class */ (function () {
             return amplitude * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / period) + c + b;
         };
     };
+    /**
+     * Elastic easing-in-out with amplitude & period.
+     * @static
+     * @param {number} amplitude 振幅の大きさ（デフォルト値：0）
+     * @param {number} period 振幅の周期（デフォルト値：0）
+     * @memberof Ease24
+     */
     Ease24._ElasticInOutWith = function (amplitude, period) {
+        if (amplitude === void 0) { amplitude = 0; }
+        if (period === void 0) { period = 0; }
         return function (t, b, c, d) {
             t /= 1000;
             d /= 1000;
@@ -386,7 +555,16 @@ var Ease24 = /** @class */ (function () {
             return amplitude * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / period) * 0.5 + c + b;
         };
     };
+    /**
+     * Elastic easing-out-in with amplitude & period.
+     * @static
+     * @param {number} amplitude 振幅の大きさ（デフォルト値：0）
+     * @param {number} period 振幅の周期（デフォルト値：0）
+     * @memberof Ease24
+     */
     Ease24._ElasticOutInWith = function (amplitude, period) {
+        if (amplitude === void 0) { amplitude = 0; }
+        if (period === void 0) { period = 0; }
         return function (t, b, c, d) {
             t /= 1000;
             d /= 1000;
@@ -432,13 +610,14 @@ var Ease24 = /** @class */ (function () {
      * -----------------------------------------------------------------------------------------------
      */
     /**
-     * 複数のイージングを組み合わせて、新しいイージングを生成します。
-     * @param easeA 元になるイージング
-     * @param easeB 混合されるイージング
-     * @param mixing 混合率を指定するイージング
-     * @param start 開始時の混合率
-     * @param end 終点時の混合率
-     * @return
+     * 2つのイージングをミックスして、新しいイージングを生成します。
+     * @static
+     * @param {Function} easeA 元になるイージング
+     * @param {Function} easeB 混合されるイージング
+     * @param {Function} mixing 混合率を指定するイージング
+     * @param {number} start 開始時の混合率
+     * @param {number} end 終点時の混合率
+     * @memberof Ease24
      */
     Ease24._Blend = function (easeA, easeB, mixing, start, end) {
         return function (t, b, c, d) {
@@ -449,14 +628,54 @@ var Ease24 = /** @class */ (function () {
             return v1 + (v2 - v1) * (v3 * rate + start);
         };
     };
-    Ease24._BackIn = Ease24._BackInWith(1.70158);
-    Ease24._BackOut = Ease24._BackOutWith(1.70158);
-    Ease24._BackInOut = Ease24._BackInOutWith(1.70158);
-    Ease24._BackOutIn = Ease24._BackOutInWith(1.70158);
-    Ease24._ElasticIn = Ease24._ElasticInWith(0, 0);
-    Ease24._ElasticOut = Ease24._ElasticOutWith(0, 0);
-    Ease24._ElasticInOut = Ease24._ElasticInOutWith(0, 0);
-    Ease24._ElasticOutIn = Ease24._ElasticOutInWith(0, 0);
+    /**
+     * Back easing-in.
+     * @static
+     * @memberof Ease24
+     */
+    Ease24._BackIn = Ease24._BackInWith();
+    /**
+     * Back easing-out.
+     * @static
+     * @memberof Ease24
+     */
+    Ease24._BackOut = Ease24._BackOutWith();
+    /**
+     * Back easing-in-out.
+     * @static
+     * @memberof Ease24
+     */
+    Ease24._BackInOut = Ease24._BackInOutWith();
+    /**
+     * Back easing-out-in.
+     * @static
+     * @memberof Ease24
+     */
+    Ease24._BackOutIn = Ease24._BackOutInWith();
+    /**
+     * Elastic easing-in.
+     * @static
+     * @memberof Ease24
+     */
+    Ease24._ElasticIn = Ease24._ElasticInWith();
+    /**
+     * Elastic easing-out.
+     * @static
+     * @memberof Ease24
+     */
+    Ease24._ElasticOut = Ease24._ElasticOutWith();
+    /**
+     * Elastic easing-in-out.
+     * @static
+     * @memberof Ease24
+     */
+    Ease24._ElasticInOut = Ease24._ElasticInOutWith();
+    /**
+     * Elastic easing-out-in.
+     * @static
+     * @memberof Ease24
+     */
+    Ease24._ElasticOutIn = Ease24._ElasticOutInWith();
     return Ease24;
 }());
 export default Ease24;

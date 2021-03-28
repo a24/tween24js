@@ -463,7 +463,7 @@ var Tween24 = /** @class */ (function () {
      * トゥイーン再生時に実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
-     * @param {...any[]} args 引数
+     * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
@@ -478,7 +478,7 @@ var Tween24 = /** @class */ (function () {
      * トゥイーン開始時に実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
-     * @param {...any[]} args 引数
+     * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
@@ -493,7 +493,7 @@ var Tween24 = /** @class */ (function () {
      * トゥイーン実行中に実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
-     * @param {...any[]} args 引数
+     * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
@@ -508,7 +508,7 @@ var Tween24 = /** @class */ (function () {
      * トゥイーンが一時停止した時に実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
-     * @param {...any[]} args 引数
+     * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
@@ -523,7 +523,7 @@ var Tween24 = /** @class */ (function () {
      * トゥイーンが停止された時に実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
-     * @param {...any[]} args 引数
+     * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
@@ -538,7 +538,7 @@ var Tween24 = /** @class */ (function () {
      * トゥイーンが完了した時に実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
-     * @param {...any[]} args 引数
+     * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
@@ -603,8 +603,8 @@ var Tween24 = /** @class */ (function () {
      * @static
      * @param {*} target 対象オブジェクト
      * @param {number} time 時間（秒）
-     * @param {Function} [easing=Ease24._Linear] イージング関数
-     * @param {({[key:string]:number}|null)} [params=null] トゥイーンさせるパラメータ
+     * @param {Function} [easing=Ease24._Linear] イージング関数（デフォルト値：Ease24._Linear）
+     * @param {({[key:string]:number}|null)} [params=null] トゥイーンさせるパラメータ（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
     */
@@ -617,7 +617,7 @@ var Tween24 = /** @class */ (function () {
      * プロパティを設定します。
      * @static
      * @param {*} target 対象オブジェクト
-     * @param {({[key:string]:number}|null)} [params=null] 設定するパラメータ
+     * @param {({[key:string]:number}|null)} [params=null] 設定するパラメータ（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
     */
@@ -640,7 +640,7 @@ var Tween24 = /** @class */ (function () {
      * @static
      * @param {*} scope 関数が定義されているオブジェクト
      * @param {Function} func 実行する関数
-     * @param {...any[]} args 実行する関数の引数
+     * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */

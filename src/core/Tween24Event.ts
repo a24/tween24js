@@ -4,6 +4,7 @@ export class Tween24Event {
 	static readonly UPDATE  :string = "update";
 	static readonly COMPLATE:string = "complate";
 	static readonly PAUSE   :string = "pause";
+	static readonly RESUME  :string = "resume";
 	static readonly STOP    :string = "stop";
 }
 export default Tween24Event;

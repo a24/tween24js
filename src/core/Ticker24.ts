@@ -33,9 +33,8 @@ export class Ticker24 {
 	}
 
 	remove(tween:Tween24) {
-		var allTweens = this.allTweens;
-		ArrayUtil.removeItemFromArray(allTweens, tween);
-		if (allTweens.length == 0) {
+		ArrayUtil.removeItemFromArray(this.allTweens, tween);
+		if (this.allTweens.length == 0) {
 			this.stop();
 		}
 	}

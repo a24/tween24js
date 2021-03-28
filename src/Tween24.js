@@ -19,6 +19,7 @@ var Tween24 = /** @class */ (function () {
         this.time = NaN;
         this.delayTime = NaN;
         this.startTime = NaN;
+        this.progress = 0;
         // Updater
         this.objectUpdater = null;
         this.objectMultiUpdater = null;
@@ -31,9 +32,10 @@ var Tween24 = /** @class */ (function () {
         this.root = null;
         this.parent = null;
         this.next = null;
-        // Flag
+        // Status
         this.inited = false;
         this.isRoot = false;
+        this.isPaused = false;
         this.isContainerTween = false;
         // Action & Callback
         this.functionExecuters = null;
@@ -52,27 +54,64 @@ var Tween24 = /** @class */ (function () {
         Tween24._playingTweensByTarget || (Tween24._playingTweensByTarget = new Map());
     }
     Tween24.prototype.play = function () {
-        this.root = this;
-        this.isRoot = true;
-        this.inited = false;
-        Tween24.ticker.add(this);
-        this.__play();
+        if (!this.isPaused) {
+            this.root = this;
+            this.isRoot = true;
+            this.inited = false;
+            this.__play();
+            Tween24.ticker.add(this);
+            this.functionExecute(Tween24Event.PLAY);
+        }
+        else {
+            this.__resume();
+            this.isPaused = false;
+            Tween24.ticker.add(this);
+            this.functionExecute(Tween24Event.RESUME);
+        }
     };
     Tween24.prototype.__play = function () {
         var _a;
         this.debugLog(this.type + " play");
-        if (!this.isRoot) {
+        if (!this.isRoot)
             this.root = ((_a = this.parent) === null || _a === void 0 ? void 0 : _a.root) || this.parent;
-        }
         this.startTime = Ticker24.getTime() + this.delayTime * 1000;
-        this.functionExecute(Tween24Event.PLAY);
+    };
+    Tween24.prototype.__resume = function () {
+        var nowTime = Ticker24.getTime();
+        this.startTime = nowTime - this.time * 1000 * this.progress;
+        if (this.playingChildTween) {
+            for (var _i = 0, _a = this.playingChildTween; _i < _a.length; _i++) {
+                var tween = _a[_i];
+                if (tween.playingChildTween)
+                    tween.__resume();
+                else
+                    tween.startTime = nowTime - tween.time * 1000 * tween.progress;
+            }
+        }
+    };
+    Tween24.prototype.pause = function () {
+        if (this.isRoot) {
+            this.isPaused = true;
+            Tween24.ticker.remove(this);
+            this.functionExecute(Tween24Event.PAUSE);
+        }
     };
     Tween24.prototype.stop = function () {
-        this.__tweenStop();
+        this.__stop();
         this.functionExecute(Tween24Event.STOP);
     };
-    // pause() {
-    // }
+    Tween24.prototype.__stop = function () {
+        this.tweenStop();
+        if (this.childTween) {
+            for (var _i = 0, _a = this.childTween; _i < _a.length; _i++) {
+                var tween = _a[_i];
+                if (tween.childTween)
+                    tween.__stop();
+                else
+                    tween.tweenStop();
+            }
+        }
+    };
     Tween24.prototype.__initParam = function () {
         var _a;
         if ((_a = this.allUpdaters) === null || _a === void 0 ? void 0 : _a.length) {
@@ -130,10 +169,10 @@ var Tween24 = /** @class */ (function () {
         }
     };
     Tween24.prototype.__update = function (nowTime) {
-        var _a;
-        var progress = this.getProgress(this.time, this.startTime, nowTime);
+        var _a, _b, _c;
+        this.updateProgress(this.time, this.startTime, nowTime);
         // Delay
-        if (progress < 0)
+        if (this.progress < 0)
             return;
         // Container Tween
         if (this.isContainerTween) {
@@ -141,16 +180,16 @@ var Tween24 = /** @class */ (function () {
                 this.inited = true;
                 switch (this.type) {
                     case Tween24.TYPE_SERIAL:
-                        if (this.playingChildTween && this.firstTween) {
-                            this.playingChildTween.push(this.firstTween);
+                        if (this.firstTween) {
+                            (_a = this.playingChildTween) === null || _a === void 0 ? void 0 : _a.push(this.firstTween);
                             this.firstTween.__play();
                         }
                         break;
                     case Tween24.TYPE_PARALLEL:
-                        for (var i = 0; i < this.numChildren; i++) {
-                            if (this.playingChildTween && this.childTween) {
-                                var tween = this.childTween[i];
-                                this.playingChildTween.push(tween);
+                        if (this.childTween) {
+                            for (var _i = 0, _d = this.childTween; _i < _d.length; _i++) {
+                                var tween = _d[_i];
+                                (_b = this.playingChildTween) === null || _b === void 0 ? void 0 : _b.push(tween);
                                 tween.__play();
                             }
                         }
@@ -160,8 +199,9 @@ var Tween24 = /** @class */ (function () {
             }
             // Update
             if (this.playingChildTween) {
-                for (var i = 0; i < this.playingChildTween.length; i++) {
-                    this.playingChildTween[i].__update(nowTime);
+                for (var _e = 0, _f = this.playingChildTween; _e < _f.length; _e++) {
+                    var tween = _f[_e];
+                    tween.__update(nowTime);
                 }
             }
             this.functionExecute(Tween24Event.UPDATE);
@@ -178,10 +218,10 @@ var Tween24 = /** @class */ (function () {
                     this.functionExecute(Tween24Event.INIT);
                 }
                 // Update propety
-                var prog = this.easing ? this.easing(progress, 0, 1, 1) : progress;
-                if ((_a = this.allUpdaters) === null || _a === void 0 ? void 0 : _a.length) {
-                    for (var _i = 0, _b = this.allUpdaters; _i < _b.length; _i++) {
-                        var updater = _b[_i];
+                var prog = this.easing ? this.easing(this.progress, 0, 1, 1) : this.progress;
+                if ((_c = this.allUpdaters) === null || _c === void 0 ? void 0 : _c.length) {
+                    for (var _g = 0, _h = this.allUpdaters; _g < _h.length; _g++) {
+                        var updater = _h[_g];
                         updater.update(prog);
                     }
                 }
@@ -196,7 +236,7 @@ var Tween24 = /** @class */ (function () {
                 this.functionExecute(Tween24Event.UPDATE);
             }
             // Complete
-            if (progress >= 1) {
+            if (this.progress >= 1) {
                 // Func
                 if (this.type == Tween24.TYPE_FUNC) {
                     this.functionExecute(Tween24.TYPE_FUNC);
@@ -208,38 +248,46 @@ var Tween24 = /** @class */ (function () {
     };
     Tween24.prototype.__complete = function () {
         this.debugLog(this.type + " complete");
-        this.__tweenStop();
+        this.tweenStop();
         if (this.parent)
             this.parent.__completeChildTween(this);
         this.functionExecute(Tween24Event.COMPLATE);
     };
-    Tween24.prototype.__tweenStop = function () {
+    Tween24.prototype.tweenStop = function () {
         if (this.isRoot)
             Tween24.ticker.remove(this);
+        if (this.playingChildTween)
+            this.playingChildTween.length = 0;
+        this.numCompleteChildren = 0;
+        this.inited = false;
         ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this._singleTarget), this);
         ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
     };
     Tween24.prototype.__completeChildTween = function (tween) {
         this.debugLog(this.type + " completeChildTween");
         this.numCompleteChildren++;
-        if (this.playingChildTween) {
+        if (this.numChildren == this.numCompleteChildren) {
+            this.__complete();
+        }
+        else if (this.playingChildTween) {
             ArrayUtil.removeItemFromArray(this.playingChildTween, tween);
             var next = tween.next;
             if (next) {
                 this.playingChildTween.push(next);
-                next.play();
+                next.__play();
             }
         }
     };
-    Tween24.prototype.getProgress = function (time, startTime, nowTime) {
+    Tween24.prototype.updateProgress = function (time, startTime, nowTime) {
         if (nowTime < startTime)
-            return -1;
+            this.progress = -1;
         else if (time == 0)
-            return 1;
+            this.progress = 1;
         else {
-            var progress = (nowTime - startTime) / (time * 1000);
-            return (progress > 1) ? 1 : progress;
+            this.progress = (nowTime - startTime) / (time * 1000);
+            this.progress = (this.progress > 1) ? 1 : this.progress;
         }
+        return this.progress;
     };
     // ------------------------------------------
     //
@@ -322,8 +370,9 @@ var Tween24 = /** @class */ (function () {
             }
         }
         else {
-            for (var i = 0; i < this.numChildren; i++) {
-                this.childTween[i].parent = this;
+            for (var _i = 0, _a = this.childTween; _i < _a.length; _i++) {
+                var tween = _a[_i];
+                tween.parent = this;
             }
         }
         return this;
@@ -481,7 +530,7 @@ var Tween24 = /** @class */ (function () {
     //
     // ------------------------------------------
     /**
-     * トゥイーン再生時に実行する関数を設定します。
+     * トゥイーン再生時に、実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
@@ -496,7 +545,7 @@ var Tween24 = /** @class */ (function () {
         return this.setFunctionExecute(Tween24Event.PLAY, scope, func, args);
     };
     /**
-     * トゥイーン開始時に実行する関数を設定します。
+     * トゥイーン開始時に、実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
@@ -511,7 +560,7 @@ var Tween24 = /** @class */ (function () {
         return this.setFunctionExecute(Tween24Event.INIT, scope, func, args);
     };
     /**
-     * トゥイーン実行中に実行する関数を設定します。
+     * トゥイーン実行中に、実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
@@ -526,7 +575,7 @@ var Tween24 = /** @class */ (function () {
         return this.setFunctionExecute(Tween24Event.UPDATE, scope, func, args);
     };
     /**
-     * トゥイーンが一時停止した時に実行する関数を設定します。
+     * トゥイーンが一時停止した時に、実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
@@ -541,7 +590,22 @@ var Tween24 = /** @class */ (function () {
         return this.setFunctionExecute(Tween24Event.PAUSE, scope, func, args);
     };
     /**
-     * トゥイーンが停止された時に実行する関数を設定します。
+     * トゥイーンが一時停止中から、再開した時に実行する関数を設定します。
+     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
+     * @param {Function} func 実行する関数
+     * @param {...any[]} args 引数（省略可）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.onResume = function (scope, func) {
+        var args = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            args[_i - 2] = arguments[_i];
+        }
+        return this.setFunctionExecute(Tween24Event.RESUME, scope, func, args);
+    };
+    /**
+     * トゥイーンが停止された時に、実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
@@ -556,7 +620,7 @@ var Tween24 = /** @class */ (function () {
         return this.setFunctionExecute(Tween24Event.STOP, scope, func, args);
     };
     /**
-     * トゥイーンが完了した時に実行する関数を設定します。
+     * トゥイーンが完了した時に、実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）

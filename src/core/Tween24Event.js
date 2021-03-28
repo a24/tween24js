@@ -6,6 +6,7 @@ var Tween24Event = /** @class */ (function () {
     Tween24Event.UPDATE = "update";
     Tween24Event.COMPLATE = "complate";
     Tween24Event.PAUSE = "pause";
+    Tween24Event.RESUME = "resume";
     Tween24Event.STOP = "stop";
     return Tween24Event;
 }());

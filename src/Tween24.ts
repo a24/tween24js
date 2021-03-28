@@ -37,6 +37,7 @@ class Tween24 {
 	private time     :number = NaN;
 	private delayTime:number = NaN;
 	private startTime:number = NaN;
+    private progress :number = 0;
 
 	// Updater
 	private objectUpdater        :ObjectUpdater   |null = null;
@@ -52,9 +53,10 @@ class Tween24 {
 	private parent:Tween24|null = null;
 	private next  :Tween24|null = null;
 
-	// Flag
-	private inited:boolean = false;
-	private isRoot:boolean = false;
+    // Status
+	private inited  :boolean = false;
+	private isRoot  :boolean = false;
+    private isPaused:boolean = false;
 	private isContainerTween:boolean = false;
 
 	// Action & Callback
@@ -80,31 +82,63 @@ class Tween24 {
 	}
 
 	play() {
-		this.root   = this;
-		this.isRoot = true;
-		this.inited = false;
-		Tween24.ticker.add(this);
-		this.__play();
+        if (!this.isPaused) {
+            this.root   = this;
+            this.isRoot = true;
+            this.inited = false;
+            this.__play();
+            Tween24.ticker.add(this);
+            this.functionExecute(Tween24Event.PLAY);
+        }
+        else {
+            this.__resume();
+            this.isPaused = false;
+            Tween24.ticker.add(this);
+            this.functionExecute(Tween24Event.RESUME);
+        }
 	}
 
 	private __play() {
 		this.debugLog(this.type + " play");
 
-		if (!this.isRoot) {
-			this.root = this.parent?.root || this.parent;
-		}
+        if (!this.isRoot) this.root = this.parent?.root || this.parent;
+        this.startTime = Ticker24.getTime() + this.delayTime * 1000;
+	}
 
-		this.startTime = Ticker24.getTime() + this.delayTime * 1000;
-		this.functionExecute(Tween24Event.PLAY);
+    private __resume() {
+        const nowTime:number = Ticker24.getTime();
+        this.startTime = nowTime - this.time * 1000 * this.progress;
+        
+        if (this.playingChildTween) {
+            for (const tween of this.playingChildTween) {
+                if (tween.playingChildTween) tween.__resume();
+                else tween.startTime = nowTime - tween.time * 1000 * tween.progress;
+            }
+        }
+    }
+
+	pause() {
+		if (this.isRoot) {
+            this.isPaused = true;
+            Tween24.ticker.remove(this);
+		    this.functionExecute(Tween24Event.PAUSE);
+        }
 	}
 
 	stop() {
-		this.__tweenStop();
+        this.__stop();
 		this.functionExecute(Tween24Event.STOP);
 	}
 
-	// pause() {
-	// }
+    private __stop() {
+		this.tweenStop();
+        if (this.childTween) {
+            for (const tween of this.childTween) {
+                if (tween.childTween) tween.__stop();
+                else tween.tweenStop();
+            }
+        }
+    }
 
 	private __initParam() {
 		if (this.allUpdaters?.length) {
@@ -152,10 +186,10 @@ class Tween24 {
 	}
 
 	public __update(nowTime:number) {
-		var progress = this.getProgress(this.time, this.startTime, nowTime);
+		this.updateProgress(this.time, this.startTime, nowTime);
 
 		// Delay
-		if (progress < 0) return;
+		if (this.progress < 0) return;
 
 		// Container Tween
 		if (this.isContainerTween) {
@@ -163,28 +197,27 @@ class Tween24 {
 				this.inited = true;
 				switch (this.type) {
 					case Tween24.TYPE_SERIAL:
-						if(this.playingChildTween && this.firstTween) {
-							this.playingChildTween.push(this.firstTween);
+						if (this.firstTween) {
+							this.playingChildTween?.push(this.firstTween);
 							this.firstTween.__play();
 						}
 						break;
 					case Tween24.TYPE_PARALLEL:
-						for (var i = 0; i < this.numChildren; i++) {
-							if (this.playingChildTween && this.childTween) {
-								var tween = this.childTween[i];
-								this.playingChildTween.push(tween);
+                        if (this.childTween) {
+                            for (const tween of this.childTween) {
+								this.playingChildTween?.push(tween);
 								tween.__play();
-							}
-						}
+                            }
+                        }
 						break;
 				}
 				this.functionExecute(Tween24Event.INIT);
 			}
 			// Update
 			if (this.playingChildTween) {
-				for (var i = 0; i < this.playingChildTween.length; i++) {
-					this.playingChildTween[i].__update(nowTime);
-				}
+                for (const tween of this.playingChildTween) {
+					tween.__update(nowTime);
+                }
 			}
 			this.functionExecute(Tween24Event.UPDATE);
 			if (this.numChildren == this.numCompleteChildren) this.__complete();
@@ -201,7 +234,7 @@ class Tween24 {
 				}
 
 				// Update propety
-				var prog = this.easing ? this.easing(progress, 0, 1, 1) : progress;
+				var prog = this.easing ? this.easing(this.progress, 0, 1, 1) : this.progress;
 				if (this.allUpdaters?.length) {
 					for (const updater of this.allUpdaters) {
 						updater.update(prog);
@@ -219,7 +252,7 @@ class Tween24 {
 			}
 
 			// Complete
-			if (progress >= 1) {
+			if (this.progress >= 1) {
 				// Func
 				if (this.type == Tween24.TYPE_FUNC) {
 					this.functionExecute(Tween24.TYPE_FUNC);
@@ -233,37 +266,45 @@ class Tween24 {
 
 	private __complete() {
 		this.debugLog(this.type + " complete");
-		this.__tweenStop();
+		this.tweenStop();
 		if (this.parent) this.parent.__completeChildTween(this);
 		this.functionExecute(Tween24Event.COMPLATE);
 	}
 
-	private __tweenStop() {
+	private tweenStop() {
 		if (this.isRoot) Tween24.ticker.remove(this);
+        if (this.playingChildTween) this.playingChildTween.length = 0;
+        this.numCompleteChildren = 0;
+        this.inited = false;
+
 		ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this._singleTarget), this);
 		ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
 	}
 
 	private __completeChildTween(tween:Tween24) {
 		this.debugLog(this.type + " completeChildTween");
-		this.numCompleteChildren++;
-		if (this.playingChildTween) {
+		this.numCompleteChildren ++;
+        if (this.numChildren == this.numCompleteChildren) {
+            this.__complete();
+		}
+        else if (this.playingChildTween) {
 			ArrayUtil.removeItemFromArray(this.playingChildTween, tween);
-			var next = tween.next;
+			var next:Tween24|null = tween.next;
 			if (next) {
 				this.playingChildTween.push(next);
-				next.play();
+				next.__play();
 			}
 		}
 	}
 
-	private getProgress(time:number, startTime:number, nowTime:number): number {
-		if (nowTime < startTime) return -1;
-		else if (time == 0) return 1;
+	private updateProgress(time:number, startTime:number, nowTime:number): number {
+		if (nowTime < startTime) this.progress = -1;
+		else if (time == 0) this.progress = 1;
 		else {
-			var progress = (nowTime - startTime) / (time * 1000);
-			return (progress > 1) ? 1 : progress;
+			this.progress = (nowTime - startTime) / (time * 1000);
+			this.progress = (this.progress > 1) ? 1 : this.progress;
 		}
+        return this.progress;
 	}
 
 
@@ -352,9 +393,9 @@ class Tween24 {
 			}
 		}
 		else {
-			for (var i = 0; i < this.numChildren; i++) {
-				this.childTween[i].parent = this;
-			}
+            for (const tween of this.childTween) {
+				tween.parent = this;
+            }
 		}
 		return this;
 	}
@@ -534,7 +575,7 @@ class Tween24 {
 	// ------------------------------------------
 
     /**
-     * トゥイーン再生時に実行する関数を設定します。
+     * トゥイーン再生時に、実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
@@ -544,7 +585,7 @@ class Tween24 {
     onPlay (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.PLAY, scope, func, args); }
     
     /**
-     * トゥイーン開始時に実行する関数を設定します。
+     * トゥイーン開始時に、実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
@@ -554,7 +595,7 @@ class Tween24 {
 	onInit (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.INIT, scope, func, args); }
     
     /**
-     * トゥイーン実行中に実行する関数を設定します。
+     * トゥイーン実行中に、実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
@@ -564,7 +605,7 @@ class Tween24 {
 	onUpdate (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.UPDATE, scope, func, args); }
     
     /**
-     * トゥイーンが一時停止した時に実行する関数を設定します。
+     * トゥイーンが一時停止した時に、実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
@@ -574,7 +615,17 @@ class Tween24 {
 	onPause (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.PAUSE, scope, func, args); }
 
     /**
-     * トゥイーンが停止された時に実行する関数を設定します。
+     * トゥイーンが一時停止中から、再開した時に実行する関数を設定します。
+     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
+     * @param {Function} func 実行する関数
+     * @param {...any[]} args 引数（省略可）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	onResume (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.RESUME, scope, func, args); }
+
+    /**
+     * トゥイーンが停止された時に、実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
@@ -584,7 +635,7 @@ class Tween24 {
 	onStop (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.STOP, scope, func, args); }
     
     /**
-     * トゥイーンが完了した時に実行する関数を設定します。
+     * トゥイーンが完了した時に、実行する関数を設定します。
      * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）

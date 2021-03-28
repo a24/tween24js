@@ -1,27 +1,28 @@
 export class ParamUpdater {
-	key   : string;
-	target: number;
-	start : number;
-	delta : number;
-	value : number;
+
+	private _key   : string;
+	private _target: number;
+	private _start : number;
+	private _delta : number;
+	private _value : number;
 
 	constructor(key:string, value:number) {
-		this.key    = key;
-		this.target = value;
-		this.start  = 0;
-		this.delta  = 0;
-		this.value  = 0;
+		this._key    = key;
+		this._target = value;
+		this._start  = 0;
+		this._delta  = 0;
+		this._value  = 0;
 	}
 
 	init(start:number) {
-		this.start  = start;
-		this.delta  = this.target - start;
-		this.value  = this.start;
+		this._start  = start;
+		this._delta  = this._target - start;
+		this._value  = this._start;
 	}
 
 	update(progress:number):number {
-		this.value = this.start + this.delta * progress;
-		return this.value;
+		this._value = this._start + this._delta * progress;
+		return this._value;
 	}	
 }
 

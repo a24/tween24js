@@ -1,17 +1,17 @@
 export class FunctionExecuter {
 
-	func :Function;
-	args :any[]|null;
-	scope:any;
+	private _func :Function;
+	private _args :any[]|null;
+	private _scope:any;
 
 	constructor(scope:any, func:Function, args:any[]) {
-		this.func  = func;
-		this.args  = args;
-		this.scope = scope;
+		this._func  = func;
+		this._args  = args;
+		this._scope = scope;
 	}
 
 	execute() {
-		this.func.apply(this.scope, this.args);
+		this._func.apply(this._scope, this._args);
 	}
 }
 

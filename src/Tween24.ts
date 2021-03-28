@@ -366,30 +366,211 @@ class Tween24 {
 	// Propety
 	//
 	// ------------------------------------------
-	
-	x       (value: number): Tween24 { return this.__setPropety("x", value); }
-	y       (value: number): Tween24 { return this.__setPropety("y", value); }
-	xy      (x: number, y: number): Tween24 { return this.__setPropety("x", x).__setPropety("y", y); }
-	alpha   (value: number): Tween24 { return this.__setPropety("alpha", value); }
-	scaleX  (value: number): Tween24 { return this.__setPropety("scaleX", value); }
-	scaleY  (value: number): Tween24 { return this.__setPropety("scaleY", value); }
-	scale   (scale: number): Tween24 { return this.__setPropety("scaleX", scale).__setPropety("scaleY", scale); }
+
+    /**
+     * 目標とするX座標を設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * @param {number} value X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    x (value: number): Tween24 { return this.__setPropety("x", value); }
+    
+    /**
+     * 目標とするY座標を設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * @param {number} value Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	y (value: number): Tween24 { return this.__setPropety("y", value); }
+    
+    /**
+     * 目標とするXとY座標を設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * @param {number} x Y座標
+     * @param {number} y Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	xy (x: number, y: number): Tween24 { return this.__setPropety("x", x).__setPropety("y", y); }
+    
+    /**
+     * 目標とする透明度を設定します。
+     * 対象が HTMLElement の場合は、CSS:opacity が適応されます。
+     * @param {number} value 透明度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	alpha (value: number): Tween24 { return this.__setPropety("alpha", value); }
+    
+    /**
+     * 目標とする水平スケールを設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * @param {number} value 水平方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	scaleX (value: number): Tween24 { return this.__setPropety("scaleX", value); }
+    
+    /**
+     * 目標とする垂直スケールを設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * @param {number} value 垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	scaleY (value: number): Tween24 { return this.__setPropety("scaleY", value); }
+    
+    /**
+     * 目標とするスケールを設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * @param {number} value 水平＆垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	scale (value: number): Tween24 { return this.__setPropety("scaleX", value).__setPropety("scaleY", value); }
+    
+    /**
+     * 目標とする水平・垂直スケールを設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * @param {number} scaleX 水平方向のスケール
+     * @param {number} scaleY 垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
 	scaleXY (scaleX: number, scaleY: number): Tween24 { return this.__setPropety("scaleX", scaleX).__setPropety("scaleY", scaleY); }
-	skewX   (value: number): Tween24 { return this.__setPropety("skewX", value); }
-	skewY   (value: number): Tween24 { return this.__setPropety("skewY", value); }
-	skew    (skew: number): Tween24 { return this.__setPropety("skewX", skew).__setPropety("skewY", skew); }
-	skewXY  (skewX: number, skewY: number): Tween24 { return this.__setPropety("skewX", skewX).__setPropety("skewY", skewY); }
-	rotation(value: number): Tween24 { return this.__setPropety("rotation", value); }
-	delay   (value: number): Tween24 { this.delayTime += value; return this; }
+    
+    /**
+     * 目標とする水平傾斜を設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * @param {number} value 水平方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	skewX (value: number): Tween24 { return this.__setPropety("skewX", value); }
+    
+    /**
+     * 目標とする垂直傾斜を設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * @param {number} value 垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	skewY (value: number): Tween24 { return this.__setPropety("skewY", value); }
+    
+    /**
+     * 目標とする水平＆垂直傾斜を設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * @param {number} value 水平＆垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	skew (value: number): Tween24 { return this.__setPropety("skewX", value).__setPropety("skewY", value); }
+    
+    /**
+     * 目標とする水平・垂直傾斜を設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * @param {number} skewX 水平方向の傾斜
+     * @param {number} skewY 垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	skewXY (skewX: number, skewY: number): Tween24 { return this.__setPropety("skewX", skewX).__setPropety("skewY", skewY); }
+    
+    /**
+     * 目標とする回転角度を設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * @param {number} value 回転角度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	rotation (value: number): Tween24 { return this.__setPropety("rotation", value); }
+    
+    /**
+     * トゥイーンの遅延時間を設定します。
+     * @param {number} value 遅延時間（秒数）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	delay (value: number): Tween24 { this.delayTime += value; return this; }
 
-	style   (name: string, value: number|string): Tween24 { return this.__setStyle(name, value); }
+    /**
+     * 目標とするスタイルシートの値を設定します。
+     * 対象が HTMLElement の場合にのみ適応されます。
+     * @param {string} name プロパティ名
+     * @param {(number|string)} value 目標の値（数値指定の場合は、基本的にpx単位で計算されます）
+     * @memberof Tween24
+     */
+    style (name: string, value: number|string): Tween24 { return this.__setStyle(name, value); }
 
-	onPlay    (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.PLAY    , scope, func, args); }
-	onInit    (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.INIT    , scope, func, args); }
-	onUpdate  (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.UPDATE  , scope, func, args); }
-	onPause   (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.PAUSE   , scope, func, args); }
-	onStop    (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.STOP    , scope, func, args); }
-	onComplate(scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.COMPLATE, scope, func, args); }
+
+
+	// ------------------------------------------
+	//
+	// Callback
+	//
+	// ------------------------------------------
+
+    /**
+     * トゥイーン再生時に実行する関数を設定します。
+     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
+     * @param {Function} func 実行する関数
+     * @param {...any[]} args 引数
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    onPlay (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.PLAY, scope, func, args); }
+    
+    /**
+     * トゥイーン開始時に実行する関数を設定します。
+     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
+     * @param {Function} func 実行する関数
+     * @param {...any[]} args 引数
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	onInit (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.INIT, scope, func, args); }
+    
+    /**
+     * トゥイーン実行中に実行する関数を設定します。
+     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
+     * @param {Function} func 実行する関数
+     * @param {...any[]} args 引数
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	onUpdate (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.UPDATE, scope, func, args); }
+    
+    /**
+     * トゥイーンが一時停止した時に実行する関数を設定します。
+     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
+     * @param {Function} func 実行する関数
+     * @param {...any[]} args 引数
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	onPause (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.PAUSE, scope, func, args); }
+
+    /**
+     * トゥイーンが停止された時に実行する関数を設定します。
+     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
+     * @param {Function} func 実行する関数
+     * @param {...any[]} args 引数
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	onStop (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.STOP, scope, func, args); }
+    
+    /**
+     * トゥイーンが完了した時に実行する関数を設定します。
+     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
+     * @param {Function} func 実行する関数
+     * @param {...any[]} args 引数
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	onComplate (scope:any, func:Function, ...args:any[]): Tween24 { return this.setFunctionExecute(Tween24Event.COMPLATE, scope, func, args); }
 
 	private __setPropety(key:string, value:number):Tween24 {
 		if (this._singleTarget) {
@@ -439,22 +620,74 @@ class Tween24 {
 	//
 	// ------------------------------------------
 
-	static tween(target:any, time:number, easing:Function|null = null, params:{[key:string]:number}|null = null): Tween24 {
+    /**
+     * トゥイーンを設定します。
+     * @static
+     * @param {*} target 対象オブジェクト
+     * @param {number} time 時間（秒）
+     * @param {Function} [easing=Ease24._Linear] イージング関数
+     * @param {({[key:string]:number}|null)} [params=null] トゥイーンさせるパラメータ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+    */
+    static tween(target:any, time:number, easing:Function = Ease24._Linear, params:{[key:string]:number}|null = null): Tween24 {
 		return new Tween24().__initChildTween(Tween24.TYPE_TWEEN, target, time, easing, params);
 	}
+
+    /**
+     * プロパティを設定します。
+     * @static
+     * @param {*} target 対象オブジェクト
+     * @param {({[key:string]:number}|null)} [params=null] 設定するパラメータ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+    */
 	static prop(target:any, params:{[key:string]:number}|null = null): Tween24 {
 		return new Tween24().__initChildTween(Tween24.TYPE_PROP, target, 0, null, params);
 	}
-	static wait(time:number): Tween24 {
+    /**
+     * トゥイーンを待機します。
+     * @static
+     * @param {number} time 待機時間（秒）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static wait(time:number): Tween24 {
 		return new Tween24().__initChildTween(Tween24.TYPE_WAIT, null, time, null ,null);
 	}
-	static func = function (scope:any, func:Function, ...args:any[]) {
+
+    /**
+     * 関数を実行します。
+     * @static
+     * @param {*} scope 関数が定義されているオブジェクト
+     * @param {Function} func 実行する関数
+     * @param {...any[]} args 実行する関数の引数
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static func(scope:any, func:Function, ...args:any[]): Tween24 {
 		return new Tween24().__initActionTween(Tween24.TYPE_FUNC, scope, func, args);
-	};
-	static serial(...childTween:any[]): Tween24 {
+	}
+
+    /**
+     * 順番に実行するトゥイーンを設定します。
+     * @static
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static serial(...childTween:Tween24[]): Tween24 {
 		return new Tween24().__initContainerTween(Tween24.TYPE_SERIAL, childTween);
 	}
-	static parallel(...childTween:any[]): Tween24 {
+    
+    /**
+     * 並列に実行するトゥイーンを設定します。
+     * @static
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	static parallel(...childTween:Tween24[]): Tween24 {
 		return new Tween24().__initContainerTween(Tween24.TYPE_PARALLEL, childTween);
 	}
 

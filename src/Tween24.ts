@@ -90,7 +90,7 @@ class Tween24 {
 			this.root = this.parent?.root || this.parent;
 		}
 
-		this.startTime = this.getTime() + this.delayTime * 1000;
+		this.startTime = Ticker24.getTime() + this.delayTime * 1000;
 		this.functionExecute(Tween24Event.PLAY);
 	}
 
@@ -147,8 +147,8 @@ class Tween24 {
 		}
 	}
 
-	public __update() {
-		var progress = this.getProgress(this.time, this.startTime);
+	public __update(nowTime:number) {
+		var progress = this.getProgress(this.time, this.startTime, nowTime);
 
 		// Delay
 		if (progress < 0) return;
@@ -179,7 +179,7 @@ class Tween24 {
 			// Update
 			if (this.playingChildTween) {
 				for (var i = 0; i < this.playingChildTween.length; i++) {
-					this.playingChildTween[i].__update();
+					this.playingChildTween[i].__update(nowTime);
 				}
 			}
 			this.functionExecute(Tween24Event.UPDATE);
@@ -250,6 +250,15 @@ class Tween24 {
 				this.playingChildTween.push(next);
 				next.play();
 			}
+		}
+	}
+
+	private getProgress(time:number, startTime:number, nowTime:number): number {
+		if (nowTime < startTime) return -1;
+		else if (time == 0) return 1;
+		else {
+			var progress = (nowTime - startTime) / (time * 1000);
+			return (progress > 1) ? 1 : progress;
 		}
 	}
 
@@ -697,18 +706,6 @@ class Tween24 {
 	// Util
 	//
 	// ------------------------------------------
-
-	getTime(): number { return Date.now() || new Date().getTime(); }
-
-	getProgress(time:number, startTime:number): number {
-		var nowTime = this.getTime();
-		if (nowTime < startTime) return -1;
-		else if (time == 0) return 1;
-		else {
-			var progress = (nowTime - startTime) / (time * 1000);
-			return (progress > 1) ? 1 : progress;
-		}
-	}
 
 	trace(value:any) {
 		console.log(value);

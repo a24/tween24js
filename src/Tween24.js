@@ -61,7 +61,7 @@ var Tween24 = /** @class */ (function () {
         if (!this.isRoot) {
             this.root = ((_a = this.parent) === null || _a === void 0 ? void 0 : _a.root) || this.parent;
         }
-        this.startTime = this.getTime() + this.delayTime * 1000;
+        this.startTime = Ticker24.getTime() + this.delayTime * 1000;
         this.functionExecute(Tween24Event.PLAY);
     };
     Tween24.prototype.stop = function () {
@@ -126,9 +126,9 @@ var Tween24 = /** @class */ (function () {
             Tween24._playingTweensByTarget.set(target, [this]);
         }
     };
-    Tween24.prototype.__update = function () {
+    Tween24.prototype.__update = function (nowTime) {
         var _a;
-        var progress = this.getProgress(this.time, this.startTime);
+        var progress = this.getProgress(this.time, this.startTime, nowTime);
         // Delay
         if (progress < 0)
             return;
@@ -158,7 +158,7 @@ var Tween24 = /** @class */ (function () {
             // Update
             if (this.playingChildTween) {
                 for (var i = 0; i < this.playingChildTween.length; i++) {
-                    this.playingChildTween[i].__update();
+                    this.playingChildTween[i].__update(nowTime);
                 }
             }
             this.functionExecute(Tween24Event.UPDATE);
@@ -226,6 +226,16 @@ var Tween24 = /** @class */ (function () {
                 this.playingChildTween.push(next);
                 next.play();
             }
+        }
+    };
+    Tween24.prototype.getProgress = function (time, startTime, nowTime) {
+        if (nowTime < startTime)
+            return -1;
+        else if (time == 0)
+            return 1;
+        else {
+            var progress = (nowTime - startTime) / (time * 1000);
+            return (progress > 1) ? 1 : progress;
         }
     };
     // ------------------------------------------
@@ -684,18 +694,6 @@ var Tween24 = /** @class */ (function () {
     // Util
     //
     // ------------------------------------------
-    Tween24.prototype.getTime = function () { return Date.now() || new Date().getTime(); };
-    Tween24.prototype.getProgress = function (time, startTime) {
-        var nowTime = this.getTime();
-        if (nowTime < startTime)
-            return -1;
-        else if (time == 0)
-            return 1;
-        else {
-            var progress = (nowTime - startTime) / (time * 1000);
-            return (progress > 1) ? 1 : progress;
-        }
-    };
     Tween24.prototype.trace = function (value) {
         console.log(value);
     };

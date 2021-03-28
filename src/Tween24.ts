@@ -32,7 +32,7 @@ class Tween24 {
 	private _singleTarget:any     |null = null;
 	private _multiTarget :any[]   |null = null;
 	private easing       :Function|null = null;
-	private type         :string = "";
+	private type         :string        = "";
 
 	private time     :number = NaN;
 	private delayTime:number = NaN;
@@ -67,6 +67,10 @@ class Tween24 {
 
 	private numChildren        :number = 0;
 	private numCompleteChildren:number = 0;
+    
+    // Tween FPS
+    __fps:number = 0;
+    __beforeTime:number = 0;
 
 	constructor() {
 		Tween24.ease ||= new Ease24();
@@ -513,6 +517,14 @@ class Tween24 {
      */
     style (name: string, value: number|string): Tween24 { return this.__setStyle(name, value); }
 
+    /**
+     * トゥイーン単体のFPSを設定します。
+     * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
+     * @param {number} fps FPSの値  
+     * @return {Tween24}
+     * @memberof Tween24
+     */
+    fps (fps:number): Tween24 { this.__fps = fps; return this; }
 
 
 	// ------------------------------------------
@@ -706,6 +718,17 @@ class Tween24 {
 	// Util
 	//
 	// ------------------------------------------
+
+    /**
+     * トゥイーン全体のFPSを設定します。
+     * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
+     * @static
+     * @param {number} [fps=0] FPSの値
+     * @memberof Tween24
+     */
+    static setFPS(fps:number = 0) {
+        Tween24.ticker.fps = fps;
+    }
 
 	trace(value:any) {
 		console.log(value);

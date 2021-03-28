@@ -9,7 +9,7 @@ export class Ticker24 {
 	allTweens :Tween24[];
 
 	constructor() {
-		this.fps        = 60;
+		this.fps        = 0;
 		this.timer      = 0;
 		this.beforeTime = 0;
 		this.running    = false;
@@ -42,10 +42,19 @@ export class Ticker24 {
 
 	update() {
 		const nowTime:number = Ticker24.getTime();
-		if (this.checkInterval(this.fps, this.beforeTime, nowTime)) {
-			for (const tween of this.allTweens) {
+		const tickerCheck:boolean = this.fps ? this.checkInterval(this.fps, this.beforeTime, nowTime) : true;
+		for (const tween of this.allTweens) {
+			if (tween.__fps) {
+				if (this.checkInterval(tween.__fps, tween.__beforeTime, nowTime)) {
+					tween.__update(nowTime);
+					tween.__beforeTime = nowTime;
+				}
+			}
+			else if (tickerCheck) {
 				tween.__update(nowTime);
 			}
+		}
+		if (tickerCheck) {
 			this.beforeTime = nowTime;
 		}
 		if (this.running) {
@@ -54,7 +63,7 @@ export class Ticker24 {
 		}
 	}
 
-	checkInterval(fps:number, beforeTime:number, nowTime:number):boolean {
+	private checkInterval(fps:number, beforeTime:number, nowTime:number):boolean {
 		const interval:number = 1000 / fps;
 		if (nowTime - beforeTime >= interval) return true;
 		else return false;

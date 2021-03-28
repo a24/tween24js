@@ -43,6 +43,9 @@ var Tween24 = /** @class */ (function () {
         this.playingChildTween = null;
         this.numChildren = 0;
         this.numCompleteChildren = 0;
+        // Tween FPS
+        this.__fps = 0;
+        this.__beforeTime = 0;
         Tween24.ease || (Tween24.ease = new Ease24());
         Tween24.ticker || (Tween24.ticker = new Ticker24());
         Tween24._playingTweens || (Tween24._playingTweens = []);
@@ -464,6 +467,14 @@ var Tween24 = /** @class */ (function () {
      * @memberof Tween24
      */
     Tween24.prototype.style = function (name, value) { return this.__setStyle(name, value); };
+    /**
+     * トゥイーン単体のFPSを設定します。
+     * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
+     * @param {number} fps FPSの値
+     * @return {Tween24}
+     * @memberof Tween24
+     */
+    Tween24.prototype.fps = function (fps) { this.__fps = fps; return this; };
     // ------------------------------------------
     //
     // Callback
@@ -694,6 +705,17 @@ var Tween24 = /** @class */ (function () {
     // Util
     //
     // ------------------------------------------
+    /**
+     * トゥイーン全体のFPSを設定します。
+     * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
+     * @static
+     * @param {number} [fps=0] FPSの値
+     * @memberof Tween24
+     */
+    Tween24.setFPS = function (fps) {
+        if (fps === void 0) { fps = 0; }
+        Tween24.ticker.fps = fps;
+    };
     Tween24.prototype.trace = function (value) {
         console.log(value);
     };

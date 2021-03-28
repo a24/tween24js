@@ -1,7 +1,7 @@
 import ArrayUtil from "../utils/ArrayUtil";
 var Ticker24 = /** @class */ (function () {
     function Ticker24() {
-        this.fps = 60;
+        this.fps = 0;
         this.timer = 0;
         this.beforeTime = 0;
         this.running = false;
@@ -30,11 +30,20 @@ var Ticker24 = /** @class */ (function () {
     };
     Ticker24.prototype.update = function () {
         var nowTime = Ticker24.getTime();
-        if (this.checkInterval(this.fps, this.beforeTime, nowTime)) {
-            for (var _i = 0, _a = this.allTweens; _i < _a.length; _i++) {
-                var tween = _a[_i];
+        var tickerCheck = this.fps ? this.checkInterval(this.fps, this.beforeTime, nowTime) : true;
+        for (var _i = 0, _a = this.allTweens; _i < _a.length; _i++) {
+            var tween = _a[_i];
+            if (tween.__fps) {
+                if (this.checkInterval(tween.__fps, tween.__beforeTime, nowTime)) {
+                    tween.__update(nowTime);
+                    tween.__beforeTime = nowTime;
+                }
+            }
+            else if (tickerCheck) {
                 tween.__update(nowTime);
             }
+        }
+        if (tickerCheck) {
             this.beforeTime = nowTime;
         }
         if (this.running) {

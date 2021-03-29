@@ -367,6 +367,14 @@ class Tween24 {
 	alpha (value: number): Tween24 { return this._setPropety("alpha", value); }
     
     /**
+     * 目標とする透明度を設定します。
+     * @param {number} value 透明度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+	opacity (value: number): Tween24 { return this._setPropety("opacity", value); }
+
+    /**
      * 目標とする水平スケールを設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
      * @param {number} value 水平方向のスケール
@@ -789,7 +797,13 @@ class Tween24 {
     static setFPS(fps:number = 0) {
         Tween24.ticker.fps = fps;
     }
-    
+
+    /**
+     * デフォルトのイージングを設定します。
+     * @static
+     * @param {Function} [easing=Ease24._Linear] デフォルトのイージング
+     * @memberof Tween24
+     */
     static setDefaultEasing(easing:Function = Ease24._Linear) {
         Tween24._defaultEasing = easing;
     }

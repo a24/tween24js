@@ -338,6 +338,13 @@ var Tween24 = /** @class */ (function () {
      */
     Tween24.prototype.alpha = function (value) { return this._setPropety("alpha", value); };
     /**
+     * 目標とする透明度を設定します。
+     * @param {number} value 透明度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.opacity = function (value) { return this._setPropety("opacity", value); };
+    /**
      * 目標とする水平スケールを設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
      * @param {number} value 水平方向のスケール
@@ -785,6 +792,12 @@ var Tween24 = /** @class */ (function () {
         if (fps === void 0) { fps = 0; }
         Tween24.ticker.fps = fps;
     };
+    /**
+     * デフォルトのイージングを設定します。
+     * @static
+     * @param {Function} [easing=Ease24._Linear] デフォルトのイージング
+     * @memberof Tween24
+     */
     Tween24.setDefaultEasing = function (easing) {
         if (easing === void 0) { easing = Ease24._Linear; }
         Tween24._defaultEasing = easing;

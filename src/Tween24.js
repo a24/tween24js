@@ -598,13 +598,13 @@ var Tween24 = /** @class */ (function () {
      * @static
      * @param {*} target 対象オブジェクト
      * @param {number} time 時間（秒）
-     * @param {Function} [easing=Ease24._Linear] イージング関数（デフォルト値：Ease24._Linear）
+     * @param {(Function|null)} [easing=null] イージング関数（デフォルト値：Ease24._Linear）
      * @param {({[key:string]:number}|null)} [params=null] トゥイーンさせるパラメータ（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
-    */
+     */
     Tween24.tween = function (target, time, easing, params) {
-        if (easing === void 0) { easing = Ease24._Linear; }
+        if (easing === void 0) { easing = null; }
         if (params === void 0) { params = null; }
         return new Tween24()._createChildTween(Tween24.TYPE_TWEEN, target, time, easing, params);
     };
@@ -676,7 +676,7 @@ var Tween24 = /** @class */ (function () {
     };
     Tween24.prototype._createChildTween = function (type, target, time, easing, params) {
         this._type = type;
-        this._easing = easing || Ease24._Linear;
+        this._easing = easing || Tween24._defaultEasing;
         this._time = time;
         this._delayTime = 0;
         this._startTime = 0;
@@ -785,6 +785,10 @@ var Tween24 = /** @class */ (function () {
         if (fps === void 0) { fps = 0; }
         Tween24.ticker.fps = fps;
     };
+    Tween24.setDefaultEasing = function (easing) {
+        if (easing === void 0) { easing = Ease24._Linear; }
+        Tween24._defaultEasing = easing;
+    };
     Tween24.prototype.trace = function (value) {
         console.log(value);
     };
@@ -799,6 +803,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.TYPE_SERIAL = "serial";
     Tween24.TYPE_PARALLEL = "parallel";
     Tween24.TYPE_FUNC = "func";
+    Tween24._defaultEasing = Ease24._Linear;
     return Tween24;
 }());
 export default Tween24;

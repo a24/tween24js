@@ -27,6 +27,7 @@ class Tween24 {
 
 	private static _playingTweens:Tween24[];
 	private static _playingTweensByTarget:Map<any, Tween24[]>;
+    private static _defaultEasing:Function = Ease24._Linear;
 
 	// Common
 	private _singleTarget:any      |null = null;
@@ -605,12 +606,12 @@ class Tween24 {
      * @static
      * @param {*} target 対象オブジェクト
      * @param {number} time 時間（秒）
-     * @param {Function} [easing=Ease24._Linear] イージング関数（デフォルト値：Ease24._Linear）
+     * @param {(Function|null)} [easing=null] イージング関数（デフォルト値：Ease24._Linear）
      * @param {({[key:string]:number}|null)} [params=null] トゥイーンさせるパラメータ（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
-    */
-    static tween(target: any, time: number, easing: Function = Ease24._Linear, params: { [key: string]: number } | null = null): Tween24 {
+     */
+    static tween(target: any, time: number, easing: Function|null = null, params: { [key: string]: number } | null = null): Tween24 {
         return new Tween24()._createChildTween(Tween24.TYPE_TWEEN, target, time, easing, params);
     }
 
@@ -673,7 +674,7 @@ class Tween24 {
     
 	private _createChildTween(type:string, target:any, time:number, easing:Function|null, params:{[key:string]:number}|null): Tween24 {
 		this._type        = type;
-		this._easing      = easing || Ease24._Linear;
+		this._easing      = easing || Tween24._defaultEasing;
 		this._time        = time;
 		this._delayTime   = 0;
 		this._startTime   = 0;
@@ -787,6 +788,10 @@ class Tween24 {
      */
     static setFPS(fps:number = 0) {
         Tween24.ticker.fps = fps;
+    }
+    
+    static setDefaultEasing(easing:Function = Ease24._Linear) {
+        Tween24._defaultEasing = easing;
     }
 
 	trace(value:any) {

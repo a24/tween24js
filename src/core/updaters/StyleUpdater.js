@@ -56,6 +56,14 @@ var StyleUpdater = /** @class */ (function () {
     };
     StyleUpdater.prototype.complete = function () {
     };
+    StyleUpdater.prototype.toString = function () {
+        var str = "";
+        for (var _i = 0, _a = this._key; _i < _a.length; _i++) {
+            var key = _a[_i];
+            str += this._param[key].toString() + " ";
+        }
+        return str.trim();
+    };
     StyleUpdater.PARAM_REG = new RegExp(/^[0-9.]{1,99}/);
     StyleUpdater.UNIT_REG = new RegExp(/[^0-9.]./);
     return StyleUpdater;

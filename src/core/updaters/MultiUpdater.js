@@ -74,6 +74,10 @@ var MultiUpdater = /** @class */ (function () {
             updater.complete();
         }
     };
+    MultiUpdater.prototype.toString = function () {
+        var updater = this._updaters[0];
+        return updater ? updater.toString() : "";
+    };
     return MultiUpdater;
 }());
 export { MultiUpdater };

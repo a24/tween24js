@@ -44,6 +44,14 @@ var ObjectUpdater = /** @class */ (function () {
     };
     ObjectUpdater.prototype.complete = function () {
     };
+    ObjectUpdater.prototype.toString = function () {
+        var str = "";
+        for (var _i = 0, _a = this._key; _i < _a.length; _i++) {
+            var key = _a[_i];
+            str += key + ":" + this._param[key] + " ";
+        }
+        return str.trim();
+    };
     return ObjectUpdater;
 }());
 export { ObjectUpdater };

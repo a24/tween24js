@@ -23,7 +23,11 @@ export class ParamUpdater {
 	update(progress:number):number {
 		this._value = this._start + this._delta * progress;
 		return this._value;
-	}	
+	}
+	
+	toString():string {
+		return `${this._key}:${this._target}`
+	}
 }
 
 export default ParamUpdater;

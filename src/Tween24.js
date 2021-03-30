@@ -11,7 +11,7 @@ import ClassUtil from "./utils/ClassUtil";
 import HTMLUtil from "./utils/HTMLUtil";
 var Tween24 = /** @class */ (function () {
     function Tween24() {
-        // Common
+        // Tween param
         this._singleTarget = null;
         this._multiTarget = null;
         this._easing = null;
@@ -20,6 +20,11 @@ var Tween24 = /** @class */ (function () {
         this._delayTime = NaN;
         this._startTime = NaN;
         this._progress = 0;
+        this._debugMode = false;
+        this._numLayers = 0;
+        this._serialNumber = 0;
+        this._tweenId = "";
+        this._targetString = "";
         // Updater
         this._objectUpdater = null;
         this._objectMultiUpdater = null;
@@ -76,10 +81,16 @@ var Tween24 = /** @class */ (function () {
     };
     Tween24.prototype._play = function () {
         var _a;
-        this.debugLog(this._type + " play");
-        if (!this._isRoot)
+        if (this._isRoot) {
+            this._numLayers = 0;
+        }
+        else {
             this._root = ((_a = this._parent) === null || _a === void 0 ? void 0 : _a._root) || this._parent;
+            this._numLayers = this._parent ? this._parent._numLayers + 1 : 1;
+            // console.log(this._numLayers)
+        }
         this._startTime = Ticker24.getTime() + this._delayTime * 1000;
+        this._debugLog("play");
     };
     Tween24.prototype._resume = function () {
         var nowTime = Ticker24.getTime();
@@ -189,13 +200,13 @@ var Tween24 = /** @class */ (function () {
             if (this._inited == false) {
                 this._inited = true;
                 switch (this._type) {
-                    case Tween24.TYPE_SERIAL:
+                    case Tween24._TYPE_SERIAL:
                         if (this._firstTween) {
                             (_a = this._playingChildTween) === null || _a === void 0 ? void 0 : _a.push(this._firstTween);
                             this._firstTween._play();
                         }
                         break;
-                    case Tween24.TYPE_PARALLEL:
+                    case Tween24._TYPE_PARALLEL:
                         if (this._childTween) {
                             for (var _i = 0, _d = this._childTween; _i < _d.length; _i++) {
                                 var tween = _d[_i];
@@ -248,8 +259,8 @@ var Tween24 = /** @class */ (function () {
             // Complete
             if (this._progress >= 1) {
                 // Func
-                if (this._type == Tween24.TYPE_FUNC) {
-                    this._functionExecute(Tween24.TYPE_FUNC);
+                if (this._type == Tween24._TYPE_FUNC) {
+                    this._functionExecute(Tween24._TYPE_FUNC);
                 }
                 // End
                 this._complete();
@@ -257,7 +268,7 @@ var Tween24 = /** @class */ (function () {
         }
     };
     Tween24.prototype._complete = function () {
-        this.debugLog(this._type + " complete");
+        this._debugLog("complete");
         this._tweenStop();
         if (this._parent)
             this._parent._completeChildTween(this);
@@ -274,7 +285,7 @@ var Tween24 = /** @class */ (function () {
         ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
     };
     Tween24.prototype._completeChildTween = function (tween) {
-        this.debugLog(this._type + " completeChildTween");
+        // this._debugLog("completeChildTween");
         this._numCompleteChildren++;
         if (this._numChildren == this._numCompleteChildren) {
             this._complete();
@@ -441,6 +452,21 @@ var Tween24 = /** @class */ (function () {
      * @memberof Tween24
      */
     Tween24.prototype.fps = function (fps) { this.__fps = fps; return this; };
+    /**
+     * トゥイーンのデバッグモードを設定します。
+     * デバッグモードをONにすると、トゥイーンの動作状況がコンソールに表示されます。
+     * @param {boolean} flag デバッグモードを使用するか
+     * @return {Tween24}
+     * @memberof Tween24
+     */
+    Tween24.prototype.debug = function (flag) { this._debugMode = flag; return this; };
+    /**
+     * トゥイーンのIDを設定します。
+     * @param {string} id トゥイーンのID
+     * @return {Tween24}
+     * @memberof Tween24
+     */
+    Tween24.prototype.id = function (id) { this._tweenId = id; return this; };
     // ------------------------------------------
     //
     // Tween Callback
@@ -613,7 +639,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.tween = function (target, time, easing, params) {
         if (easing === void 0) { easing = null; }
         if (params === void 0) { params = null; }
-        return new Tween24()._createChildTween(Tween24.TYPE_TWEEN, target, time, easing, params);
+        return new Tween24()._createChildTween(Tween24._TYPE_TWEEN, target, time, easing, params);
     };
     /**
      * プロパティを設定します。
@@ -625,7 +651,7 @@ var Tween24 = /** @class */ (function () {
     */
     Tween24.prop = function (target, params) {
         if (params === void 0) { params = null; }
-        return new Tween24()._createChildTween(Tween24.TYPE_PROP, target, 0, null, params);
+        return new Tween24()._createChildTween(Tween24._TYPE_PROP, target, 0, null, params);
     };
     /**
      * トゥイーンを待機します。
@@ -635,7 +661,7 @@ var Tween24 = /** @class */ (function () {
      * @memberof Tween24
      */
     Tween24.wait = function (time) {
-        return new Tween24()._createChildTween(Tween24.TYPE_WAIT, null, time, null, null);
+        return new Tween24()._createChildTween(Tween24._TYPE_WAIT, null, time, null, null);
     };
     /**
      * 関数を実行します。
@@ -651,7 +677,7 @@ var Tween24 = /** @class */ (function () {
         for (var _i = 2; _i < arguments.length; _i++) {
             args[_i - 2] = arguments[_i];
         }
-        return new Tween24()._createActionTween(Tween24.TYPE_FUNC, scope, func, args);
+        return new Tween24()._createActionTween(Tween24._TYPE_FUNC, scope, func, args);
     };
     /**
      * 順番に実行するトゥイーンを設定します。
@@ -665,7 +691,7 @@ var Tween24 = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             childTween[_i] = arguments[_i];
         }
-        return new Tween24()._createContainerTween(Tween24.TYPE_SERIAL, childTween);
+        return new Tween24()._createContainerTween(Tween24._TYPE_SERIAL, childTween);
     };
     /**
      * 並列に実行するトゥイーンを設定します。
@@ -679,7 +705,7 @@ var Tween24 = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             childTween[_i] = arguments[_i];
         }
-        return new Tween24()._createContainerTween(Tween24.TYPE_PARALLEL, childTween);
+        return new Tween24()._createContainerTween(Tween24._TYPE_PARALLEL, childTween);
     };
     Tween24.prototype._createChildTween = function (type, target, time, easing, params) {
         this._type = type;
@@ -690,8 +716,10 @@ var Tween24 = /** @class */ (function () {
         this._inited = false;
         this._allUpdaters = [];
         this._isContainerTween = false;
+        this._createCommon();
         if (Array.isArray(target)) {
             if (ClassUtil.isString(target[0])) {
+                this._targetString = "[" + target.toString() + "]";
                 this._multiTarget = [];
                 for (var _i = 0, target_1 = target; _i < target_1.length; _i++) {
                     var t = target_1[_i];
@@ -701,6 +729,7 @@ var Tween24 = /** @class */ (function () {
                 this._allUpdaters.push(this._transformMultiUpdater);
             }
             else if (target[0] instanceof HTMLElement) {
+                this._targetString = "[HTMLElements]";
                 this._multiTarget = target;
                 this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
                 this._allUpdaters.push(this._transformMultiUpdater);
@@ -723,6 +752,7 @@ var Tween24 = /** @class */ (function () {
                 this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
                 this._allUpdaters.push(this._transformMultiUpdater);
             }
+            this._targetString = "" + target;
         }
         else {
             this._singleTarget = target;
@@ -746,9 +776,10 @@ var Tween24 = /** @class */ (function () {
         this._numChildren = childTween.length;
         this._numCompleteChildren = 0;
         this._isContainerTween = true;
+        this._createCommon();
         var prev = this._firstTween;
         var next;
-        if (type == Tween24.TYPE_SERIAL) {
+        if (type == Tween24._TYPE_SERIAL) {
             for (var i = 0; i < this._numChildren; i++) {
                 next = this._childTween[i + 1];
                 prev._next = next;
@@ -771,10 +802,14 @@ var Tween24 = /** @class */ (function () {
         this._startTime = 0;
         this._inited = false;
         this._isContainerTween = false;
+        this._createCommon();
         switch (this._type) {
-            case Tween24.TYPE_FUNC: this._setFunctionExecute(Tween24.TYPE_FUNC, scope, func, args);
+            case Tween24._TYPE_FUNC: this._setFunctionExecute(Tween24._TYPE_FUNC, scope, func, args);
         }
         return this;
+    };
+    Tween24.prototype._createCommon = function () {
+        this._serialNumber = ++Tween24._numCreateTween;
     };
     // ------------------------------------------
     //
@@ -802,21 +837,59 @@ var Tween24 = /** @class */ (function () {
         if (easing === void 0) { easing = Ease24._Linear; }
         Tween24._defaultEasing = easing;
     };
-    Tween24.prototype.trace = function (value) {
-        console.log(value);
+    /**
+     * トゥイーン全体のデバッグモードを設定します。
+     * デバッグモードをONにすると、トゥイーンの動作状況がコンソールに表示されます。
+     * @static
+     * @param {boolean} flag デバッグモードを使用するか
+     * @memberof Tween24
+     */
+    Tween24.debugMode = function (flag) {
+        Tween24._debugMode = flag;
     };
-    Tween24.prototype.debugLog = function (message) {
-        this.trace("[Tween24 " + message + "]");
+    Tween24.prototype.toString = function () {
+        return "Tween24 " + this.getTweenTypeString() + " " + this.getTweenParamString();
+    };
+    Tween24.prototype._debugLog = function (message) {
+        var _a, _b;
+        if (Tween24._debugMode || this._debugMode || ((_a = this._root) === null || _a === void 0 ? void 0 : _a._debugMode) || ((_b = this._parent) === null || _b === void 0 ? void 0 : _b._debugMode)) {
+            var margin = "  ".repeat(this._numLayers);
+            console.log("" + margin + this.getTweenTypeString() + " " + message + " " + this.getTweenParamString());
+        }
+    };
+    Tween24.prototype.getTweenTypeString = function () {
+        var type = "";
+        type += this._parent ? this._parent._type + "/" : "";
+        type += this._type;
+        return "[" + type + "]";
+    };
+    Tween24.prototype.getTweenParamString = function () {
+        var param = "";
+        param += this._targetString ? "target:" + this._targetString : ("id:" + (this._tweenId || this._serialNumber));
+        switch (this._type) {
+            case Tween24._TYPE_TWEEN:
+            case Tween24._TYPE_WAIT:
+                param += " time:" + this._time + " ";
+        }
+        if (this._allUpdaters) {
+            for (var _i = 0, _a = this._allUpdaters; _i < _a.length; _i++) {
+                var updater = _a[_i];
+                param += updater.toString() + " ";
+            }
+        }
+        return "{" + param.trim() + "}";
     };
     // Static
     Tween24.VERSION = "0.3.0";
-    Tween24.TYPE_TWEEN = "tween";
-    Tween24.TYPE_PROP = "prop";
-    Tween24.TYPE_WAIT = "wait";
-    Tween24.TYPE_SERIAL = "serial";
-    Tween24.TYPE_PARALLEL = "parallel";
-    Tween24.TYPE_FUNC = "func";
+    Tween24._TYPE_TWEEN = "tween";
+    Tween24._TYPE_PROP = "prop";
+    Tween24._TYPE_WAIT = "wait";
+    Tween24._TYPE_SERIAL = "serial";
+    Tween24._TYPE_PARALLEL = "parallel";
+    Tween24._TYPE_FUNC = "func";
     Tween24._defaultEasing = Ease24._Linear;
+    Tween24._debugMode = false;
+    Tween24._numCreateTween = 0;
     return Tween24;
 }());
 export default Tween24;

@@ -15,6 +15,9 @@ var ParamUpdater = /** @class */ (function () {
         this._value = this._start + this._delta * progress;
         return this._value;
     };
+    ParamUpdater.prototype.toString = function () {
+        return this._key + ":" + this._target;
+    };
     return ParamUpdater;
 }());
 export { ParamUpdater };

@@ -115,6 +115,24 @@ var TransformUpdater = /** @class */ (function () {
     TransformUpdater.prototype.complete = function () {
         TransformUpdater._chache.delete(this._target);
     };
+    TransformUpdater.prototype.toString = function () {
+        var str = "";
+        if (this._x)
+            str += this._x.toString() + " ";
+        if (this._y)
+            str += this._y.toString() + " ";
+        if (this._scaleX)
+            str += this._scaleX.toString() + " ";
+        if (this._scaleY)
+            str += this._scaleY.toString() + " ";
+        if (this._skewX)
+            str += this._skewX.toString() + " ";
+        if (this._skewY)
+            str += this._skewY.toString() + " ";
+        if (this._rotation)
+            str += this._rotation.toString() + " ";
+        return str.trim();
+    };
     return TransformUpdater;
 }());
 export { TransformUpdater };

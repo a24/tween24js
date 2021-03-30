@@ -57,6 +57,13 @@ export class ObjectUpdater implements Updater {
 
 	complete() {
 	}
+
+	toString():string {
+		let str:string = "";
+		for (const key of this._key)
+			str += key + ":" + this._param[key] + " ";
+		return str.trim();
+	}
 }
 
 export default ObjectUpdater;

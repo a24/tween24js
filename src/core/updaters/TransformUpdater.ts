@@ -121,6 +121,18 @@ export class TransformUpdater implements Updater {
 	complete() {
 		TransformUpdater._chache.delete(this._target);
 	}
+
+	toString():string {
+		let str:string = "";
+		if (this._x       ) str += this._x       .toString() + " ";
+		if (this._y       ) str += this._y       .toString() + " ";
+		if (this._scaleX  ) str += this._scaleX  .toString() + " ";
+		if (this._scaleY  ) str += this._scaleY  .toString() + " ";
+		if (this._skewX   ) str += this._skewX   .toString() + " ";
+		if (this._skewY   ) str += this._skewY   .toString() + " ";
+		if (this._rotation) str += this._rotation.toString() + " ";
+		return str.trim();
+	}
 }
 
 export default TransformUpdater;

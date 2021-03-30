@@ -14,31 +14,41 @@ import HTMLUtil         from "./utils/HTMLUtil";
 class Tween24 {
 
 	// Static
-	static readonly VERSION      :string = "0.3.0";
-	static readonly TYPE_TWEEN   :string = "tween";
-	static readonly TYPE_PROP    :string = "prop";
-	static readonly TYPE_WAIT    :string = "wait";
-	static readonly TYPE_SERIAL  :string = "serial";
-	static readonly TYPE_PARALLEL:string = "parallel";
-	static readonly TYPE_FUNC    :string = "func";
+	static readonly VERSION:string = "0.3.0";
+
+	private static readonly _TYPE_TWEEN   :string = "tween";
+	private static readonly _TYPE_PROP    :string = "prop";
+	private static readonly _TYPE_WAIT    :string = "wait";
+	private static readonly _TYPE_SERIAL  :string = "serial";
+	private static readonly _TYPE_PARALLEL:string = "parallel";
+	private static readonly _TYPE_FUNC    :string = "func";
 
 	static ticker:Ticker24;
 	static ease  :Ease24;
 
 	private static _playingTweens:Tween24[];
 	private static _playingTweensByTarget:Map<any, Tween24[]>;
-    private static _defaultEasing:Function = Ease24._Linear;
 
-	// Common
+    private static _defaultEasing:Function = Ease24._Linear;
+    private static _debugMode:boolean = false;
+    private static _numCreateTween:number = 0;
+
+	// Tween param
 	private _singleTarget:any      |null = null;
 	private _multiTarget :any[]    |null = null;
-	private _easing       :Function|null = null;
-	private _type         :string        = "";
+	private _easing      :Function |null = null;
+	private _type        :string         = "";
 
-	private _time     :number = NaN;
-	private _delayTime:number = NaN;
-	private _startTime:number = NaN;
-    private _progress :number = 0;
+	private _time     :number  = NaN;
+	private _delayTime:number  = NaN;
+	private _startTime:number  = NaN;
+    private _progress :number  = 0;
+
+    private _debugMode   :boolean = false;
+    private _numLayers   :number  = 0;
+    private _serialNumber:number  = 0;
+    private _tweenId     :string  = "";
+    private _targetString:string  = "";
 
 	// Updater
 	private _objectUpdater        :ObjectUpdater   |null = null;
@@ -107,10 +117,16 @@ class Tween24 {
 	}
 
 	private _play() {
-		this.debugLog(this._type + " play");
-
-        if (!this._isRoot) this._root = this._parent?._root || this._parent;
+        if (this._isRoot) {
+            this._numLayers = 0;
+        }
+        else {
+            this._root = this._parent?._root || this._parent;
+            this._numLayers = this._parent ? this._parent._numLayers + 1 : 1;
+            // console.log(this._numLayers)
+        }
         this._startTime = Ticker24.getTime() + this._delayTime * 1000;
+		this._debugLog("play");
 	}
 
     private _resume() {
@@ -211,13 +227,13 @@ class Tween24 {
 			if (this._inited == false) {
 				this._inited = true;
 				switch (this._type) {
-					case Tween24.TYPE_SERIAL:
+					case Tween24._TYPE_SERIAL:
 						if (this._firstTween) {
 							this._playingChildTween?.push(this._firstTween);
 							this._firstTween._play();
 						}
 						break;
-					case Tween24.TYPE_PARALLEL:
+					case Tween24._TYPE_PARALLEL:
                         if (this._childTween) {
                             for (const tween of this._childTween) {
 								this._playingChildTween?.push(tween);
@@ -269,8 +285,8 @@ class Tween24 {
 			// Complete
 			if (this._progress >= 1) {
 				// Func
-				if (this._type == Tween24.TYPE_FUNC) {
-					this._functionExecute(Tween24.TYPE_FUNC);
+				if (this._type == Tween24._TYPE_FUNC) {
+					this._functionExecute(Tween24._TYPE_FUNC);
 				}
 
 				// End
@@ -280,7 +296,7 @@ class Tween24 {
 	}
 
 	private _complete() {
-		this.debugLog(this._type + " complete");
+		this._debugLog("complete");
 		this._tweenStop();
 		if (this._parent) this._parent._completeChildTween(this);
 		this._functionExecute(Tween24Event.COMPLATE);
@@ -297,7 +313,7 @@ class Tween24 {
 	}
 
 	private _completeChildTween(tween:Tween24) {
-		this.debugLog(this._type + " completeChildTween");
+		// this._debugLog("completeChildTween");
 		this._numCompleteChildren ++;
         if (this._numChildren == this._numCompleteChildren) {
             this._complete();
@@ -483,6 +499,23 @@ class Tween24 {
      */
     fps (fps:number): Tween24 { this.__fps = fps; return this; }
 
+    /**
+     * トゥイーンのデバッグモードを設定します。
+     * デバッグモードをONにすると、トゥイーンの動作状況がコンソールに表示されます。
+     * @param {boolean} flag デバッグモードを使用するか
+     * @return {Tween24}
+     * @memberof Tween24
+     */
+    debug (flag:boolean): Tween24 { this._debugMode = flag; return this; }
+
+    /**
+     * トゥイーンのIDを設定します。
+     * @param {string} id トゥイーンのID
+     * @return {Tween24}
+     * @memberof Tween24
+     */
+    id (id:string): Tween24 { this._tweenId = id; return this; }
+
 
 	// ------------------------------------------
 	//
@@ -620,7 +653,7 @@ class Tween24 {
      * @memberof Tween24
      */
     static tween(target: any, time: number, easing: Function|null = null, params: { [key: string]: number } | null = null): Tween24 {
-        return new Tween24()._createChildTween(Tween24.TYPE_TWEEN, target, time, easing, params);
+        return new Tween24()._createChildTween(Tween24._TYPE_TWEEN, target, time, easing, params);
     }
 
     /**
@@ -632,7 +665,7 @@ class Tween24 {
      * @memberof Tween24
     */
     static prop(target: any, params: { [key: string]: number } | null = null): Tween24 {
-        return new Tween24()._createChildTween(Tween24.TYPE_PROP, target, 0, null, params);
+        return new Tween24()._createChildTween(Tween24._TYPE_PROP, target, 0, null, params);
     }
     /**
      * トゥイーンを待機します。
@@ -642,7 +675,7 @@ class Tween24 {
      * @memberof Tween24
      */
     static wait(time: number): Tween24 {
-        return new Tween24()._createChildTween(Tween24.TYPE_WAIT, null, time, null, null);
+        return new Tween24()._createChildTween(Tween24._TYPE_WAIT, null, time, null, null);
     }
 
     /**
@@ -655,7 +688,7 @@ class Tween24 {
      * @memberof Tween24
      */
     static func(scope: any, func: Function, ...args: any[]): Tween24 {
-        return new Tween24()._createActionTween(Tween24.TYPE_FUNC, scope, func, args);
+        return new Tween24()._createActionTween(Tween24._TYPE_FUNC, scope, func, args);
     }
 
     /**
@@ -666,7 +699,7 @@ class Tween24 {
      * @memberof Tween24
      */
     static serial(...childTween: Tween24[]): Tween24 {
-        return new Tween24()._createContainerTween(Tween24.TYPE_SERIAL, childTween);
+        return new Tween24()._createContainerTween(Tween24._TYPE_SERIAL, childTween);
     }
 
     /**
@@ -677,7 +710,7 @@ class Tween24 {
      * @memberof Tween24
      */
     static parallel(...childTween: Tween24[]): Tween24 {
-        return new Tween24()._createContainerTween(Tween24.TYPE_PARALLEL, childTween);
+        return new Tween24()._createContainerTween(Tween24._TYPE_PARALLEL, childTween);
     }
     
 	private _createChildTween(type:string, target:any, time:number, easing:Function|null, params:{[key:string]:number}|null): Tween24 {
@@ -690,8 +723,11 @@ class Tween24 {
 		this._allUpdaters = [];
 		this._isContainerTween = false;
 
+        this._createCommon();
+
 		if (Array.isArray(target)) {
 			if (ClassUtil.isString(target[0])) {
+                this._targetString = `[${target.toString()}]`;
 				this._multiTarget = [];
 				for (const t of target)
 					this._multiTarget = this._multiTarget.concat(HTMLUtil.getHTMLElement(t));
@@ -699,6 +735,7 @@ class Tween24 {
 				this._allUpdaters.push(this._transformMultiUpdater);
 			}
 			else if (target[0] instanceof HTMLElement) {
+                this._targetString = `[HTMLElements]`;
 				this._multiTarget = target;
 				this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
 				this._allUpdaters.push(this._transformMultiUpdater);
@@ -721,6 +758,7 @@ class Tween24 {
 				this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
 				this._allUpdaters.push(this._transformMultiUpdater);
 			}
+            this._targetString = `${target}`;
 		}
 		else {
 			this._singleTarget = target;
@@ -748,9 +786,11 @@ class Tween24 {
 		this._numCompleteChildren = 0;
 		this._isContainerTween    = true;
 
+        this._createCommon();
+
 		var prev = this._firstTween;
 		var next;
-		if (type == Tween24.TYPE_SERIAL) {
+		if (type == Tween24._TYPE_SERIAL) {
 			for (var i = 0; i < this._numChildren; i++) {
 				next = this._childTween[i + 1];
 				prev._next = next;
@@ -774,11 +814,17 @@ class Tween24 {
 		this._inited    = false;
 		this._isContainerTween = false;
 
+        this._createCommon();
+
 		switch (this._type) {
-			case Tween24.TYPE_FUNC: this._setFunctionExecute(Tween24.TYPE_FUNC, scope, func, args);
+			case Tween24._TYPE_FUNC: this._setFunctionExecute(Tween24._TYPE_FUNC, scope, func, args);
 		}
 		return this;
 	}
+
+    private _createCommon() {
+        this._serialNumber = ++ Tween24._numCreateTween;
+    }
 
 
 	// ------------------------------------------
@@ -808,13 +854,50 @@ class Tween24 {
         Tween24._defaultEasing = easing;
     }
 
-	trace(value:any) {
-		console.log(value);
+    /**
+     * トゥイーン全体のデバッグモードを設定します。
+     * デバッグモードをONにすると、トゥイーンの動作状況がコンソールに表示されます。
+     * @static
+     * @param {boolean} flag デバッグモードを使用するか
+     * @memberof Tween24
+     */
+    static debugMode(flag:boolean) {
+        Tween24._debugMode = flag;
+    }
+
+    toString():string {
+        return `Tween24 ${this.getTweenTypeString()} ${this.getTweenParamString()}`
+    }
+
+	private _debugLog(message:any) {
+		if (Tween24._debugMode || this._debugMode || this._root?._debugMode || this._parent?._debugMode) {
+            const margin:string = "  ".repeat(this._numLayers);
+            console.log(`${margin}${this.getTweenTypeString()} ${message} ${this.getTweenParamString()}`);
+        }
 	}
 
-	debugLog(message:any) {
-		this.trace("[Tween24 " + message + "]")
-	}
+    private getTweenTypeString():string {
+        let type:string = "";
+        type += this._parent ? `${this._parent._type}/` : "";
+        type += this._type;
+        return `[${type}]`;
+    }
+
+    private getTweenParamString():string {
+        let param:string = "";
+        param += this._targetString ? `target:${this._targetString}` : (`id:${this._tweenId || this._serialNumber}`);
+        switch (this._type) {
+            case Tween24._TYPE_TWEEN :
+            case Tween24._TYPE_WAIT :
+                param += " time:" + this._time + " ";
+        }
+        if (this._allUpdaters) {
+            for (const updater of this._allUpdaters) {
+                param += updater.toString() + " ";
+            }
+        }
+        return `{${param.trim()}}`;
+    }
 }
 
 export default Tween24;

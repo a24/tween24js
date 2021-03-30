@@ -68,6 +68,13 @@ export class StyleUpdater implements Updater {
 
 	complete() {
 	}
+
+	toString():string {
+		let str:string = "";
+		for (const key of this._key)
+			str += this._param[key].toString() + " ";
+		return str.trim();
+	}
 }
 
 export default StyleUpdater;

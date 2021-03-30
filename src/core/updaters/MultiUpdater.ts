@@ -76,6 +76,11 @@ export class MultiUpdater implements Updater {
 			updater.complete();
 		}
 	}
+
+	toString():string {
+		const updater:Updater = this._updaters[0];
+		return updater ? updater.toString() : "";
+	}
 }
 
 export default MultiUpdater;

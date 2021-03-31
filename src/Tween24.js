@@ -38,6 +38,7 @@ var Tween24 = /** @class */ (function () {
         this._parent = null;
         this._next = null;
         // Status
+        this._useStyle = false;
         this._inited = false;
         this._isRoot = false;
         this._isPaused = false;
@@ -347,14 +348,14 @@ var Tween24 = /** @class */ (function () {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    Tween24.prototype.alpha = function (value) { return this._setPropety("alpha", value); };
+    Tween24.prototype.alpha = function (value) { return this._useStyle ? this._setStyle("opacity", value) : this._setPropety("alpha", value); };
     /**
      * 目標とする透明度を設定します。
      * @param {number} value 透明度
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    Tween24.prototype.opacity = function (value) { return this._setPropety("opacity", value); };
+    Tween24.prototype.opacity = function (value) { return this._useStyle ? this._setStyle("opacity", value) : this._setPropety("opacity", value); };
     /**
      * 目標とする水平スケールを設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
@@ -719,6 +720,7 @@ var Tween24 = /** @class */ (function () {
         this._createCommon();
         if (Array.isArray(target)) {
             if (ClassUtil.isString(target[0])) {
+                this._useStyle = true;
                 this._targetString = "[" + target.toString() + "]";
                 this._multiTarget = [];
                 for (var _i = 0, target_1 = target; _i < target_1.length; _i++) {
@@ -729,6 +731,7 @@ var Tween24 = /** @class */ (function () {
                 this._allUpdaters.push(this._transformMultiUpdater);
             }
             else if (target[0] instanceof HTMLElement) {
+                this._useStyle = true;
                 this._targetString = "[HTMLElements]";
                 this._multiTarget = target;
                 this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
@@ -752,9 +755,11 @@ var Tween24 = /** @class */ (function () {
                 this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
                 this._allUpdaters.push(this._transformMultiUpdater);
             }
+            this._useStyle = true;
             this._targetString = "" + target;
         }
         else if (target instanceof HTMLElement) {
+            this._useStyle = true;
             this._singleTarget = target;
             this._transformUpdater = new TransformUpdater(this._singleTarget);
             this._allUpdaters.push(this._transformUpdater);

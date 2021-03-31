@@ -65,6 +65,7 @@ class Tween24 {
 	private _next  :Tween24|null = null;
 
     // Status
+    private _useStyle:boolean = false;
 	private _inited  :boolean = false;
 	private _isRoot  :boolean = false;
     private _isPaused:boolean = false;
@@ -380,7 +381,7 @@ class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-	alpha (value: number): Tween24 { return this._setPropety("alpha", value); }
+	alpha (value: number): Tween24 { return this._useStyle ? this._setStyle("opacity", value) : this._setPropety("alpha", value); }
     
     /**
      * 目標とする透明度を設定します。
@@ -388,7 +389,7 @@ class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-	opacity (value: number): Tween24 { return this._setPropety("opacity", value); }
+	opacity (value: number): Tween24 { return this._useStyle ? this._setStyle("opacity", value) : this._setPropety("opacity", value); }
 
     /**
      * 目標とする水平スケールを設定します。
@@ -726,6 +727,7 @@ class Tween24 {
 
 		if (Array.isArray(target)) {
 			if (ClassUtil.isString(target[0])) {
+                this._useStyle = true;
                 this._targetString = `[${target.toString()}]`;
 				this._multiTarget = [];
 				for (const t of target)
@@ -734,6 +736,7 @@ class Tween24 {
 				this._allUpdaters.push(this._transformMultiUpdater);
 			}
 			else if (target[0] instanceof HTMLElement) {
+                this._useStyle = true;
                 this._targetString = `[HTMLElements]`;
 				this._multiTarget = target;
 				this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
@@ -757,9 +760,11 @@ class Tween24 {
 				this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
 				this._allUpdaters.push(this._transformMultiUpdater);
 			}
+            this._useStyle = true;
             this._targetString = `${target}`;
 		}
         else if (target instanceof HTMLElement) {
+            this._useStyle = true;
             this._singleTarget = target;
             this._transformUpdater = new TransformUpdater(this._singleTarget);
             this._allUpdaters.push(this._transformUpdater);

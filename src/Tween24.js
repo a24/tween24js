@@ -467,6 +467,39 @@ var Tween24 = /** @class */ (function () {
      * @memberof Tween24
      */
     Tween24.prototype.id = function (id) { this._tweenId = id; return this; };
+    Tween24.prototype._setPropety = function (key, value) {
+        if (this._singleTarget) {
+            if (this._objectUpdater)
+                this._objectUpdater.addProp(key, value);
+            else if (this._transformUpdater)
+                this._transformUpdater.addProp(key, value);
+        }
+        else if (this._multiTarget) {
+            if (this._objectMultiUpdater)
+                this._objectMultiUpdater.addProp(key, value);
+            else if (this._transformMultiUpdater)
+                this._transformMultiUpdater.addProp(key, value);
+        }
+        return this;
+    };
+    Tween24.prototype._setStyle = function (name, value) {
+        var _a, _b;
+        if (this._singleTarget) {
+            if (!this._styleUpdater) {
+                this._styleUpdater = new StyleUpdater(this._singleTarget);
+                (_a = this._allUpdaters) === null || _a === void 0 ? void 0 : _a.push(this._styleUpdater);
+            }
+            this._styleUpdater.addPropStr(name, value);
+        }
+        else if (this._multiTarget) {
+            if (!this._styleMultiUpdater) {
+                this._styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.name);
+                (_b = this._allUpdaters) === null || _b === void 0 ? void 0 : _b.push(this._styleMultiUpdater);
+            }
+            this._styleMultiUpdater.addPropStr(name, value);
+        }
+        return this;
+    };
     // ------------------------------------------
     //
     // Tween Callback
@@ -576,39 +609,6 @@ var Tween24 = /** @class */ (function () {
             args[_i - 2] = arguments[_i];
         }
         return this._setFunctionExecute(Tween24Event.COMPLATE, scope, func, args);
-    };
-    Tween24.prototype._setPropety = function (key, value) {
-        if (this._singleTarget) {
-            if (this._objectUpdater)
-                this._objectUpdater.addProp(key, value);
-            else if (this._transformUpdater)
-                this._transformUpdater.addProp(key, value);
-        }
-        else if (this._multiTarget) {
-            if (this._objectMultiUpdater)
-                this._objectMultiUpdater.addProp(key, value);
-            else if (this._transformMultiUpdater)
-                this._transformMultiUpdater.addProp(key, value);
-        }
-        return this;
-    };
-    Tween24.prototype._setStyle = function (name, value) {
-        var _a, _b;
-        if (this._singleTarget) {
-            if (!this._styleUpdater) {
-                this._styleUpdater = new StyleUpdater(this._singleTarget);
-                (_a = this._allUpdaters) === null || _a === void 0 ? void 0 : _a.push(this._styleUpdater);
-            }
-            this._styleUpdater.addPropStr(name, value);
-        }
-        else if (this._multiTarget) {
-            if (!this._styleMultiUpdater) {
-                this._styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.name);
-                (_b = this._allUpdaters) === null || _b === void 0 ? void 0 : _b.push(this._styleMultiUpdater);
-            }
-            this._styleMultiUpdater.addPropStr(name, value);
-        }
-        return this;
     };
     Tween24.prototype._setFunctionExecute = function (key, scope, func, args) {
         this._functionExecuters || (this._functionExecuters = {});
@@ -753,6 +753,11 @@ var Tween24 = /** @class */ (function () {
                 this._allUpdaters.push(this._transformMultiUpdater);
             }
             this._targetString = "" + target;
+        }
+        else if (target instanceof HTMLElement) {
+            this._singleTarget = target;
+            this._transformUpdater = new TransformUpdater(this._singleTarget);
+            this._allUpdaters.push(this._transformUpdater);
         }
         else {
             this._singleTarget = target;

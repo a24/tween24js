@@ -516,6 +516,35 @@ class Tween24 {
      */
     id (id:string): Tween24 { this._tweenId = id; return this; }
 
+	private _setPropety(key:string, value:number):Tween24 {
+		if (this._singleTarget) {
+			if      (this._objectUpdater   ) this._objectUpdater   .addProp(key, value);
+			else if (this._transformUpdater) this._transformUpdater.addProp(key, value);
+		}
+		else if (this._multiTarget) {
+			if      (this._objectMultiUpdater   ) this._objectMultiUpdater   .addProp(key, value);
+			else if (this._transformMultiUpdater) this._transformMultiUpdater.addProp(key, value);
+		}
+		return this;
+	}
+
+	private _setStyle(name: string, value: number|string):Tween24 {
+		if (this._singleTarget) {
+			if (!this._styleUpdater) {
+				this._styleUpdater = new StyleUpdater(this._singleTarget);
+				this._allUpdaters?.push(this._styleUpdater);
+			}
+			this._styleUpdater.addPropStr(name, value as string);
+		}
+		else if (this._multiTarget) {
+			if (!this._styleMultiUpdater) {
+				this._styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.name);
+				this._allUpdaters?.push(this._styleMultiUpdater);
+			}
+			this._styleMultiUpdater.addPropStr(name, value as string);
+		}
+		return this;
+	}
 
 	// ------------------------------------------
 	//
@@ -592,36 +621,6 @@ class Tween24 {
      * @memberof Tween24
      */
 	onComplate (scope:any, func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.COMPLATE, scope, func, args); }
-
-	private _setPropety(key:string, value:number):Tween24 {
-		if (this._singleTarget) {
-			if      (this._objectUpdater   ) this._objectUpdater   .addProp(key, value);
-			else if (this._transformUpdater) this._transformUpdater.addProp(key, value);
-		}
-		else if (this._multiTarget) {
-			if      (this._objectMultiUpdater   ) this._objectMultiUpdater   .addProp(key, value);
-			else if (this._transformMultiUpdater) this._transformMultiUpdater.addProp(key, value);
-		}
-		return this;
-	}
-
-	private _setStyle(name: string, value: number|string):Tween24 {
-		if (this._singleTarget) {
-			if (!this._styleUpdater) {
-				this._styleUpdater = new StyleUpdater(this._singleTarget);
-				this._allUpdaters?.push(this._styleUpdater);
-			}
-			this._styleUpdater.addPropStr(name, value as string);
-		}
-		else if (this._multiTarget) {
-			if (!this._styleMultiUpdater) {
-				this._styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.name);
-				this._allUpdaters?.push(this._styleMultiUpdater);
-			}
-			this._styleMultiUpdater.addPropStr(name, value as string);
-		}
-		return this;
-	}
 
 	private _setFunctionExecute(key:string, scope:any, func:Function, args:any[]):Tween24 {
 		this._functionExecuters ||= {};
@@ -760,6 +759,11 @@ class Tween24 {
 			}
             this._targetString = `${target}`;
 		}
+        else if (target instanceof HTMLElement) {
+            this._singleTarget = target;
+            this._transformUpdater = new TransformUpdater(this._singleTarget);
+            this._allUpdaters.push(this._transformUpdater);
+        }
 		else {
 			this._singleTarget = target;
 			this._objectUpdater = new ObjectUpdater(target);

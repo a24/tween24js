@@ -524,7 +524,7 @@ class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    debug (flag:boolean): Tween24 { this._debugMode = flag; return this; }
+    debug (flag:boolean = true): Tween24 { this._debugMode = flag; return this; }
 
     /**
      * トゥイーンのIDを設定します。
@@ -706,6 +706,17 @@ class Tween24 {
      */
     static func(scope: any, func: Function, ...args: any[]): Tween24 {
         return new Tween24()._createActionTween(Tween24._TYPE_FUNC, scope, func, args);
+    }
+    
+    /**
+     * console.log() を実行します。
+     * @static
+     * @param {...any[]} message コンソールに出力する内容
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static log(...message:any[]): Tween24 {
+        return new Tween24()._createActionTween(Tween24._TYPE_FUNC, window, window.console.log, message);
     }
 
     /**

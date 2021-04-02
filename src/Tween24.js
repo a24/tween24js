@@ -475,7 +475,11 @@ var Tween24 = /** @class */ (function () {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    Tween24.prototype.debug = function (flag) { this._debugMode = flag; return this; };
+    Tween24.prototype.debug = function (flag) {
+        if (flag === void 0) { flag = true; }
+        this._debugMode = flag;
+        return this;
+    };
     /**
      * トゥイーンのIDを設定します。
      * @param {string} id トゥイーンのID
@@ -694,6 +698,20 @@ var Tween24 = /** @class */ (function () {
             args[_i - 2] = arguments[_i];
         }
         return new Tween24()._createActionTween(Tween24._TYPE_FUNC, scope, func, args);
+    };
+    /**
+     * console.log() を実行します。
+     * @static
+     * @param {...any[]} message コンソールに出力する内容
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.log = function () {
+        var message = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            message[_i] = arguments[_i];
+        }
+        return new Tween24()._createActionTween(Tween24._TYPE_FUNC, window, window.console.log, message);
     };
     /**
      * 順番に実行するトゥイーンを設定します。

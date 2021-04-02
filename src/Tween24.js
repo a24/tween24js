@@ -923,7 +923,7 @@ var Tween24 = /** @class */ (function () {
         return "{" + param.trim() + "}";
     };
     // Static
-    Tween24.VERSION = "0.3.0";
+    Tween24.VERSION = "0.7.0";
     Tween24._TYPE_TWEEN = "tween";
     Tween24._TYPE_PROP = "prop";
     Tween24._TYPE_WAIT = "wait";

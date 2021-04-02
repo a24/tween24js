@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Tween24 easing sample</title>
+    <script src="../dist/tween24.js"></script>
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+            font-family: "Helvetica Neue",
+                Arial,
+                "Hiragino Kaku Gothic ProN",
+                "Hiragino Sans",
+                Meiryo,
+                sans-serif;
+        }
+        body {
+            display:flex;
+            flex-flow: column;
+            justify-content:space-around;
+            height: 100vh;
+            font-size: 12px;
+            background-color: #e6e6e6;
+        }
+        section {
+            display:flex;
+            margin: 0 auto;
+            width: 960px;
+            height: 480px;
+            background-color: #F0F0F0;
+        }
+        ul {
+            display:flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            margin: 40px 0 0 0;
+        }
+        ul li {
+            display:flex;
+            font-size: 14px;
+            list-style: none;
+            width: 400px;
+            margin: 0 40px 40px 40px;
+            color: #fff;
+            background-color: #e0e0e0;
+        }
+        ul li p {
+            padding: 6px 6px;
+            width: 130px;
+            text-align: center;
+            background-color: #247570;
+        }
+        ul li div {
+            width: 30px;
+            height: 30px;
+            background-color: #3CC2B9;
+        }
+    </style>
+</head>
+<body>
+    <section>
+        <ul>
+            <li><p>_1_SineInOut</p><div id="box1" class="box"></div></li>
+            <li><p>_2_QuadInOut</p><div id="box2" class="box"></div></li>
+            <li><p>_3_CubicInOut</p><div id="box3" class="box"></div></li>
+            <li><p>_4_QuartInOut</p><div id="box4" class="box"></div></li>
+            <li><p>_5_QuintInOut</p><div id="box5" class="box"></div></li>
+            <li><p>_6_ExpoInOut</p><div id="box6" class="box"></div></li>
+            <li><p>_7_CircInOut</p><div id="box7" class="box"></div></li>
+            <li><p>_BounceOut</p><div id="box8" class="box"></div></li>
+            <li><p>_BackOut</p><div id="box9" class="box"></div></li>
+            <li><p>_BackOutWith(3)</p><div id="box10" class="box"></div></li>
+            <li><p>_ElasticOut</p><div id="box11" class="box"></div></li>
+            <li><p>_ElasticOutWith<br>(1, 0.00015)</p><div id="box12" class="box"></div></li>
+        </ul>
+    </section>
+
+    <script>
+        var tween = Tween24.serial(
+            Tween24.prop(".box").x(0),
+            Tween24.parallel(
+                Tween24.tween("#box1", 1.5, Ease24._1_SineInOut).x(230),
+                Tween24.tween("#box2", 1.5, Ease24._2_QuadInOut).x(230),
+                Tween24.tween("#box3", 1.5, Ease24._3_CubicInOut).x(230),
+                Tween24.tween("#box4", 1.5, Ease24._4_QuartInOut).x(230),
+                Tween24.tween("#box5", 1.5, Ease24._5_QuintInOut).x(230),
+                Tween24.tween("#box6", 1.5, Ease24._6_ExpoInOut).x(230),
+                Tween24.tween("#box7", 1.5, Ease24._7_CircInOut).x(230),
+                Tween24.tween("#box8", 1.5, Ease24._BounceOut).x(230),
+                Tween24.tween("#box9", 1.5, Ease24._BackOut).x(230),
+                Tween24.tween("#box10", 1.5, Ease24._BackOutWith(3)).x(230),
+                Tween24.tween("#box11", 1.5, Ease24._ElasticOut).x(230),
+                Tween24.tween("#box12", 1.5, Ease24._ElasticOutWith(1, 0.00015)).x(230),
+            )
+        ).delay(1);
+        tween.onComplete(tween, tween.play);
+        tween.play();
+    </script>
+</body>
+</html>

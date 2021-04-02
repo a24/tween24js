@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Tween24 sample timer</title>
+    <script src="../dist/tween24.js"></script>
+    <style type="text/css">
+        body {
+            display:flex;
+            flex-flow: column;
+            justify-content:space-around;
+            height: 100vh;
+            font-size: 12px;
+            background-color: #e6e6e6;
+            font-family: "Helvetica Neue",
+                Arial,
+                "Hiragino Kaku Gothic ProN",
+                "Hiragino Sans",
+                Meiryo,
+                sans-serif;
+        }
+        div {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        #timer {
+            display: flex;
+            justify-content: center;
+            margin: 0 0 20px 0;
+            font-size: 10vw;
+            color: #247570;
+        }
+        button {
+            padding: 8px 40px;
+            margin: 0 10px;
+            font-size: 3vw;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            border-radius: 30px;
+            color: #fff;
+            background-color: #3CC2B9;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+<script>
+    var time = 5; // カウントする秒数
+    var timer = Tween24.serial(
+        Tween24.prop(this, { time: this.time }), // タイムをリセット
+        Tween24.tween(this, this.time, Ease24._Linear, { time: 0 }) // time変数をトゥイーン
+            .onUpdate(this, update) // 更新時に実行する関数を設定
+            .onComplete(this, finish) // 完了時に実行する関数を設定
+    );
+
+    // トゥイーン更新時に実行
+    function update() {
+        document.getElementById("timer").textContent = "Time: " + this.time.toFixed(1);
+    }
+
+    // トゥイーン完了時に実行
+    function finish() {
+        document.getElementById("timer").textContent = "finish.";
+    }
+</script>
+
+<section>
+    <p id="timer">Sample timer</p>
+    <div>
+        <button onclick="timer.play();">Play</button>
+        <button onclick="timer.pause();">Pause</button>
+    </div>
+</section>
+</body>
+</html>

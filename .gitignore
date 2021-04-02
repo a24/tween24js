@@ -1,2 +1,5 @@
 node_modules
 .DS_Store
+/sample/test.html
+/sample/tweenmax
+/.idea

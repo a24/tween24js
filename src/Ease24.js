@@ -620,6 +620,8 @@ var Ease24 = /** @class */ (function () {
      * @memberof Ease24
      */
     Ease24._Blend = function (easeA, easeB, mixing, start, end) {
+        if (start === void 0) { start = 0; }
+        if (end === void 0) { end = 1; }
         return function (t, b, c, d) {
             var v1 = easeA(t, b, c, d);
             var v2 = easeB(t, b, c, d);

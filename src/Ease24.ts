@@ -658,7 +658,7 @@ class Ease24 {
 	 * @param {number} end 終点時の混合率
 	 * @memberof Ease24
 	 */
-	static _Blend(easeA:Function, easeB:Function, mixing:Function, start:number, end:number): Function {
+	static _Blend(easeA:Function, easeB:Function, mixing:Function, start:number = 0, end:number = 1): Function {
 		return function (t:number, b:number, c:number, d:number): number {
 			var v1  = easeA (t, b, c, d);
 			var v2  = easeB (t, b, c, d);

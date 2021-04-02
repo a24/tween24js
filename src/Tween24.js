@@ -41,6 +41,7 @@ var Tween24 = /** @class */ (function () {
         this._useStyle = false;
         this._inited = false;
         this._isRoot = false;
+        this._isPlayed = false;
         this._isPaused = false;
         this._isContainerTween = false;
         // Action & Callback
@@ -66,12 +67,14 @@ var Tween24 = /** @class */ (function () {
     // ------------------------------------------
     Tween24.prototype.play = function () {
         if (!this._isPaused) {
-            this._root = this;
-            this._isRoot = true;
-            this._inited = false;
-            this._play();
-            Tween24.ticker.add(this);
-            this._functionExecute(Tween24Event.PLAY);
+            if (!this._isPlayed) {
+                this._root = this;
+                this._isRoot = true;
+                this._inited = false;
+                this._play();
+                Tween24.ticker.add(this);
+                this._functionExecute(Tween24Event.PLAY);
+            }
         }
         else {
             this._resume();
@@ -90,10 +93,12 @@ var Tween24 = /** @class */ (function () {
             this._numLayers = this._parent ? this._parent._numLayers + 1 : 1;
             // console.log(this._numLayers)
         }
+        this._isPlayed = true;
         this._startTime = Ticker24.getTime() + this._delayTime * 1000;
         this._debugLog("play");
     };
     Tween24.prototype._resume = function () {
+        this._isPlayed = true;
         var nowTime = Ticker24.getTime();
         this._startTime = nowTime - this._time * 1000 * this._progress;
         if (this._playingChildTween) {
@@ -108,6 +113,7 @@ var Tween24 = /** @class */ (function () {
     };
     Tween24.prototype.pause = function () {
         if (this._isRoot) {
+            this._isPlayed = false;
             this._isPaused = true;
             Tween24.ticker.remove(this);
             this._functionExecute(Tween24Event.PAUSE);
@@ -281,6 +287,7 @@ var Tween24 = /** @class */ (function () {
         if (this._playingChildTween)
             this._playingChildTween.length = 0;
         this._numCompleteChildren = 0;
+        this._isPlayed = false;
         this._inited = false;
         ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this._singleTarget), this);
         ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
@@ -431,6 +438,13 @@ var Tween24 = /** @class */ (function () {
      */
     Tween24.prototype.rotation = function (value) { return this._setPropety("rotation", value); };
     /**
+     * CSS:border-radius（角丸）を設定します。
+     * @param {number} value
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.borderRadius = function (value) { return this._setStyle("border-radius", value); };
+    /**
      * トゥイーンの遅延時間を設定します。
      * @param {number} value 遅延時間（秒数）
      * @return {Tween24} Tween24インスタンス
@@ -442,6 +456,7 @@ var Tween24 = /** @class */ (function () {
      * 対象が HTMLElement の場合にのみ適応されます。
      * @param {string} name プロパティ名
      * @param {(number|string)} value 目標の値（数値指定の場合は、基本的にpx単位で計算されます）
+     * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     Tween24.prototype.style = function (name, value) { return this._setStyle(name, value); };
@@ -449,7 +464,7 @@ var Tween24 = /** @class */ (function () {
      * トゥイーン単体のFPSを設定します。
      * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
      * @param {number} fps FPSの値
-     * @return {Tween24}
+     * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     Tween24.prototype.fps = function (fps) { this.__fps = fps; return this; };
@@ -457,14 +472,14 @@ var Tween24 = /** @class */ (function () {
      * トゥイーンのデバッグモードを設定します。
      * デバッグモードをONにすると、トゥイーンの動作状況がコンソールに表示されます。
      * @param {boolean} flag デバッグモードを使用するか
-     * @return {Tween24}
+     * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     Tween24.prototype.debug = function (flag) { this._debugMode = flag; return this; };
     /**
      * トゥイーンのIDを設定します。
      * @param {string} id トゥイーンのID
-     * @return {Tween24}
+     * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     Tween24.prototype.id = function (id) { this._tweenId = id; return this; };
@@ -604,7 +619,7 @@ var Tween24 = /** @class */ (function () {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    Tween24.prototype.onComplate = function (scope, func) {
+    Tween24.prototype.onComplete = function (scope, func) {
         var args = [];
         for (var _i = 2; _i < arguments.length; _i++) {
             args[_i - 2] = arguments[_i];

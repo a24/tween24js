@@ -68,6 +68,7 @@ class Tween24 {
     private _useStyle:boolean = false;
 	private _inited  :boolean = false;
 	private _isRoot  :boolean = false;
+    private _isPlayed  :boolean = false;
     private _isPaused:boolean = false;
 	private _isContainerTween:boolean = false;
 
@@ -102,12 +103,14 @@ class Tween24 {
 
 	play() {
         if (!this._isPaused) {
-            this._root   = this;
-            this._isRoot = true;
-            this._inited = false;
-            this._play();
-            Tween24.ticker.add(this);
-            this._functionExecute(Tween24Event.PLAY);
+            if (!this._isPlayed) {
+                this._root   = this;
+                this._isRoot = true;
+                this._inited = false;
+                this._play();
+                Tween24.ticker.add(this);
+                this._functionExecute(Tween24Event.PLAY);
+            }
         }
         else {
             this._resume();
@@ -126,11 +129,14 @@ class Tween24 {
             this._numLayers = this._parent ? this._parent._numLayers + 1 : 1;
             // console.log(this._numLayers)
         }
+        this._isPlayed = true;
         this._startTime = Ticker24.getTime() + this._delayTime * 1000;
 		this._debugLog("play");
 	}
 
     private _resume() {
+        this._isPlayed = true;
+
         const nowTime:number = Ticker24.getTime();
         this._startTime = nowTime - this._time * 1000 * this._progress;
         
@@ -144,6 +150,7 @@ class Tween24 {
 
 	pause() {
 		if (this._isRoot) {
+            this._isPlayed = false;
             this._isPaused = true;
             Tween24.ticker.remove(this);
 		    this._functionExecute(Tween24Event.PAUSE);
@@ -307,6 +314,7 @@ class Tween24 {
 		if (this._isRoot) Tween24.ticker.remove(this);
         if (this._playingChildTween) this._playingChildTween.length = 0;
         this._numCompleteChildren = 0;
+        this._isPlayed = false;
         this._inited = false;
 
 		ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this._singleTarget), this);
@@ -475,6 +483,14 @@ class Tween24 {
 	rotation (value: number): Tween24 { return this._setPropety("rotation", value); }
     
     /**
+     * CSS:border-radius（角丸）を設定します。
+     * @param {number} value
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    borderRadius (value: number): Tween24 { return this._setStyle("border-radius", value); }
+
+    /**
      * トゥイーンの遅延時間を設定します。
      * @param {number} value 遅延時間（秒数）
      * @return {Tween24} Tween24インスタンス
@@ -487,6 +503,7 @@ class Tween24 {
      * 対象が HTMLElement の場合にのみ適応されます。
      * @param {string} name プロパティ名
      * @param {(number|string)} value 目標の値（数値指定の場合は、基本的にpx単位で計算されます）
+     * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     style (name: string, value: number|string): Tween24 { return this._setStyle(name, value); }
@@ -495,7 +512,7 @@ class Tween24 {
      * トゥイーン単体のFPSを設定します。
      * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
      * @param {number} fps FPSの値  
-     * @return {Tween24}
+     * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     fps (fps:number): Tween24 { this.__fps = fps; return this; }
@@ -504,7 +521,7 @@ class Tween24 {
      * トゥイーンのデバッグモードを設定します。
      * デバッグモードをONにすると、トゥイーンの動作状況がコンソールに表示されます。
      * @param {boolean} flag デバッグモードを使用するか
-     * @return {Tween24}
+     * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     debug (flag:boolean): Tween24 { this._debugMode = flag; return this; }
@@ -512,7 +529,7 @@ class Tween24 {
     /**
      * トゥイーンのIDを設定します。
      * @param {string} id トゥイーンのID
-     * @return {Tween24}
+     * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     id (id:string): Tween24 { this._tweenId = id; return this; }
@@ -621,7 +638,7 @@ class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-	onComplate (scope:any, func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.COMPLATE, scope, func, args); }
+	onComplete (scope:any, func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.COMPLATE, scope, func, args); }
 
 	private _setFunctionExecute(key:string, scope:any, func:Function, args:any[]):Tween24 {
 		this._functionExecuters ||= {};

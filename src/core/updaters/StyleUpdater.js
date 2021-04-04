@@ -1,5 +1,6 @@
 import ParamUpdater from "./ParamUpdater";
 import HTMLUtil from "../../utils/HTMLUtil";
+import StyleColorUpdater from "./StyleColorUpdater";
 var StyleUpdater = /** @class */ (function () {
     function StyleUpdater(target) {
         this._target = target;
@@ -21,24 +22,36 @@ var StyleUpdater = /** @class */ (function () {
             this._unit[key] = unit ? unit[0] : "";
             this._key.push(key);
         }
+        else if (value.substr(0, 1) == "#") {
+            this._param || (this._param = {});
+            this._key || (this._key = []);
+            this._unit || (this._unit = {});
+            this._param[key] = new StyleColorUpdater(key, value);
+            this._key.push(key);
+        }
         else {
             this._onceParam || (this._onceParam = {});
             this._onceParam[key] = value;
         }
     };
     StyleUpdater.prototype.init = function () {
-        var _a;
+        var _a, _b;
         this._isUpdatedOnce = false;
         if (this._key && this._param && this._unit) {
             this._tweenKey = this._key.concat();
-            for (var _i = 0, _b = this._tweenKey; _i < _b.length; _i++) {
-                var key = _b[_i];
+            for (var _i = 0, _c = this._tweenKey; _i < _c.length; _i++) {
+                var key = _c[_i];
                 var value = HTMLUtil.getStyle(this._target).getPropertyValue(key);
-                var val = value.match(StyleUpdater.PARAM_REG);
-                var unit = value.match(StyleUpdater.UNIT_REG);
-                (_a = this._unit)[key] || (_a[key] = unit ? unit[0] : "");
-                if (val)
-                    this._param[key].init(Number(val));
+                if (value.substr(0, 3) == "rgb") {
+                    this._param[key].init(value);
+                    (_a = this._unit)[key] || (_a[key] = "");
+                }
+                else {
+                    var val = value.match(StyleUpdater.PARAM_REG);
+                    var unit = value.match(StyleUpdater.UNIT_REG);
+                    (_b = this._unit)[key] || (_b[key] = unit ? unit[0] : "");
+                    this._param[key].init(Number(val ? val : 0));
+                }
             }
         }
     };

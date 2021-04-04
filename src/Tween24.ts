@@ -14,7 +14,7 @@ import HTMLUtil         from "./utils/HTMLUtil";
 class Tween24 {
 
 	// Static
-	static readonly VERSION:string = "0.7.0";
+	static readonly VERSION:string = "0.7.1";
 
 	private static readonly _TYPE_TWEEN   :string = "tween";
 	private static readonly _TYPE_PROP    :string = "prop";

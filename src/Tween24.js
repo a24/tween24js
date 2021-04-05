@@ -438,6 +438,48 @@ var Tween24 = /** @class */ (function () {
      */
     Tween24.prototype.rotation = function (value) { return this._setPropety("rotation", value); };
     /**
+     * CSS:top を設定します。
+     * @param {number} value
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.top = function (value) { return this._setStyle("top", value); };
+    /**
+     * CSS:right を設定します。
+     * @param {number} value
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.right = function (value) { return this._setStyle("right", value); };
+    /**
+     * CSS:bottom を設定します。
+     * @param {number} value
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.bottom = function (value) { return this._setStyle("bottom", value); };
+    /**
+     * CSS:left を設定します。
+     * @param {number} value
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.left = function (value) { return this._setStyle("left", value); };
+    /**
+     * CSS:color を設定します。
+     * @param {string} colorCode
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.color = function (colorCode) { return this._setStyle("color", colorCode); };
+    /**
+     * CSS:background-color を設定します。
+     * @param {string} colorCode
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.backgroundColor = function (colorCode) { return this._setStyle("background-color", colorCode); };
+    /**
      * CSS:border-radius（角丸）を設定します。
      * @param {number} value
      * @return {Tween24} Tween24インスタンス

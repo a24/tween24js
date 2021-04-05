@@ -483,6 +483,54 @@ class Tween24 {
 	rotation (value: number): Tween24 { return this._setPropety("rotation", value); }
     
     /**
+     * CSS:top を設定します。
+     * @param {number} value
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    top (value: number): Tween24 { return this._setStyle("top", value); }
+    
+    /**
+     * CSS:right を設定します。
+     * @param {number} value
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    right (value: number): Tween24 { return this._setStyle("right", value); }
+    
+    /**
+     * CSS:bottom を設定します。
+     * @param {number} value
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    bottom (value: number): Tween24 { return this._setStyle("bottom", value); }
+
+    /**
+     * CSS:left を設定します。
+     * @param {number} value
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    left (value: number): Tween24 { return this._setStyle("left", value); }
+
+    /**
+     * CSS:color を設定します。
+     * @param {string} colorCode
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    color (colorCode: string): Tween24 { return this._setStyle("color", colorCode); }
+    
+    /**
+     * CSS:background-color を設定します。
+     * @param {string} colorCode
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundColor (colorCode: string): Tween24 { return this._setStyle("background-color", colorCode); }
+
+    /**
      * CSS:border-radius（角丸）を設定します。
      * @param {number} value
      * @return {Tween24} Tween24インスタンス

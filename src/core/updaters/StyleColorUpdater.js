@@ -13,11 +13,11 @@ var StyleColorUpdater = /** @class */ (function () {
         this._b = new ParamUpdater("b", c & 0xFF);
     }
     StyleColorUpdater.prototype.init = function (start) {
-        var val = start.match(/\d+/g);
-        if (val) {
-            this._r.init(Number(val[0]));
-            this._g.init(Number(val[1]));
-            this._b.init(Number(val[2]));
+        var rgb = start.match(/\d+/g);
+        if (rgb) {
+            this._r.init(Number(rgb[0]));
+            this._g.init(Number(rgb[1]));
+            this._b.init(Number(rgb[2]));
         }
     };
     StyleColorUpdater.prototype.update = function (progress) {

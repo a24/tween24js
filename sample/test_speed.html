@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Tween24 sample timer</title>
+    <script src="../dist/tween24.js"></script>
+    <style type="text/css">
+    </style>
+</head>
+<body>
+    <div id="test"></div>
+<script>
+var time1  = Date.now();
+var time2  = Date.now();
+console.log(time2);
+
+for (let index = 0; index < 100000; index++) {
+    document.getElementById("test");
+}
+time2  = Date.now();
+console.log(time2 - time1);
+
+for (let index = 0; index < 100000; index++) {
+    document.querySelectorAll("test");
+}
+time2  = Date.now();
+console.log(time2 - time1);
+</script>
+</body>
+</html>

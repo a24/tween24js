@@ -800,7 +800,7 @@ var Tween24 = /** @class */ (function () {
                 this._multiTarget = [];
                 for (var _i = 0, target_1 = target; _i < target_1.length; _i++) {
                     var t = target_1[_i];
-                    this._multiTarget = this._multiTarget.concat(HTMLUtil.getHTMLElement(t));
+                    this._multiTarget = this._multiTarget.concat(HTMLUtil.querySelectorAll(t));
                 }
                 this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
                 this._allUpdaters.push(this._transformMultiUpdater);
@@ -819,7 +819,7 @@ var Tween24 = /** @class */ (function () {
             }
         }
         else if (ClassUtil.isString(target)) {
-            var t = HTMLUtil.getHTMLElement(target);
+            var t = HTMLUtil.querySelectorAll(target);
             if (t.length == 1) {
                 this._singleTarget = t[0];
                 this._transformUpdater = new TransformUpdater(this._singleTarget);
@@ -965,7 +965,7 @@ var Tween24 = /** @class */ (function () {
         return "{" + param.trim() + "}";
     };
     // Static
-    Tween24.VERSION = "0.7.2";
+    Tween24.VERSION = "0.7.4";
     Tween24._TYPE_TWEEN = "tween";
     Tween24._TYPE_PROP = "prop";
     Tween24._TYPE_WAIT = "wait";

@@ -14,7 +14,7 @@ import HTMLUtil         from "./utils/HTMLUtil";
 class Tween24 {
 
 	// Static
-	static readonly VERSION:string = "0.7.2";
+	static readonly VERSION:string = "0.7.4";
 
 	private static readonly _TYPE_TWEEN   :string = "tween";
 	private static readonly _TYPE_PROP    :string = "prop";
@@ -807,7 +807,7 @@ class Tween24 {
                 this._targetString = `[${target.toString()}]`;
 				this._multiTarget = [];
 				for (const t of target)
-					this._multiTarget = this._multiTarget.concat(HTMLUtil.getHTMLElement(t));
+					this._multiTarget = this._multiTarget.concat(HTMLUtil.querySelectorAll(t));
 				this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
 				this._allUpdaters.push(this._transformMultiUpdater);
 			}
@@ -825,7 +825,7 @@ class Tween24 {
 			}
 		}
 		else if (ClassUtil.isString(target)) {
-			const t:HTMLElement[] = HTMLUtil.getHTMLElement(target);
+            const t = HTMLUtil.querySelectorAll(target);
 			if (t.length == 1) {
 				this._singleTarget = t[0];
 				this._transformUpdater = new TransformUpdater(this._singleTarget);

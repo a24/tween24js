@@ -20,6 +20,10 @@ export class HTMLUtil {
 		return result;
 	}
 
+	static querySelectorAll(query:string):never[] {
+		return Array.from(document.querySelectorAll(query));
+	}
+
 	static setStyleProp(element:HTMLElement, prop:string, value:string|number) {
 		element.style.setProperty(prop, value as string);
 	}

@@ -22,6 +22,9 @@ var HTMLUtil = /** @class */ (function () {
         }
         return result;
     };
+    HTMLUtil.querySelectorAll = function (query) {
+        return Array.from(document.querySelectorAll(query));
+    };
     HTMLUtil.setStyleProp = function (element, prop, value) {
         element.style.setProperty(prop, value);
     };

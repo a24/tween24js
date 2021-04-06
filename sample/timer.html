@@ -51,7 +51,7 @@
 <body>
 <script>
     var time = 5; // カウントする秒数
-    var timer = Tween24.serial(
+    let timer = Tween24.serial(
         Tween24.prop(this, { time: this.time }), // タイムをリセット
         Tween24.tween(this, this.time, Ease24._Linear, { time: 0 }) // time変数をトゥイーン
             .onUpdate(this, update) // 更新時に実行する関数を設定

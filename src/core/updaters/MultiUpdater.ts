@@ -4,6 +4,7 @@ import StyleUpdater     from "./StyleUpdater";
 import TransformUpdater from "./TransformUpdater";
 
 export class MultiUpdater implements Updater {
+	static type:string = "MultiUpdater";
 
 	private _updaters:Updater[];
 	private _updatersByTarget:Map<any, Updater>;
@@ -23,9 +24,9 @@ export class MultiUpdater implements Updater {
 	private getUpdaterInstance(target:any, UpdaterType:string):Updater {
 		let updater:Updater;
 		switch (UpdaterType) {
-			case TransformUpdater.name : updater = new TransformUpdater(target); break;
-			case StyleUpdater    .name : updater = new StyleUpdater    (target); break;
-			default                    : updater = new ObjectUpdater   (target);
+			case TransformUpdater.className : updater = new TransformUpdater(target); break;
+			case StyleUpdater    .className : updater = new StyleUpdater    (target); break;
+			default                         : updater = new ObjectUpdater   (target);
 		}
 		return updater;
 	}

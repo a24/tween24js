@@ -16,10 +16,10 @@ var MultiUpdater = /** @class */ (function () {
     MultiUpdater.prototype.getUpdaterInstance = function (target, UpdaterType) {
         var updater;
         switch (UpdaterType) {
-            case TransformUpdater.name:
+            case TransformUpdater.className:
                 updater = new TransformUpdater(target);
                 break;
-            case StyleUpdater.name:
+            case StyleUpdater.className:
                 updater = new StyleUpdater(target);
                 break;
             default: updater = new ObjectUpdater(target);
@@ -78,6 +78,7 @@ var MultiUpdater = /** @class */ (function () {
         var updater = this._updaters[0];
         return updater ? updater.toString() : "";
     };
+    MultiUpdater.type = "MultiUpdater";
     return MultiUpdater;
 }());
 export { MultiUpdater };

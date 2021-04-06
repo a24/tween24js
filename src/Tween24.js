@@ -91,7 +91,6 @@ var Tween24 = /** @class */ (function () {
         else {
             this._root = ((_a = this._parent) === null || _a === void 0 ? void 0 : _a._root) || this._parent;
             this._numLayers = this._parent ? this._parent._numLayers + 1 : 1;
-            // console.log(this._numLayers)
         }
         this._isPlayed = true;
         this._startTime = Ticker24.getTime() + this._delayTime * 1000;
@@ -555,7 +554,7 @@ var Tween24 = /** @class */ (function () {
         }
         else if (this._multiTarget) {
             if (!this._styleMultiUpdater) {
-                this._styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.name);
+                this._styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.className);
                 (_b = this._allUpdaters) === null || _b === void 0 ? void 0 : _b.push(this._styleMultiUpdater);
             }
             this._styleMultiUpdater.addPropStr(name, value);
@@ -802,19 +801,19 @@ var Tween24 = /** @class */ (function () {
                     var t = target_1[_i];
                     this._multiTarget = this._multiTarget.concat(HTMLUtil.querySelectorAll(t));
                 }
-                this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
+                this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.className);
                 this._allUpdaters.push(this._transformMultiUpdater);
             }
             else if (target[0] instanceof HTMLElement) {
                 this._useStyle = true;
                 this._targetString = "[HTMLElements]";
                 this._multiTarget = target;
-                this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
+                this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.className);
                 this._allUpdaters.push(this._transformMultiUpdater);
             }
             else {
                 this._multiTarget = target;
-                this._objectMultiUpdater = new MultiUpdater(this._multiTarget, ObjectUpdater.name);
+                this._objectMultiUpdater = new MultiUpdater(this._multiTarget, ObjectUpdater.className);
                 this._allUpdaters.push(this._objectMultiUpdater);
             }
         }
@@ -827,7 +826,7 @@ var Tween24 = /** @class */ (function () {
             }
             else {
                 this._multiTarget = t;
-                this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
+                this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.className);
                 this._allUpdaters.push(this._transformMultiUpdater);
             }
             this._useStyle = true;
@@ -965,7 +964,7 @@ var Tween24 = /** @class */ (function () {
         return "{" + param.trim() + "}";
     };
     // Static
-    Tween24.VERSION = "0.7.4";
+    Tween24.VERSION = "0.7.5";
     Tween24._TYPE_TWEEN = "tween";
     Tween24._TYPE_PROP = "prop";
     Tween24._TYPE_WAIT = "wait";

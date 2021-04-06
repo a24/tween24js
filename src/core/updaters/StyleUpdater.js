@@ -97,6 +97,7 @@ var StyleUpdater = /** @class */ (function () {
     };
     StyleUpdater.prototype.complete = function () {
     };
+    StyleUpdater.className = "StyleUpdater";
     StyleUpdater.PARAM_REG = new RegExp(/^[0-9.]{1,99}/);
     StyleUpdater.UNIT_REG = new RegExp(/[^0-9.]./);
     return StyleUpdater;

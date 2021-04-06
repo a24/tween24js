@@ -14,7 +14,7 @@ import HTMLUtil         from "./utils/HTMLUtil";
 class Tween24 {
 
 	// Static
-	static readonly VERSION:string = "0.7.4";
+	static readonly VERSION:string = "0.7.5";
 
 	private static readonly _TYPE_TWEEN   :string = "tween";
 	private static readonly _TYPE_PROP    :string = "prop";
@@ -127,7 +127,6 @@ class Tween24 {
         else {
             this._root = this._parent?._root || this._parent;
             this._numLayers = this._parent ? this._parent._numLayers + 1 : 1;
-            // console.log(this._numLayers)
         }
         this._isPlayed = true;
         this._startTime = Ticker24.getTime() + this._delayTime * 1000;
@@ -604,7 +603,7 @@ class Tween24 {
 		}
 		else if (this._multiTarget) {
 			if (!this._styleMultiUpdater) {
-				this._styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.name);
+				this._styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.className);
 				this._allUpdaters?.push(this._styleMultiUpdater);
 			}
 			this._styleMultiUpdater.addPropStr(name, value as string);
@@ -808,19 +807,19 @@ class Tween24 {
 				this._multiTarget = [];
 				for (const t of target)
 					this._multiTarget = this._multiTarget.concat(HTMLUtil.querySelectorAll(t));
-				this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
+				this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.className);
 				this._allUpdaters.push(this._transformMultiUpdater);
 			}
 			else if (target[0] instanceof HTMLElement) {
                 this._useStyle = true;
                 this._targetString = `[HTMLElements]`;
 				this._multiTarget = target;
-				this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
+				this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.className);
 				this._allUpdaters.push(this._transformMultiUpdater);
 			}
 			else {
 				this._multiTarget = target;
-				this._objectMultiUpdater = new MultiUpdater(this._multiTarget, ObjectUpdater.name);
+				this._objectMultiUpdater = new MultiUpdater(this._multiTarget, ObjectUpdater.className);
 				this._allUpdaters.push(this._objectMultiUpdater);
 			}
 		}
@@ -833,7 +832,7 @@ class Tween24 {
 			}
 			else {
 				this._multiTarget = t;
-				this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.name);
+				this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.className);
 				this._allUpdaters.push(this._transformMultiUpdater);
 			}
             this._useStyle = true;

@@ -52,6 +52,7 @@ var ObjectUpdater = /** @class */ (function () {
         }
         return str.trim();
     };
+    ObjectUpdater.className = "ObjectUpdater";
     return ObjectUpdater;
 }());
 export { ObjectUpdater };

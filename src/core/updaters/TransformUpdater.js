@@ -133,6 +133,7 @@ var TransformUpdater = /** @class */ (function () {
             str += this._rotation.toString() + " ";
         return str.trim();
     };
+    TransformUpdater.className = "TransformUpdater";
     return TransformUpdater;
 }());
 export { TransformUpdater };

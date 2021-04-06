@@ -1,6 +1,7 @@
 import Updater from "./Updater";
 
 export class ObjectUpdater implements Updater {
+	static className:string = "ObjectUpdater";
 
 	private _target  :any;
 	private _key     :string[];

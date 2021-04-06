@@ -4,6 +4,8 @@ import ParamUpdater from "./ParamUpdater";
 import HTMLUtil     from "../../utils/HTMLUtil";
 
 export class TransformUpdater implements Updater {
+	static className:string = "TransformUpdater";
+	
 	private static _chache:Map<HTMLElement, Matrix>;
 
 	private _target: HTMLElement;

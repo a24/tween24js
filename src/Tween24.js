@@ -438,49 +438,79 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.rotation = function (value) { return this._setPropety("rotation", value); };
     /**
      * CSS:top を設定します。
-     * @param {number} value
+     * @param {number} 上からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     Tween24.prototype.top = function (value) { return this._setStyle("top", value); };
     /**
      * CSS:right を設定します。
-     * @param {number} value
+     * @param {number} 右からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     Tween24.prototype.right = function (value) { return this._setStyle("right", value); };
     /**
      * CSS:bottom を設定します。
-     * @param {number} value
+     * @param {number} value 下からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     Tween24.prototype.bottom = function (value) { return this._setStyle("bottom", value); };
     /**
      * CSS:left を設定します。
-     * @param {number} value
+     * @param {number} value 左からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     Tween24.prototype.left = function (value) { return this._setStyle("left", value); };
     /**
+     * 目標とする幅を設定します。
+     * 対象が HTMLElement の場合は、CSS:width が適応されます。
+     * @param {number} value 要素の幅
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.width = function (value) { return this._useStyle ? this._setStyle("width", value) : this._setPropety("width", value); };
+    /**
+     * 目標とする高さを設定します。
+     * 対象が HTMLElement の場合は、CSS:height が適応されます。
+     * @param {number} value 要素の高さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.height = function (value) { return this._useStyle ? this._setStyle("height", value) : this._setPropety("height", value); };
+    /**
      * CSS:color を設定します。
-     * @param {string} colorCode
+     * @param {string} colorCode 「#」から始まるカラー値
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     Tween24.prototype.color = function (colorCode) { return this._setStyle("color", colorCode); };
     /**
-     * CSS:background-color を設定します。
-     * @param {string} colorCode
+     * CSS:background-color（背景色）を設定します。
+     * @param {string} colorCode 「#」から始まるカラー値
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     Tween24.prototype.backgroundColor = function (colorCode) { return this._setStyle("background-color", colorCode); };
     /**
+     * CSS:border-width（枠の太さ）を設定します。
+     * @param {number} value 枠の太さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.borderWidth = function (value) { return this._setStyle("border-width", value); };
+    /**
+     * CSS:border-color（枠の色）を設定します。
+     * @param {number} value 「#」から始まるカラー値
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    Tween24.prototype.borderColor = function (value) { return this._setStyle("border-color", value); };
+    /**
      * CSS:border-radius（角丸）を設定します。
-     * @param {number} value
+     * @param {number} value 角丸の値
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
@@ -964,7 +994,7 @@ var Tween24 = /** @class */ (function () {
         return "{" + param.trim() + "}";
     };
     // Static
-    Tween24.VERSION = "0.7.5";
+    Tween24.VERSION = "0.7.6";
     Tween24._TYPE_TWEEN = "tween";
     Tween24._TYPE_PROP = "prop";
     Tween24._TYPE_WAIT = "wait";

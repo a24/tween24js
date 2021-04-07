@@ -355,7 +355,7 @@ class Tween24 {
 
     /**
      * 目標とするX座標を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value X座標
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -364,7 +364,7 @@ class Tween24 {
     
     /**
      * 目標とするY座標を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value Y座標
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -373,7 +373,7 @@ class Tween24 {
     
     /**
      * 目標とするXとY座標を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} x Y座標
      * @param {number} y Y座標
      * @return {Tween24} Tween24インスタンス
@@ -383,7 +383,7 @@ class Tween24 {
     
     /**
      * 目標とする透明度を設定します。
-     * 対象が HTMLElement の場合は、CSS:opacity が適応されます。
+     * 対象が HTMLElement の場合は、CSS:opacity が適用されます。
      * @param {number} value 透明度
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -400,7 +400,7 @@ class Tween24 {
 
     /**
      * 目標とする水平スケールを設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平方向のスケール
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -409,7 +409,7 @@ class Tween24 {
     
     /**
      * 目標とする垂直スケールを設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 垂直方向のスケール
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -418,7 +418,7 @@ class Tween24 {
     
     /**
      * 目標とするスケールを設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平＆垂直方向のスケール
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -427,7 +427,7 @@ class Tween24 {
     
     /**
      * 目標とする水平・垂直スケールを設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} scaleX 水平方向のスケール
      * @param {number} scaleY 垂直方向のスケール
      * @return {Tween24} Tween24インスタンス
@@ -437,7 +437,7 @@ class Tween24 {
     
     /**
      * 目標とする水平傾斜を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平方向の傾斜
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -446,7 +446,7 @@ class Tween24 {
     
     /**
      * 目標とする垂直傾斜を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 垂直方向の傾斜
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -455,7 +455,7 @@ class Tween24 {
     
     /**
      * 目標とする水平＆垂直傾斜を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平＆垂直方向の傾斜
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -464,7 +464,7 @@ class Tween24 {
     
     /**
      * 目標とする水平・垂直傾斜を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} skewX 水平方向の傾斜
      * @param {number} skewY 垂直方向の傾斜
      * @return {Tween24} Tween24インスタンス
@@ -474,7 +474,7 @@ class Tween24 {
     
     /**
      * 目標とする回転角度を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 回転角度
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -515,7 +515,7 @@ class Tween24 {
 
     /**
      * 目標とする幅を設定します。
-     * 対象が HTMLElement の場合は、CSS:width が適応されます。
+     * 対象が HTMLElement の場合は、CSS:width が適用されます。
      * @param {number} value 要素の幅
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -524,7 +524,7 @@ class Tween24 {
 
     /**
      * 目標とする高さを設定します。
-     * 対象が HTMLElement の場合は、CSS:height が適応されます。
+     * 対象が HTMLElement の場合は、CSS:height が適用されます。
      * @param {number} value 要素の高さ
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -581,7 +581,7 @@ class Tween24 {
 
     /**
      * 目標とするスタイルシートの値を設定します。
-     * 対象が HTMLElement の場合にのみ適応されます。
+     * 対象が HTMLElement の場合にのみ適用されます。
      * @param {string} name プロパティ名
      * @param {(number|string)} value 目標の値（数値指定の場合は、基本的にpx単位で計算されます）
      * @return {Tween24} Tween24インスタンス

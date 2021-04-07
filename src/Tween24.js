@@ -324,7 +324,7 @@ var Tween24 = /** @class */ (function () {
     // ------------------------------------------
     /**
      * 目標とするX座標を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value X座標
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -332,7 +332,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.x = function (value) { return this._setPropety("x", value); };
     /**
      * 目標とするY座標を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value Y座標
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -340,7 +340,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.y = function (value) { return this._setPropety("y", value); };
     /**
      * 目標とするXとY座標を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} x Y座標
      * @param {number} y Y座標
      * @return {Tween24} Tween24インスタンス
@@ -349,7 +349,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.xy = function (x, y) { return this._setPropety("x", x)._setPropety("y", y); };
     /**
      * 目標とする透明度を設定します。
-     * 対象が HTMLElement の場合は、CSS:opacity が適応されます。
+     * 対象が HTMLElement の場合は、CSS:opacity が適用されます。
      * @param {number} value 透明度
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -364,7 +364,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.opacity = function (value) { return this._useStyle ? this._setStyle("opacity", value) : this._setPropety("opacity", value); };
     /**
      * 目標とする水平スケールを設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平方向のスケール
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -372,7 +372,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.scaleX = function (value) { return this._setPropety("scaleX", value); };
     /**
      * 目標とする垂直スケールを設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 垂直方向のスケール
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -380,7 +380,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.scaleY = function (value) { return this._setPropety("scaleY", value); };
     /**
      * 目標とするスケールを設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平＆垂直方向のスケール
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -388,7 +388,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.scale = function (value) { return this._setPropety("scaleX", value)._setPropety("scaleY", value); };
     /**
      * 目標とする水平・垂直スケールを設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} scaleX 水平方向のスケール
      * @param {number} scaleY 垂直方向のスケール
      * @return {Tween24} Tween24インスタンス
@@ -397,7 +397,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.scaleXY = function (scaleX, scaleY) { return this._setPropety("scaleX", scaleX)._setPropety("scaleY", scaleY); };
     /**
      * 目標とする水平傾斜を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平方向の傾斜
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -405,7 +405,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.skewX = function (value) { return this._setPropety("skewX", value); };
     /**
      * 目標とする垂直傾斜を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 垂直方向の傾斜
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -413,7 +413,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.skewY = function (value) { return this._setPropety("skewY", value); };
     /**
      * 目標とする水平＆垂直傾斜を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平＆垂直方向の傾斜
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -421,7 +421,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.skew = function (value) { return this._setPropety("skewX", value)._setPropety("skewY", value); };
     /**
      * 目標とする水平・垂直傾斜を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} skewX 水平方向の傾斜
      * @param {number} skewY 垂直方向の傾斜
      * @return {Tween24} Tween24インスタンス
@@ -430,7 +430,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.skewXY = function (skewX, skewY) { return this._setPropety("skewX", skewX)._setPropety("skewY", skewY); };
     /**
      * 目標とする回転角度を設定します。
-     * 対象が HTMLElement の場合は、CSS:Transform が適応されます。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 回転角度
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -466,7 +466,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.left = function (value) { return this._setStyle("left", value); };
     /**
      * 目標とする幅を設定します。
-     * 対象が HTMLElement の場合は、CSS:width が適応されます。
+     * 対象が HTMLElement の場合は、CSS:width が適用されます。
      * @param {number} value 要素の幅
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -474,7 +474,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.width = function (value) { return this._useStyle ? this._setStyle("width", value) : this._setPropety("width", value); };
     /**
      * 目標とする高さを設定します。
-     * 対象が HTMLElement の場合は、CSS:height が適応されます。
+     * 対象が HTMLElement の場合は、CSS:height が適用されます。
      * @param {number} value 要素の高さ
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -524,7 +524,7 @@ var Tween24 = /** @class */ (function () {
     Tween24.prototype.delay = function (value) { this._delayTime += value; return this; };
     /**
      * 目標とするスタイルシートの値を設定します。
-     * 対象が HTMLElement の場合にのみ適応されます。
+     * 対象が HTMLElement の場合にのみ適用されます。
      * @param {string} name プロパティ名
      * @param {(number|string)} value 目標の値（数値指定の場合は、基本的にpx単位で計算されます）
      * @return {Tween24} Tween24インスタンス

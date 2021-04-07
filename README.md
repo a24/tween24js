@@ -125,5 +125,5 @@ Easing
 
 Gobal setting
 --------------------------
-Tween24.setDefaultEasing(...);
-Tween24.setFPS(...);
+- Tween24.setDefaultEasing(...);
+- Tween24.setFPS(...);

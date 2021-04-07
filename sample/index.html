@@ -50,7 +50,7 @@
 
         let single = Tween24.serial(
 
-            // box1を、1秒かけてX座標400にトゥイーンします。
+            // box1を、1秒かけてX座標860にトゥイーンします
             Tween24.tween(target, 1).x(860),
 
             // ループ対応処理
@@ -149,12 +149,13 @@
     <script>
         let seripara = Tween24.serial(
             Tween24.parallel(
-                Tween24.tween(".sp-box", 2, Ease24._6_ExpoInOut).x(860),
+                Tween24.tween(".sp-box", 2, Ease24._6_ExpoInOut).x(860), // 右に移動しながら
                 Tween24.serial(
-                    Tween24.tween(".sp-box", 1, Ease24._3_CubicIn).scaleX(1.3).skewX(70),
-                    Tween24.tween(".sp-box", 1, Ease24._3_CubicOut).scaleX(1).skewX(0)
+                    Tween24.tween(".sp-box", 1, Ease24._3_CubicIn).scaleX(1.3).skewX(70), // 前半で傾斜とスケールを変更し
+                    Tween24.tween(".sp-box", 1, Ease24._3_CubicOut).scaleX(1).skewX(0) // 後半で戻す
                 )
             ),
+            // その後、角丸＆回転しつつ座標を戻す
             Tween24.tween(".sp-box", 1.5, Ease24._6_ExpoOut).x(0).rotation(180).borderRadius(50),
             // ループ対応処理
             Tween24.wait(1), // 1秒待機

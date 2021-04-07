@@ -502,7 +502,7 @@ var Tween24 = /** @class */ (function () {
      */
     Tween24.prototype.style = function (name, value) { return this._setStyle(name, value); };
     /**
-     * トゥイーン単体のFPSを設定します。
+     * トゥイーン単体のFPS（1秒間の更新回数）を設定します。
      * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
      * @param {number} fps FPSの値
      * @return {Tween24} Tween24インスタンス
@@ -901,7 +901,7 @@ var Tween24 = /** @class */ (function () {
     //
     // ------------------------------------------
     /**
-     * トゥイーン全体のFPSを設定します。
+     * トゥイーン全体のFPS（1秒間の更新回数）を設定します。
      * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
      * @static
      * @param {number} [fps=0] FPSの値

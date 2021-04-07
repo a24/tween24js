@@ -8,12 +8,18 @@
         body {
             margin: 0;
             background-color: #e6e6e6;
+            font-family: "Helvetica Neue",
+                Arial,
+                "Hiragino Kaku Gothic ProN",
+                "Hiragino Sans",
+                Meiryo,
+                sans-serif;
         }
         section {
             display:flex;
             flex-flow: column;
             justify-content:space-around;
-            margin: 100px auto;
+            margin: 100px auto 0 auto;
             width: 960px;
             height: 480px;
             background-color: #F0F0F0;
@@ -23,81 +29,125 @@
             height: 100px;
             background-color: #3CC2B9;
         }
+        p {
+            font-size: 20px;
+            text-align: center;
+            color: #247570;
+        }
     </style>
 </head>
 <body>
-    <script>
-        // Tween24.debugMode(true);
-    </script>
 
-
-    <!-- Single Tween -->
+    <!----------- Single Tween ----------->
 
     <section id="single">
         <div id="box1"></div>
     </section>
+    <p>- Single Tween -</p>
 
     <script>
         let target = document.getElementById("box1");
 
-        // box1を、1秒かけてX座標400にトゥイーンします。
-        let single = Tween24.tween(target, 1).x(860).play();
+        let single = Tween24.serial(
+
+            // box1を、1秒かけてX座標400にトゥイーンします。
+            Tween24.tween(target, 1).x(860),
+
+            // ループ対応処理
+            Tween24.wait(1), // 1秒待機
+            Tween24.prop(target).x(0) // 座標をリセット
+        );
+        // ループ設定
+        single.onComplete(single, single.play);
+        single.play();
     </script>
 
-    <!-- Blend Easing Tween -->
+    <!----------- Blend Easing Tween ----------->
 
     <section id="blend">
         <div id="bl-box1"></div>
     </section>
+    <p>- Blend Easing Tween -</p>
 
     <script>
-        Tween24.tween("#bl-box1", 1, Ease24._Blend(Ease24._6_ExpoIn, Ease24._BounceOut, Ease24._6_ExpoInOut)).x(860).play();
+        let blend = Tween24.serial(
+
+            // イージングをブレンド
+            Tween24.tween("#bl-box1", 1, Ease24._Blend(Ease24._6_ExpoIn, Ease24._BounceOut, Ease24._6_ExpoInOut)).x(860),
+
+            // ループ対応処理
+            Tween24.wait(1), // 1秒待機
+            Tween24.prop("#bl-box1").x(0) // 座標をリセット
+        );
+        // ループ設定
+        blend.onComplete(blend, blend.play);
+        blend.play();
     </script>
 
-    <!-- Serial Tween -->
+    <!------------ Serial Tween ----------->
 
     <section id="serial">
         <div id="sr-box1" class="sr-box"></div>
         <div id="sr-box2" class="sr-box"></div>
         <div id="sr-box3" class="sr-box"></div>
     </section>
+    <p>- Serial Tween -</p>
 
     <script>
-        Tween24.serial(
+        // まとめて透明度を0に設定し、順番にフェードインしながらX座標を860に
+        let serial = Tween24.serial(
             Tween24.prop(".sr-box").opacity(0),
             Tween24.tween("#sr-box1", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
             Tween24.tween("#sr-box2", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
-            Tween24.tween("#sr-box3", 1, Ease24._6_ExpoInOut).x(860).opacity(1)
-        ).play();
+            Tween24.tween("#sr-box3", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
+
+            // ループ対応処理
+            Tween24.wait(1), // 1秒待機
+            Tween24.prop(".sr-box").x(0) // 座標をリセット
+        );
+        // ループ設定
+        serial.onComplete(serial, serial.play);
+        serial.play();
     </script>
 
-    <!-- Parallel Tween -->
+    <!----------- Parallel Tween ----------->
 
     <section id="parallel">
         <div id="pr-box1" class="pr-box"></div>
         <div id="pr-box2" class="pr-box"></div>
         <div id="pr-box3" class="pr-box"></div>
     </section>
+    <p>- Parallel Tween -</p>
 
     <script>
-        Tween24.parallel(
-            Tween24.prop(".pr-box").opacity(0),
-            Tween24.tween("#pr-box1", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
-            Tween24.tween("#pr-box2", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
-            Tween24.tween("#pr-box3", 1, Ease24._6_ExpoInOut).x(860).opacity(1)
-        ).play();
+        let parallel = Tween24.serial(
+            // まとめて透明度を0に設定し、同時にフェードインしながらX座標を860に
+            Tween24.parallel(
+                Tween24.prop(".pr-box").opacity(0),
+                Tween24.tween("#pr-box1", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
+                Tween24.tween("#pr-box2", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
+                Tween24.tween("#pr-box3", 1, Ease24._6_ExpoInOut).x(860).opacity(1)
+            ),
+            // ループ対応処理
+            Tween24.wait(1), // 1秒待機
+            Tween24.prop(".pr-box").x(0) // 座標をリセット
+        );
+        // ループ設定
+        parallel.onComplete(parallel, parallel.play);
+        parallel.play();
     </script>
 
-    <!-- Serial & Parallel Tween -->
+    <!----------- Serial & Parallel Tween ----------->
 
     <section id="seri-para">
         <div class="sp-box"></div>
         <div class="sp-box"></div>
         <div class="sp-box"></div>
     </section>
+    <p>- Serial & Parallel Tween -</p>
     
     <script>
-        Tween24.serial(
+        let seripara = Tween24.serial(
             Tween24.parallel(
                 Tween24.tween(".sp-box", 2, Ease24._6_ExpoInOut).x(860),
                 Tween24.serial(
@@ -106,7 +156,13 @@
                 )
             ),
             Tween24.tween(".sp-box", 1.5, Ease24._6_ExpoOut).x(0).rotation(180).borderRadius(50),
-        ).play();
+            // ループ対応処理
+            Tween24.wait(1), // 1秒待機
+            Tween24.prop(".sp-box").rotation(0).borderRadius(0) // 座標をリセット
+        );
+        // ループ設定
+        seripara.onComplete(seripara, seripara.play);
+        seripara.play();
     </script>
 </body>
 </html>

@@ -1017,4 +1017,3 @@ export class Tween24 {
         return `{${param.trim()}}`;
     }
 }
-export default Tween24;

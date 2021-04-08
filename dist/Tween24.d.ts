@@ -463,4 +463,3 @@ export declare class Tween24 {
     private getTweenTypeString;
     private getTweenParamString;
 }
-export default Tween24;

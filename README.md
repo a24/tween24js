@@ -1,12 +1,25 @@
-Tween24.js
-=========
+# Tween24.js
+
 Tween24.js is animation library that enables fast coding using method chains.
 
-Sample
---------------------------
-- http://a24.github.io/tween24js/sample/index.html
-- http://a24.github.io/tween24js/sample/timer.html
-- http://a24.github.io/tween24js/sample/easing.html
+![Example of Tween24](https://a24.github.io/tween24js/images/tween24-example.gif)
+
+# Setup
+
+## Script Install
+```html
+<script src="tween24.js"></script>
+```
+
+## NPM Install
+```
+$ npm install tween24
+```
+
+# Sample
+- https://a24.github.io/tween24js/sample/index.html
+- https://a24.github.io/tween24js/sample/timer.html
+- https://a24.github.io/tween24js/sample/easing.html
 ```js
 // Single Tween
 Tween24.tween(target, 1).x(860).play();
@@ -53,8 +66,7 @@ function finish() {
 }
 ```
 
-Property method
---------------------------
+# Property method
 - x(...)
 - y(...)
 - xy(...)
@@ -85,8 +97,7 @@ Property method
 - debug()
 - id(...)
 
-Tween & Action method
---------------------------
+# Tween & Action method
 - Tween24.tween(...)
 - Tween24.prop(...)
 - Tween24.serial(...)
@@ -94,14 +105,12 @@ Tween & Action method
 - Tween24.wait(...)
 - Tween24.func(...)
 
-Control method
---------------------------
+# Control method
 - tween.play();
 - tween.pause();
 - tween.stop();
 
-Callback
---------------------------
+# Callback
 - tween.onPlay(...);
 - tween.onInit(...);
 - tween.onUpdate(...);
@@ -110,8 +119,7 @@ Callback
 - tween.onStop(...);
 - tween.onComplete(...);
 
-Easing
---------------------------
+# Easing
 - Ease24._Linear
 - Ease24._1_Sine...
 - Ease24._2_Quad...
@@ -127,7 +135,6 @@ Easing
 - Ease24._Elastic...With
 - Ease24._Blend
 
-Gobal setting
---------------------------
+# Gobal setting
 - Tween24.setDefaultEasing(...);
 - Tween24.setFPS(...);

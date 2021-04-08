@@ -10,4 +10,3 @@ var ClassUtil = /** @class */ (function () {
     return ClassUtil;
 }());
 export { ClassUtil };
-export default ClassUtil;

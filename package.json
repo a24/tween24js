@@ -3,6 +3,7 @@
   "version": "0.7.6",
   "description": "Tween24.js is animation library that enables fast coding using method chains.",
   "main": "./dist/tween24.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "start": "webpack serve --mode development",
     "dev": "webpack --mode development",
@@ -12,7 +13,7 @@
     "type": "git",
     "url": "git+https://a24@github.com/a24/tween24js.git"
   },
-  "keywords": [],
+  "keywords": ["JavaScript", "TypeScript", "CSS", "Tween", "Animation"],
   "author": "Atsushi Kaga",
   "license": "MIT",
   "bugs": {

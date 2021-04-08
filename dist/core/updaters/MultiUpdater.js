@@ -1,6 +1,6 @@
-import ObjectUpdater from "./ObjectUpdater";
-import StyleUpdater from "./StyleUpdater";
-import TransformUpdater from "./TransformUpdater";
+import { ObjectUpdater } from "./ObjectUpdater";
+import { StyleUpdater } from "./StyleUpdater";
+import { TransformUpdater } from "./TransformUpdater";
 var MultiUpdater = /** @class */ (function () {
     function MultiUpdater(targets, UpdaterType) {
         this._updaters = [];
@@ -82,4 +82,3 @@ var MultiUpdater = /** @class */ (function () {
     return MultiUpdater;
 }());
 export { MultiUpdater };
-export default MultiUpdater;

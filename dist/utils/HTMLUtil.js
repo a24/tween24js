@@ -48,4 +48,3 @@ var HTMLUtil = /** @class */ (function () {
     return HTMLUtil;
 }());
 export { HTMLUtil };
-export default HTMLUtil;

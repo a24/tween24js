@@ -22,4 +22,3 @@ var ArrayUtil = /** @class */ (function () {
     return ArrayUtil;
 }());
 export { ArrayUtil };
-export default ArrayUtil;

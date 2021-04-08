@@ -10,4 +10,3 @@ var FunctionExecuter = /** @class */ (function () {
     return FunctionExecuter;
 }());
 export { FunctionExecuter };
-export default FunctionExecuter;

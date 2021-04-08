@@ -1,6 +1,6 @@
-import ParamUpdater from "./ParamUpdater";
-import HTMLUtil from "../../utils/HTMLUtil";
-import StyleColorUpdater from "./StyleColorUpdater";
+import { ParamUpdater } from "./ParamUpdater";
+import { HTMLUtil } from "../../utils/HTMLUtil";
+import { StyleColorUpdater } from "./StyleColorUpdater";
 var StyleUpdater = /** @class */ (function () {
     function StyleUpdater(target) {
         this._target = target;
@@ -103,4 +103,3 @@ var StyleUpdater = /** @class */ (function () {
     return StyleUpdater;
 }());
 export { StyleUpdater };
-export default StyleUpdater;

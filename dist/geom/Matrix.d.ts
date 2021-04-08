@@ -1,0 +1,35 @@
+export declare class Matrix {
+    private static _PI;
+    private static _RAD_TO_DEG;
+    private static _DEG_TO_RAD;
+    private _skewX;
+    private _skewY;
+    private _scaleX;
+    private _scaleY;
+    private _rotation;
+    a: number;
+    b: number;
+    c: number;
+    d: number;
+    tx: number;
+    ty: number;
+    constructor();
+    setMatrixByCSSTransform(matrix: string): void;
+    updateMatrix(): void;
+    toString(): string;
+    set x(value: number);
+    get x(): number;
+    set y(value: number);
+    get y(): number;
+    set skewX(value: number);
+    get skewX(): number;
+    set skewY(value: number);
+    get skewY(): number;
+    set rotation(value: number);
+    get rotation(): number;
+    set scaleX(value: number);
+    get scaleX(): number;
+    set scaleY(value: number);
+    get scaleY(): number;
+    static copy(to: Matrix, from: Matrix): Matrix;
+}

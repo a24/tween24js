@@ -119,4 +119,3 @@ var Matrix = /** @class */ (function () {
     return Matrix;
 }());
 export { Matrix };
-export default Matrix;

@@ -3,3 +3,6 @@ node_modules
 /sample/test.html
 /sample/tweenmax
 /.idea
+
+# src フォルダーでは TypeScript ファイルのみ管理
+src/**/*.js

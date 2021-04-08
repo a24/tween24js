@@ -56,4 +56,3 @@ var ObjectUpdater = /** @class */ (function () {
     return ObjectUpdater;
 }());
 export { ObjectUpdater };
-export default ObjectUpdater;

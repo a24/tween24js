@@ -21,4 +21,3 @@ var ParamUpdater = /** @class */ (function () {
     return ParamUpdater;
 }());
 export { ParamUpdater };
-export default ParamUpdater;

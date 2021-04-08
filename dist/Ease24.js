@@ -680,4 +680,4 @@ var Ease24 = /** @class */ (function () {
     Ease24._ElasticOutIn = Ease24._ElasticOutInWith();
     return Ease24;
 }());
-export default Ease24;
+export { Ease24 };

@@ -11,4 +11,3 @@ var Tween24Event = /** @class */ (function () {
     return Tween24Event;
 }());
 export { Tween24Event };
-export default Tween24Event;

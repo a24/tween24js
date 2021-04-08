@@ -1,4 +1,4 @@
-import ArrayUtil from "../utils/ArrayUtil";
+import { ArrayUtil } from "../utils/ArrayUtil";
 var Ticker24 = /** @class */ (function () {
     function Ticker24() {
         this._fps = 0;
@@ -70,4 +70,3 @@ var Ticker24 = /** @class */ (function () {
     return Ticker24;
 }());
 export { Ticker24 };
-export default Ticker24;

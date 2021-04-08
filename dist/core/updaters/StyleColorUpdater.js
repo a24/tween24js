@@ -1,4 +1,4 @@
-import ParamUpdater from "./ParamUpdater";
+import { ParamUpdater } from "./ParamUpdater";
 var StyleColorUpdater = /** @class */ (function () {
     function StyleColorUpdater(key, colorCode) {
         this._key = key;
@@ -29,4 +29,3 @@ var StyleColorUpdater = /** @class */ (function () {
     return StyleColorUpdater;
 }());
 export { StyleColorUpdater };
-export default StyleColorUpdater;

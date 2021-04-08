@@ -46,9 +46,9 @@
     <p>- Single Tween -</p>
 
     <script>
-        let target = document.getElementById("box1");
+        const target = document.getElementById("box1");
 
-        let single = Tween24.serial(
+        const single = Tween24.serial(
 
             // box1を、1秒かけてX座標860にトゥイーンします
             Tween24.tween(target, 1).x(860),
@@ -70,10 +70,11 @@
     <p>- Blend Easing Tween -</p>
 
     <script>
-        let blend = Tween24.serial(
+        const blendEasing = Ease24._Blend(Ease24._6_ExpoIn, Ease24._BounceOut, Ease24._6_ExpoInOut);
+        const blend = Tween24.serial(
 
             // イージングをブレンド
-            Tween24.tween("#bl-box1", 1, Ease24._Blend(Ease24._6_ExpoIn, Ease24._BounceOut, Ease24._6_ExpoInOut)).x(860),
+            Tween24.tween("#bl-box1", 1, blendEasing).x(860),
 
             // ループ対応処理
             Tween24.wait(1), // 1秒待機
@@ -95,7 +96,7 @@
 
     <script>
         // まとめて透明度を0に設定し、順番にフェードインしながらX座標を860に
-        let serial = Tween24.serial(
+        const serial = Tween24.serial(
             Tween24.prop(".sr-box").opacity(0),
             Tween24.tween("#sr-box1", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
             Tween24.tween("#sr-box2", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
@@ -120,7 +121,7 @@
     <p>- Parallel Tween -</p>
 
     <script>
-        let parallel = Tween24.serial(
+        const parallel = Tween24.serial(
             // まとめて透明度を0に設定し、同時にフェードインしながらX座標を860に
             Tween24.parallel(
                 Tween24.prop(".pr-box").opacity(0),
@@ -147,7 +148,7 @@
     <p>- Serial & Parallel Tween -</p>
     
     <script>
-        let seripara = Tween24.serial(
+        const seripara = Tween24.serial(
             Tween24.parallel(
                 Tween24.tween(".sp-box", 2, Ease24._6_ExpoInOut).x(860), // 右に移動しながら
                 Tween24.serial(

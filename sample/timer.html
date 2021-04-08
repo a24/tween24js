@@ -24,7 +24,7 @@
             justify-content: center;
             margin: 0 auto;
         }
-        #timer {
+        #time {
             display: flex;
             justify-content: center;
             margin: 0 0 20px 0;
@@ -50,30 +50,31 @@
 </head>
 <body>
 <script>
-    var time = 5; // カウントする秒数
-    let timer = Tween24.serial(
-        Tween24.prop(this, { time: this.time }), // タイムをリセット
-        Tween24.tween(this, this.time, Ease24._Linear, { time: 0 }) // time変数をトゥイーン
-            .onUpdate(this, update) // 更新時に実行する関数を設定
-            .onComplete(this, finish) // 完了時に実行する関数を設定
-    );
+const timer = {};
+timer.count = 5; // カウントする秒数
 
-    // トゥイーン更新時に実行
-    function update() {
-        document.getElementById("timer").textContent = "Time: " + this.time.toFixed(1);
-    }
-
-    // トゥイーン完了時に実行
-    function finish() {
-        document.getElementById("timer").textContent = "finish.";
-    }
+// トゥイーン更新時に実行される
+timer.update = function() {
+    document.getElementById("time").textContent = "Time: " + timer.count.toFixed(1);
+}
+// トゥイーン完了時に実行される
+timer.finish = function() {
+    document.getElementById("time").textContent = "finish.";
+}
+// カウントダウンするトゥイーン
+timer.tween = Tween24.serial(
+    Tween24.prop(timer, { count: timer.count }), // タイムをリセット
+    Tween24.tween(timer, timer.count, Ease24._Linear, { count: 0 }) // 変数countをトゥイーン
+        .onUpdate(timer, timer.update) // 更新時に実行する関数を設定
+        .onComplete(timer, timer.finish) // 完了時に実行する関数を設定
+);
 </script>
 
 <section>
-    <p id="timer">Sample timer</p>
+    <p id="time">Sample timer</p>
     <div>
-        <button onclick="timer.play();">Play</button>
-        <button onclick="timer.pause();">Pause</button>
+        <button onclick="timer.tween.play();">Play</button>
+        <button onclick="timer.tween.pause();">Pause</button>
     </div>
 </section>
 </body>

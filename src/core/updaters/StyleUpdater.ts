@@ -9,21 +9,21 @@ export class StyleUpdater implements Updater {
     static readonly PARAM_REG:RegExp = new RegExp(/^[0-9.]{1,99}/);
     static readonly UNIT_REG :RegExp = new RegExp(/[^0-9.]./);
 
-    private _target  : HTMLElement;
-    private _param   : {[key:string]:ParamUpdater|StyleColorUpdater}|null;
-    private _key     : string[]|null;
-    private _unit    : {[key:string]:string}|null;
-    private _tweenKey: string[]|null|null;
+    private _target       : HTMLElement;
+    private _param        : {[key:string]:ParamUpdater|StyleColorUpdater}|null;
+    private _key          : string[]|null;
+    private _unit         : {[key:string]:string}|null;
+    private _tweenKey     : string[]|null|null;
     private _onceParam    : {[key:string]:string}|null;
     private _isUpdatedOnce: boolean;
 
     constructor(target:any) {
-        this._target    = target;
-        this._param     = null;
-        this._key       = null;
-        this._unit      = null;
-        this._tweenKey  = null;
-        this._onceParam = null;
+        this._target        = target;
+        this._param         = null;
+        this._key           = null;
+        this._unit          = null;
+        this._tweenKey      = null;
+        this._onceParam     = null;
         this._isUpdatedOnce = false;
     }
     
@@ -98,6 +98,20 @@ export class StyleUpdater implements Updater {
                 }
             }
         }
+    }
+
+    clone(target:any = this._target):StyleUpdater {
+        const copy:StyleUpdater = new StyleUpdater(target);
+        if (this._param) {
+            copy._param = {};
+            for (const key in this._param) 
+                copy._param[key] = this._param[key].clone();
+        }
+
+        if (this._key      ) copy._key        = [ ...this._key ];
+        if (this._unit     ) copy._unit       = { ...this._unit };
+        if (this._onceParam) copy._onceParam  = { ...this._onceParam };
+        return copy;
     }
 
     toString():string {

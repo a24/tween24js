@@ -56,7 +56,11 @@ export class ObjectUpdater implements Updater {
         }
     }
 
-    complete() {
+    clone(target:any = this._target):ObjectUpdater {
+        const copy:ObjectUpdater = new ObjectUpdater(target);
+        copy._param = { ...this._param };
+        copy._key   = [ ...this._key ];
+        return copy;
     }
 
     toString():string {
@@ -64,5 +68,8 @@ export class ObjectUpdater implements Updater {
         for (const key of this._key)
             str += key + ":" + this._param[key] + " ";
         return str.trim();
+    }
+
+    complete() {
     }
 }

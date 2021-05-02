@@ -24,6 +24,10 @@ export class HTMLUtil {
         return Array.from(document.querySelectorAll(query));
     }
 
+    static querySelectorAllWithBase(base:HTMLElement, query:string):never[] {
+        return Array.from(base.querySelectorAll(query));
+    }
+
     static setStyleProp(element:HTMLElement, prop:string, value:string|number) {
         element.style.setProperty(prop, value as string);
     }

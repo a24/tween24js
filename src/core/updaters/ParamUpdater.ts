@@ -6,9 +6,9 @@ export class ParamUpdater {
     private _delta : number;
     private _value : number;
 
-    constructor(key:string, value:number) {
+    constructor(key:string, target:number) {
         this._key    = key;
-        this._target = value;
+        this._target = target;
         this._start  = 0;
         this._delta  = 0;
         this._value  = 0;
@@ -23,6 +23,10 @@ export class ParamUpdater {
     update(progress:number):number {
         this._value = this._start + this._delta * progress;
         return this._value;
+    }
+
+    clone():ParamUpdater {
+        return new ParamUpdater(this._key, this._target);
     }
     
     toString():string {

@@ -4,9 +4,9 @@ export class StyleColorUpdater {
 
     private _key  : string;
     private _color: string;
-    private _r: ParamUpdater;
-    private _g: ParamUpdater;
-    private _b: ParamUpdater;
+    private _r    : ParamUpdater;
+    private _g    : ParamUpdater;
+    private _b    : ParamUpdater;
 
     constructor(key:string, colorCode:string) {
         this._key   = key;
@@ -35,6 +35,10 @@ export class StyleColorUpdater {
 
     update(progress:number):string {
         return `rgb(${this._r.update(progress)},${this._g.update(progress)},${this._b.update(progress)})`;
+    }
+
+    clone():StyleColorUpdater {
+        return new StyleColorUpdater(this._key, this._color);
     }
     
     toString():string {

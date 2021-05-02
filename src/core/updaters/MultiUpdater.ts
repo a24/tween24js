@@ -7,21 +7,27 @@ export class MultiUpdater implements Updater {
     static type:string = "MultiUpdater";
 
     private _updaters:Updater[];
-    private _updatersByTarget:Map<any, Updater>;
+    private _updaterType:string|null;
+    private _targets:any[];
 
-    constructor(targets:any[], UpdaterType:string) {
+    constructor(targets:any[], updaterType:string|null, updater:Updater|null) {
+        this._targets = targets;
+        this._updaterType = updaterType;
         this._updaters = [];
-        this._updatersByTarget = new Map<any, Updater>();
 
-        let updater:Updater;
-        for (const t of targets) {
-            updater = this.getUpdaterInstance(t, UpdaterType);
-            this._updaters.push(updater);
-            this._updatersByTarget.set(t, updater);
+        if (updaterType) {
+            for (const t of this._targets) {
+                this._updaters.push(this._getUpdaterInstance(t, this._updaterType));
+            }
+        }
+        else if (updater) {
+            for (const t of targets) {
+                this._updaters.push(updater.clone(t));
+            }
         }
     }
 
-    private getUpdaterInstance(target:any, UpdaterType:string):Updater {
+    private _getUpdaterInstance(target:any, UpdaterType:string|null):Updater {
         let updater:Updater;
         switch (UpdaterType) {
             case TransformUpdater.className : updater = new TransformUpdater(target); break;
@@ -75,6 +81,21 @@ export class MultiUpdater implements Updater {
     complete() {
         for (const updater of this._updaters) {
             updater.complete();
+        }
+    }
+
+    clone(target:any = this._targets):Updater {
+        if (Array.isArray(target)) {
+            const copy:MultiUpdater = new MultiUpdater(target, this._updaterType, null);
+            for (const updater of this._updaters) {
+                for (const t of copy._targets) {
+                    copy._updaters.push(updater.clone(t));
+                }
+            }
+            return copy;
+        }
+        else {
+            return this._updaters[0].clone(target);
         }
     }
 

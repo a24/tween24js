@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Tween24 Button Sample</title>
+    <script src="../dist/tween24.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+            background-color: #e6e6e6;
+            font-family: "Helvetica Neue",
+                Arial,
+                "Hiragino Kaku Gothic ProN",
+                "Hiragino Sans",
+                Meiryo,
+                sans-serif;
+        }
+        section {
+            display:flex;
+            flex-flow: column;
+            justify-content:space-around;
+            margin: 100px auto 0 auto;
+            width: 960px;
+            height: 400px;
+            padding: 40px 0;
+            background-color: #F0F0F0;
+        }
+        button {
+            background-color: #247570;
+            border: none;
+            padding: 20px;
+            width: 300px;
+            margin: 0 auto;
+            border-radius: 60px;
+            cursor: pointer;
+        }
+        p {
+            font-size: 20px;
+            text-align: center;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: 0;
+        }
+    </style>
+</head>
+<body>
+    <section>
+        <button class="btn" type="button"><p>Button01</p></button>
+        <button class="btn" type="button"><p>Button02</p></button>
+        <button class="btn" type="button"><p>Button03</p></button>
+        <button class="btn" type="button"><p>Button04</p></button>
+        <button class="btn" type="button"><p>Button05</p></button>
+    </section>
+
+    <script>
+        Event24.add(".btn", "mouseover", "mouseout", 
+            Tween24.parallel(
+                Tween24.tween(".btn p", 0.1).color("#92F0EA"),
+                Tween24.tween(".btn p", 0.05).style("letter-spacing", "1px"),
+                Tween24.tween(".btn", 0.2).backgroundColor("#3CC2B9")
+            )
+        );
+        Event24.add(".btn", "mouseout", "mouseover", 
+            Tween24.serial(
+                Tween24.prop(".btn p").color("#92F0EA").style("letter-spacing", "1px"),
+                Tween24.prop(".btn").backgroundColor("#3CC2B9"),
+                Tween24.parallel(
+                    Tween24.tween(".btn p", 0.4).color("#FFF"),
+                    Tween24.tween(".btn p", 0.1).style("letter-spacing", "0px"),
+                    Tween24.tween(".btn", 0.2).backgroundColor("#247570").style("letter-spacing", "0px")
+                )
+            )
+        );
+    </script>
+</body>
+</html>

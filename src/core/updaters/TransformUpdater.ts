@@ -124,6 +124,18 @@ export class TransformUpdater implements Updater {
         TransformUpdater._chache.delete(this._target);
     }
 
+    clone(target:HTMLElement = this._target):TransformUpdater {
+        const copy:TransformUpdater = new TransformUpdater(target);
+        if (this._x       ) copy._x        = this._x       .clone();
+        if (this._y       ) copy._y        = this._y       .clone();
+        if (this._scaleX  ) copy._scaleX   = this._scaleX  .clone();
+        if (this._scaleY  ) copy._scaleY   = this._scaleY  .clone();
+        if (this._skewX   ) copy._skewX    = this._skewX   .clone();
+        if (this._skewY   ) copy._skewY    = this._skewY   .clone();
+        if (this._rotation) copy._rotation = this._rotation.clone();
+        return copy;
+    }
+
     toString():string {
         let str:string = "";
         if (this._x       ) str += this._x       .toString() + " ";

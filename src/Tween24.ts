@@ -14,7 +14,7 @@ import { HTMLUtil }         from "./utils/HTMLUtil";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.7.6";
+    static readonly VERSION:string = "0.7.7";
 
     private static readonly _TYPE_TWEEN   :string = "tween";
     private static readonly _TYPE_PROP    :string = "prop";
@@ -49,6 +49,7 @@ export class Tween24 {
     private _serialNumber:number  = 0;
     private _tweenId     :string  = "";
     private _targetString:string  = "";
+    private _targetQuery  :string|null  = null;
 
     // Updater
     private _objectUpdater        :ObjectUpdater   |null = null;
@@ -68,7 +69,7 @@ export class Tween24 {
     private _useStyle:boolean = false;
     private _inited  :boolean = false;
     private _isRoot  :boolean = false;
-    private _isPlayed  :boolean = false;
+    private _isPlayed:boolean = false;
     private _isPaused:boolean = false;
     private _isContainerTween:boolean = false;
 
@@ -637,7 +638,7 @@ export class Tween24 {
         }
         else if (this._multiTarget) {
             if (!this._styleMultiUpdater) {
-                this._styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.className);
+                this._styleMultiUpdater = new MultiUpdater(this._multiTarget, StyleUpdater.className, null);
                 this._allUpdaters?.push(this._styleMultiUpdater);
             }
             this._styleMultiUpdater.addPropStr(name, value as string);
@@ -838,35 +839,37 @@ export class Tween24 {
             if (ClassUtil.isString(target[0])) {
                 this._useStyle = true;
                 this._targetString = `[${target.toString()}]`;
+                this._targetQuery = target.toString();
                 this._multiTarget = [];
                 for (const t of target)
                     this._multiTarget = this._multiTarget.concat(HTMLUtil.querySelectorAll(t));
-                this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.className);
+                this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.className, null);
                 this._allUpdaters.push(this._transformMultiUpdater);
             }
             else if (target[0] instanceof HTMLElement) {
                 this._useStyle = true;
                 this._targetString = `[HTMLElements]`;
                 this._multiTarget = target;
-                this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.className);
+                this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.className, null);
                 this._allUpdaters.push(this._transformMultiUpdater);
             }
             else {
                 this._multiTarget = target;
-                this._objectMultiUpdater = new MultiUpdater(this._multiTarget, ObjectUpdater.className);
+                this._objectMultiUpdater = new MultiUpdater(this._multiTarget, ObjectUpdater.className, null);
                 this._allUpdaters.push(this._objectMultiUpdater);
             }
         }
         else if (ClassUtil.isString(target)) {
+            this._targetQuery = target;
             const t = HTMLUtil.querySelectorAll(target);
-            if (t.length == 1) {
+            if (t.length <= 1) {
                 this._singleTarget = t[0];
                 this._transformUpdater = new TransformUpdater(this._singleTarget);
                 this._allUpdaters.push(this._transformUpdater);
             }
             else {
                 this._multiTarget = t;
-                this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.className);
+                this._transformMultiUpdater = new MultiUpdater(this._multiTarget, TransformUpdater.className, null);
                 this._allUpdaters.push(this._transformMultiUpdater);
             }
             this._useStyle = true;
@@ -981,6 +984,71 @@ export class Tween24 {
      */
     static debugMode(flag:boolean) {
         Tween24._debugMode = flag;
+    }
+
+    __clone(base:HTMLElement, baseQuery:string):Tween24 {
+        const copy:Tween24 = new Tween24();
+        let target:any;
+        if (this._targetQuery) {
+            for (const query of this._targetQuery.split(",")) {
+                if (query == baseQuery) {
+                    target = base;
+                }
+                else {
+                    const reg:RegExp = new RegExp("^" + baseQuery + " ")
+                    if (reg.test(this._targetQuery)) {
+                        target = HTMLUtil.querySelectorAllWithBase(base, this._targetQuery.replace(reg, ""))
+                    }
+                    else {
+                        target = this._singleTarget || this._multiTarget;
+                    }
+                }
+            }
+        }
+        switch (this._type) {
+            case Tween24._TYPE_TWEEN :
+            case Tween24._TYPE_PROP  :
+                copy._createChildTween(this._type, target, this._time, this._easing, null);
+                if (this._allUpdaters?.length) {
+                    if (this._singleTarget && copy._multiTarget) {
+                        for (const updater of this._allUpdaters) {
+                            copy._allUpdaters?.push(new MultiUpdater(copy._multiTarget, null, updater));
+                        }
+                    }
+                    else {
+                        for (const updater of this._allUpdaters) {
+                            copy._allUpdaters?.push(updater.clone(copy._singleTarget || copy._multiTarget));
+                        }
+                    }
+                }
+                break;
+            case Tween24._TYPE_WAIT :
+                copy._createChildTween(this._type, target, this._time, this._easing, null);
+                break;
+            case Tween24._TYPE_SERIAL   :
+            case Tween24._TYPE_PARALLEL :
+                const tweens:Tween24[] = [];
+                if (this._childTween) {
+                    for (const tween of this._childTween) {
+                        tweens.push(tween.__clone(base, baseQuery));
+                    }
+                }
+                copy._createContainerTween(this._type, tweens);
+                break;
+            case Tween24._TYPE_FUNC :
+                copy._type = this._type;
+                copy._time = copy._delayTime = copy._startTime = 0;
+                copy._inited = copy._isContainerTween = false;
+                break;
+        }
+        if (this._functionExecuters) {
+            copy._functionExecuters = {};
+            for (const key in this._functionExecuters) {
+                copy._functionExecuters[key] = this._functionExecuters[key].clone();
+            }
+        }
+        copy.delay(this._delayTime).fps(this.__fps).debug(this._debugMode);
+        return copy;
     }
 
     toString():string {

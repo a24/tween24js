@@ -14,13 +14,14 @@ import { HTMLUtil }         from "./utils/HTMLUtil";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.7.7";
+    static readonly VERSION:string = "0.7.8";
 
     private static readonly _TYPE_TWEEN   :string = "tween";
     private static readonly _TYPE_PROP    :string = "prop";
     private static readonly _TYPE_WAIT    :string = "wait";
     private static readonly _TYPE_SERIAL  :string = "serial";
     private static readonly _TYPE_PARALLEL:string = "parallel";
+    private static readonly _TYPE_LAG     :string = "lag";
     private static readonly _TYPE_FUNC    :string = "func";
 
     static ticker:Ticker24;
@@ -242,6 +243,7 @@ export class Tween24 {
                         }
                         break;
                     case Tween24._TYPE_PARALLEL:
+                    case Tween24._TYPE_LAG     :
                         if (this._childTween) {
                             for (const tween of this._childTween) {
                                 this._playingChildTween?.push(tween);
@@ -591,8 +593,9 @@ export class Tween24 {
     style (name: string, value: number|string): Tween24 { return this._setStyle(name, value); }
 
     /**
-     * トゥイーン単体のFPS（1秒間の更新回数）を設定します。
+     * トゥイーン毎のFPS（1秒間の更新回数）を設定します。
      * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
+     * （※ 子以下のトゥイーンには設定できません。）
      * @param {number} fps FPSの値  
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -822,6 +825,29 @@ export class Tween24 {
     static parallel(...childTween: Tween24[]): Tween24 {
         return new Tween24()._createContainerTween(Tween24._TYPE_PARALLEL, childTween);
     }
+
+    /**
+     * 子トゥイーンの対象が複数指定されていた場合、時差を設定します。
+     * @static
+     * @param {number} lagTime 対象毎の時差（秒数）
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static lag(lagTime:number, ...childTween: Tween24[]): Tween24 {
+        const tweens:Tween24[] = [];
+        for (const tween of childTween) {
+            if (tween._multiTarget) {
+                for (let index = 0; index < tween._multiTarget.length; index++) {
+                    tweens.push(tween.__clone(tween._multiTarget[index], tween._targetQuery).delay(lagTime * index));
+                }
+            }
+            else {
+                tweens.push(tween);
+            }
+        }
+        return new Tween24()._createContainerTween(Tween24._TYPE_LAG, tweens);
+    }
     
     private _createChildTween(type:string, target:any, time:number, easing:Function|null, params:{[key:string]:number}|null): Tween24 {
         this._type        = type;
@@ -986,10 +1012,10 @@ export class Tween24 {
         Tween24._debugMode = flag;
     }
 
-    __clone(base:HTMLElement, baseQuery:string):Tween24 {
+    __clone(base:any, baseQuery:string|null):Tween24 {
         const copy:Tween24 = new Tween24();
         let target:any;
-        if (this._targetQuery) {
+        if (this._targetQuery && baseQuery) {
             for (const query of this._targetQuery.split(",")) {
                 if (query == baseQuery) {
                     target = base;
@@ -1004,6 +1030,9 @@ export class Tween24 {
                     }
                 }
             }
+        }
+        else {
+            target = base;
         }
         switch (this._type) {
             case Tween24._TYPE_TWEEN :
@@ -1027,6 +1056,7 @@ export class Tween24 {
                 break;
             case Tween24._TYPE_SERIAL   :
             case Tween24._TYPE_PARALLEL :
+            case Tween24._TYPE_LAG      :
                 const tweens:Tween24[] = [];
                 if (this._childTween) {
                     for (const tween of this._childTween) {
@@ -1077,11 +1107,14 @@ export class Tween24 {
             case Tween24._TYPE_WAIT :
                 param += " time:" + this._time + " ";
         }
+        if (this._delayTime) {
+            param += " delay:" + this._delayTime + " ";
+        }
         if (this._allUpdaters) {
             for (const updater of this._allUpdaters) {
                 param += updater.toString() + " ";
             }
         }
-        return `{${param.trim()}}`;
+        return `{${param.replace(/\s+/g," ").trim()}}`;
     }
 }

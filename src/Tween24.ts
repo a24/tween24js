@@ -10,11 +10,12 @@ import { MultiUpdater }     from "./core/updaters/MultiUpdater";
 import { ArrayUtil }        from "./utils/ArrayUtil";
 import { ClassUtil }        from "./utils/ClassUtil";
 import { HTMLUtil }         from "./utils/HTMLUtil";
+import { Sort24 }           from "./index";
 
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.7.9";
+    static readonly VERSION:string = "0.7.10";
 
     private static readonly _TYPE_TWEEN         :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY:string = "tween_velocity";
@@ -864,11 +865,91 @@ export class Tween24 {
      * @memberof Tween24
      */
     static lag(lagTime:number, ...childTween: Tween24[]): Tween24 {
+        return Tween24.lagSort(lagTime, Sort24._Normal, ...childTween);
+    }
+
+    /**
+     * 子トゥイーンの対象が複数指定されていた場合、再生順をソートして時差を設定します。
+     * @static
+     * @param {number} lagTime 対象毎の時差（秒数）
+     * @param {Function} sort 再生順をソートする関数
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static lagSort(lagTime:number, sort:Function, ...childTween: Tween24[]): Tween24 {
         const tweens:Tween24[] = [];
         for (const tween of childTween) {
             if (tween._multiTarget) {
-                for (let index = 0; index < tween._multiTarget.length; index++) {
-                    tweens.push(tween.__clone(tween._multiTarget[index], tween._targetQuery).delay(lagTime * index));
+                const targets:any[] = sort == Sort24._Normal ? tween._multiTarget : sort(tween._multiTarget);
+                for (let i = 0; i < targets.length; i++) {
+                    tweens.push(tween.__clone(targets[i], tween._targetQuery).delay(lagTime * i));
+                }
+            }
+            else {
+                tweens.push(tween);
+            }
+        }
+        return new Tween24()._createContainerTween(Tween24._TYPE_LAG, tweens);
+    }
+
+    /**
+     * 子トゥイーンの対象が複数指定されていた場合、トータル時間を元に時差を設定します。
+     * @static
+     * @param {number} totalLagTime 時差のトータル時間（秒数）
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static lagTotal(totalLagTime:number, ...childTween: Tween24[]): Tween24 {
+        return Tween24.lagTotalSortEase(totalLagTime, Sort24._Normal, Ease24._Linear, ...childTween);
+    }
+
+    /**
+     * 子トゥイーンの対象が複数指定されていた場合、トータル時間を元にイージングをかけながら時差を設定します。
+     * @static
+     * @param {number} totalLagTime 時差のトータル時間（秒数）
+     * @param {Function} easing 時差の時間量のイージング
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static lagTotalEase(totalLagTime:number, easing:Function, ...childTween: Tween24[]): Tween24 {
+        return Tween24.lagTotalSortEase(totalLagTime, Sort24._Normal, easing, ...childTween);
+    }
+
+    /**
+     * 子トゥイーンの対象が複数指定されていた場合、再生順をソートして、トータル時間を元に時差を設定します。
+     * @static
+     * @param {number} totalLagTime 時差のトータル時間（秒数）
+     * @param {Function} sort 再生順をソートする関数
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static lagTotalSort(totalLagTime:number, sort:Function, ...childTween: Tween24[]): Tween24 {
+        return Tween24.lagTotalSortEase(totalLagTime, sort, Ease24._Linear, ...childTween);
+    }
+
+    /**
+     * 子トゥイーンの対象が複数指定されていた場合、再生順をソートして、トータル時間を元にイージングをかけながら時差を設定します。
+     * @static
+     * @param {number} totalLagTime 時差のトータル時間（秒数）
+     * @param {Function} sort 再生順をソートする関数
+     * @param {Function} easing 時差の時間量のイージング
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static lagTotalSortEase(totalLagTime:number, sort:Function, easing:Function, ...childTween: Tween24[]): Tween24 {
+        const tweens:Tween24[] = [];
+        for (const tween of childTween) {
+            if (tween._multiTarget) {
+                const targets:any[] = sort == Sort24._Normal ? tween._multiTarget : sort(tween._multiTarget);
+                const numTarget:number = targets.length;
+                for (let i = 0; i < numTarget; i++) {
+                    const delay:number = easing((i + 1) / numTarget, 0, totalLagTime, 1);
+                    tweens.push(tween.__clone(targets[i], tween._targetQuery).delay(delay));
                 }
             }
             else {

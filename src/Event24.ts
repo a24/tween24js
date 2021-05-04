@@ -32,16 +32,9 @@ export class Event24 {
         this._playEventType = playEventType;
         this._stopEventType = stopEventType;
 
-        if (target instanceof HTMLElement) {
-            this._tween         = tween.__clone(target, query);
-            this._playHandler   = this._play.bind(this);
-            this._stopHandler   = this._stop.bind(this);
-        }
-        else {
-            this._tween         = tween;
-            this._playHandler   = this._play;
-            this._stopHandler   = this._stop;
-        }
+        this._tween = (target instanceof HTMLElement) ? tween.__clone(target, query) : tween;
+        this._playHandler   = this._play.bind(this);
+        this._stopHandler   = this._stop.bind(this);
     }
 
     public setEventListener() {

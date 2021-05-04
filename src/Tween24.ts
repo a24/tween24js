@@ -14,15 +14,16 @@ import { HTMLUtil }         from "./utils/HTMLUtil";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.7.8";
+    static readonly VERSION:string = "0.7.9";
 
-    private static readonly _TYPE_TWEEN   :string = "tween";
-    private static readonly _TYPE_PROP    :string = "prop";
-    private static readonly _TYPE_WAIT    :string = "wait";
-    private static readonly _TYPE_SERIAL  :string = "serial";
-    private static readonly _TYPE_PARALLEL:string = "parallel";
-    private static readonly _TYPE_LAG     :string = "lag";
-    private static readonly _TYPE_FUNC    :string = "func";
+    private static readonly _TYPE_TWEEN         :string = "tween";
+    private static readonly _TYPE_TWEEN_VELOCITY:string = "tween_velocity";
+    private static readonly _TYPE_PROP          :string = "prop";
+    private static readonly _TYPE_WAIT          :string = "wait";
+    private static readonly _TYPE_SERIAL        :string = "serial";
+    private static readonly _TYPE_PARALLEL      :string = "parallel";
+    private static readonly _TYPE_LAG           :string = "lag";
+    private static readonly _TYPE_FUNC          :string = "func";
 
     static ticker:Ticker24;
     static ease  :Ease24;
@@ -41,6 +42,7 @@ export class Tween24 {
     private _type        :string         = "";
 
     private _time     :number  = NaN;
+    private _velocity :number  = NaN;
     private _delayTime:number  = NaN;
     private _startTime:number  = NaN;
     private _progress :number  = 0;
@@ -69,9 +71,10 @@ export class Tween24 {
     // Status
     private _useStyle:boolean = false;
     private _inited  :boolean = false;
+    private _played  :boolean = false;
+    private _paused  :boolean = false;
     private _isRoot  :boolean = false;
-    private _isPlayed:boolean = false;
-    private _isPaused:boolean = false;
+    private _firstUpdated    :boolean = false;
     private _isContainerTween:boolean = false;
 
     // Action & Callback
@@ -104,11 +107,12 @@ export class Tween24 {
     // ------------------------------------------
 
     play() {
-        if (!this._isPaused) {
-            if (!this._isPlayed) {
+        if (!this._paused) {
+            if (!this._played) {
                 this._root   = this;
                 this._isRoot = true;
                 this._inited = false;
+                this._firstUpdated = false;
                 this._play();
                 Tween24.ticker.add(this);
                 this._functionExecute(Tween24Event.PLAY);
@@ -116,7 +120,7 @@ export class Tween24 {
         }
         else {
             this._resume();
-            this._isPaused = false;
+            this._paused = false;
             Tween24.ticker.add(this);
             this._functionExecute(Tween24Event.RESUME);
         }
@@ -130,13 +134,13 @@ export class Tween24 {
             this._root = this._parent?._root || this._parent;
             this._numLayers = this._parent ? this._parent._numLayers + 1 : 1;
         }
-        this._isPlayed = true;
+        this._played = true;
         this._startTime = Ticker24.getTime() + this._delayTime * 1000;
         this._debugLog("play");
     }
 
     private _resume() {
-        this._isPlayed = true;
+        this._played = true;
 
         const nowTime:number = Ticker24.getTime();
         this._startTime = nowTime - this._time * 1000 * this._progress;
@@ -151,8 +155,8 @@ export class Tween24 {
 
     pause() {
         if (this._isRoot) {
-            this._isPlayed = false;
-            this._isPaused = true;
+            this._played = false;
+            this._paused = true;
             Tween24.ticker.remove(this);
             this._functionExecute(Tween24Event.PAUSE);
         }
@@ -185,6 +189,17 @@ export class Tween24 {
             for (const updater of this._allUpdaters) {
                 updater.init();
             }
+        }
+
+        // Velocity
+        if (this._type == Tween24._TYPE_TWEEN_VELOCITY) {
+            const deltas:number[] = [0];
+            if (this._allUpdaters?.length) {
+                for (const updater of this._allUpdaters) {
+                    deltas.push(updater.getMaxAbsDelta());
+                }
+            }
+            this._time = Math.max(...deltas) / this._velocity;
         }
         
         // Overwrite
@@ -226,6 +241,13 @@ export class Tween24 {
     }
 
     public _update(nowTime:number) {
+        // Init
+        if (!this._inited) {
+            this._inited = true;
+            this._initParam();
+            this._functionExecute(Tween24Event.INIT);
+        }
+
         this._updateProgress(this._time, this._startTime, nowTime);
 
         // Delay
@@ -233,8 +255,8 @@ export class Tween24 {
 
         // Container Tween
         if (this._isContainerTween) {
-            if (this._inited == false) {
-                this._inited = true;
+            if (this._firstUpdated == false) {
+                this._firstUpdated = true;
                 switch (this._type) {
                     case Tween24._TYPE_SERIAL:
                         if (this._firstTween) {
@@ -252,7 +274,6 @@ export class Tween24 {
                         }
                         break;
                 }
-                this._functionExecute(Tween24Event.INIT);
             }
             // Update
             if (this._playingChildTween) {
@@ -266,14 +287,8 @@ export class Tween24 {
 
         // Child Tween
         else {
+            this._firstUpdated = true;
             if (this._singleTarget || this._multiTarget) {
-                // Init
-                if (!this._inited) {
-                    this._inited = true;
-                    this._initParam();
-                    this._functionExecute(Tween24Event.INIT);
-                }
-
                 // Update propety
                 var prog = this._easing ? this._easing(this._progress, 0, 1, 1) : this._progress;
                 if (this._allUpdaters?.length) {
@@ -284,11 +299,6 @@ export class Tween24 {
                 this._functionExecute(Tween24Event.UPDATE);
             }
             else {
-                // Init
-                if (!this._inited) {
-                    this._inited = true;
-                    this._functionExecute(Tween24Event.INIT);
-                }
                 this._functionExecute(Tween24Event.UPDATE);
             }
 
@@ -316,8 +326,9 @@ export class Tween24 {
         if (this._isRoot) Tween24.ticker.remove(this);
         if (this._playingChildTween) this._playingChildTween.length = 0;
         this._numCompleteChildren = 0;
-        this._isPlayed = false;
+        this._played = false;
         this._inited = false;
+        this._firstUpdated = false;
 
         ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this._singleTarget), this);
         ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
@@ -759,6 +770,24 @@ export class Tween24 {
     }
 
     /**
+     * 速度を指定するトゥイーンを設定します。
+     * 
+     * このトゥイーンは、指定された速度とパラメータの変化量から時間を自動設定します。
+     * 複数パラメータを変化させる場合、変化量の一番大きい値を基準にします。
+     * x,y の座標系パラメータは、計算後の距離を変化量とします。
+     * @static
+     * @param {*} target 対象オブジェクト
+     * @param {number} velocity 1秒間の変化量（速度）
+     * @param {(Function|null)} [easing=null] イージング関数（デフォルト値：Ease24._Linear）
+     * @param {({ [key: string]: number } | null)} [params=null] トゥイーンさせるパラメータ（省略可）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static tweenVelocity(target: any, velocity: number, easing: Function|null = null, params: { [key: string]: number } | null = null): Tween24 {
+        return new Tween24()._createChildTween(Tween24._TYPE_TWEEN_VELOCITY, target, velocity, easing, params);
+    }
+
+    /**
      * プロパティを設定します。
      * @static
      * @param {*} target 対象オブジェクト
@@ -849,15 +878,21 @@ export class Tween24 {
         return new Tween24()._createContainerTween(Tween24._TYPE_LAG, tweens);
     }
     
-    private _createChildTween(type:string, target:any, time:number, easing:Function|null, params:{[key:string]:number}|null): Tween24 {
+    private _createChildTween(type:string, target:any, timeOrVelocity:number, easing:Function|null, params:{[key:string]:number}|null): Tween24 {
         this._type        = type;
         this._easing      = easing || Tween24._defaultEasing;
-        this._time        = time;
         this._delayTime   = 0;
         this._startTime   = 0;
-        this._inited      = false;
         this._allUpdaters = [];
         this._isContainerTween = false;
+
+        if (type == Tween24._TYPE_TWEEN_VELOCITY) {
+            this._time = 0;
+            this._velocity = timeOrVelocity;
+        }
+        else {
+            this._time = timeOrVelocity;
+        }
 
         this._createCommon();
 
@@ -958,7 +993,6 @@ export class Tween24 {
         this._time      = 0;
         this._delayTime = 0;
         this._startTime = 0;
-        this._inited    = false;
         this._isContainerTween = false;
 
         this._createCommon();
@@ -1037,7 +1071,8 @@ export class Tween24 {
         switch (this._type) {
             case Tween24._TYPE_TWEEN :
             case Tween24._TYPE_PROP  :
-                copy._createChildTween(this._type, target, this._time, this._easing, null);
+            case Tween24._TYPE_TWEEN_VELOCITY:
+                copy._createChildTween(this._type, target, this._velocity || this._time, this._easing, null);
                 if (this._allUpdaters?.length) {
                     if (this._singleTarget && copy._multiTarget) {
                         for (const updater of this._allUpdaters) {
@@ -1068,7 +1103,7 @@ export class Tween24 {
             case Tween24._TYPE_FUNC :
                 copy._type = this._type;
                 copy._time = copy._delayTime = copy._startTime = 0;
-                copy._inited = copy._isContainerTween = false;
+                copy._isContainerTween = false;
                 break;
         }
         if (this._functionExecuters) {
@@ -1105,7 +1140,9 @@ export class Tween24 {
         switch (this._type) {
             case Tween24._TYPE_TWEEN :
             case Tween24._TYPE_WAIT :
-                param += " time:" + this._time + " ";
+                param += " time:" + this._time + " "; break;
+            case Tween24._TYPE_TWEEN_VELOCITY :
+                param += " velocity:" + this._velocity + " "; break;
         }
         if (this._delayTime) {
             param += " delay:" + this._delayTime + " ";

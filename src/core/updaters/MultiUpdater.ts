@@ -84,6 +84,13 @@ export class MultiUpdater implements Updater {
         }
     }
 
+    getMaxAbsDelta():number {
+        const deltas:number[] = [];
+        for (const updater of this._updaters)
+            deltas.push(updater.getMaxAbsDelta());
+        return Math.max(...deltas);
+    }
+
     clone(target:any = this._targets):Updater {
         if (Array.isArray(target)) {
             const copy:MultiUpdater = new MultiUpdater(target, this._updaterType, null);

@@ -25,6 +25,10 @@ export class ParamUpdater {
         return this._value;
     }
 
+    getDelta() {
+        return this._delta;
+    }
+
     clone():ParamUpdater {
         return new ParamUpdater(this._key, this._target);
     }

@@ -37,6 +37,13 @@ export class StyleColorUpdater {
         return `rgb(${this._r.update(progress)},${this._g.update(progress)},${this._b.update(progress)})`;
     }
 
+    getDelta():number {
+        const dr:number = this._r.getDelta();
+        const dg:number = this._g.getDelta();
+        const db:number = this._b.getDelta();
+        return Math.max(Math.sqrt(dr * dr + dg * dg + db * db));
+    }
+
     clone():StyleColorUpdater {
         return new StyleColorUpdater(this._key, this._color);
     }

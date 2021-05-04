@@ -55,6 +55,20 @@ export class ObjectUpdater implements Updater {
             }
         }
     }
+    
+    getMaxAbsDelta():number {
+        const deltas:number[] = [];
+        let dx:number = 0;
+        let dy:number = 0;
+        for (const key in this._deltaParam) {
+            if      (key == "x") dx = this._param[key];
+            else if (key == "y") dy = this._param[key];
+            else 
+                deltas.push(Math.abs(this._param[key]));
+        }
+        deltas.push(Math.sqrt(dx * dx + dy * dy));
+        return Math.max(...deltas);
+    }
 
     clone(target:any = this._target):ObjectUpdater {
         const copy:ObjectUpdater = new ObjectUpdater(target);

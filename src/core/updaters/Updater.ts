@@ -10,4 +10,5 @@ export interface Updater {
     addProp   (key:string, value:number):void;
     addPropStr(key:string, value:string):void;
     overwrite (updater:Updater|MultiUpdater):void;
+    getMaxAbsDelta():number;
 }

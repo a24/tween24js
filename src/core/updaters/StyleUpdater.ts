@@ -100,6 +100,15 @@ export class StyleUpdater implements Updater {
         }
     }
 
+    getMaxAbsDelta():number {
+        const deltas:number[] = [];
+        if (this._param) {
+            for (const key in this._param) 
+                deltas.push(Math.abs(this._param[key].getDelta()));
+        }
+        return Math.max(...deltas);
+    }
+
     clone(target:any = this._target):StyleUpdater {
         const copy:StyleUpdater = new StyleUpdater(target);
         if (this._param) {

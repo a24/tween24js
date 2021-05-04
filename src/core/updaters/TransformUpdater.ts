@@ -124,6 +124,19 @@ export class TransformUpdater implements Updater {
         TransformUpdater._chache.delete(this._target);
     }
 
+    getMaxAbsDelta():number {
+        const deltas:number[] = [];
+        const dx = this._x ? this._x.getDelta() : 0;
+        const dy = this._y ? this._y.getDelta() : 0;
+        deltas.push(Math.sqrt(dx * dx + dy * dy));
+        if (this._scaleX  ) deltas.push(Math.abs(this._scaleX  .getDelta()));
+        if (this._scaleY  ) deltas.push(Math.abs(this._scaleY  .getDelta()));
+        if (this._skewX   ) deltas.push(Math.abs(this._skewX   .getDelta()));
+        if (this._skewY   ) deltas.push(Math.abs(this._skewY   .getDelta()));
+        if (this._rotation) deltas.push(Math.abs(this._rotation.getDelta()));
+        return Math.max(...deltas);
+    }
+
     clone(target:HTMLElement = this._target):TransformUpdater {
         const copy:TransformUpdater = new TransformUpdater(target);
         if (this._x       ) copy._x        = this._x       .clone();

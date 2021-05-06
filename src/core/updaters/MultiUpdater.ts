@@ -93,7 +93,8 @@ export class MultiUpdater implements Updater {
 
     clone(target:any = this._targets):Updater {
         if (Array.isArray(target)) {
-            const copy:MultiUpdater = new MultiUpdater(target, this._updaterType, null);
+            const copy:MultiUpdater = new MultiUpdater(target, null, null);
+            copy._updaterType = this._updaterType;
             for (const updater of this._updaters) {
                 for (const t of copy._targets) {
                     copy._updaters.push(updater.clone(t));

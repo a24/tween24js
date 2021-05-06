@@ -11,20 +11,24 @@ import { ArrayUtil }        from "./utils/ArrayUtil";
 import { ClassUtil }        from "./utils/ClassUtil";
 import { HTMLUtil }         from "./utils/HTMLUtil";
 import { Sort24 }           from "./index";
+import { Text24 }           from "./utils/Text24";
 
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.7.10";
+    static readonly VERSION:string = "0.8.0";
 
-    private static readonly _TYPE_TWEEN         :string = "tween";
-    private static readonly _TYPE_TWEEN_VELOCITY:string = "tween_velocity";
-    private static readonly _TYPE_PROP          :string = "prop";
-    private static readonly _TYPE_WAIT          :string = "wait";
-    private static readonly _TYPE_SERIAL        :string = "serial";
-    private static readonly _TYPE_PARALLEL      :string = "parallel";
-    private static readonly _TYPE_LAG           :string = "lag";
-    private static readonly _TYPE_FUNC          :string = "func";
+    private static readonly _TYPE_TWEEN              :string = "tween";
+    private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
+    private static readonly _TYPE_TWEEN_TEXT         :string = "tween_text";
+    private static readonly _TYPE_TWEEN_TEXT_VELOCITY:string = "tween_text_velocity";
+    private static readonly _TYPE_PROP               :string = "prop";
+    private static readonly _TYPE_PROP_TEXT          :string = "prop_text";
+    private static readonly _TYPE_WAIT               :string = "wait";
+    private static readonly _TYPE_SERIAL             :string = "serial";
+    private static readonly _TYPE_PARALLEL           :string = "parallel";
+    private static readonly _TYPE_LAG                :string = "lag";
+    private static readonly _TYPE_FUNC               :string = "func";
 
     static ticker:Ticker24;
     static ease  :Ease24;
@@ -82,12 +86,19 @@ export class Tween24 {
     private _functionExecuters:{[key:string]:FunctionExecuter}|null = null;
 
     // Container Tween
-    private _firstTween       :Tween24  |null = null;
-    private _childTween       :Tween24[]|null = null;
-    private _playingChildTween:Tween24[]|null = null;
+    private _firstTween        :Tween24  |null = null;
+    private _childTween        :Tween24[]|null = null;
+    private _playingChildTween :Tween24[]|null = null;
+    private _originalChildTween:Tween24[]|null = null;
 
     private _numChildren        :number = 0;
     private _numCompleteChildren:number = 0;
+
+    // Lag
+    private _lagTime     :number = NaN;
+    private _totalLagTime:number = NaN;
+    private _lagSort     :Function|null = null;
+    private _lagEasing   :Function|null = null;
     
     // Tween FPS
     __fps:number = 0;
@@ -193,7 +204,7 @@ export class Tween24 {
         }
 
         // Velocity
-        if (this._type == Tween24._TYPE_TWEEN_VELOCITY) {
+        if (this._type == Tween24._TYPE_TWEEN_VELOCITY || this._type == Tween24._TYPE_TWEEN_TEXT_VELOCITY) {
             const deltas:number[] = [0];
             if (this._allUpdaters?.length) {
                 for (const updater of this._allUpdaters) {
@@ -799,6 +810,76 @@ export class Tween24 {
     static prop(target: any, params: { [key: string]: number } | null = null): Tween24 {
         return new Tween24()._createChildTween(Tween24._TYPE_PROP, target, 0, null, params);
     }
+
+    /**
+     * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれにプロパティを設定します。
+     * @static
+     * @param {string} targetQuery 対象要素を指定するクエリ
+     * @param {number} spacing 文字間の調整（px）
+     * @param {boolean} [overflowHidden=false] overflow:hidden を設定するか
+     * @param {boolean} [double=false] テキストを下側に複製するか
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static propText(targetQuery:string, spacing:number, overflowHidden:boolean = false, double:boolean = false): Tween24 {
+        return Tween24._tweenText(Tween24._TYPE_PROP_TEXT, targetQuery, 0, null, spacing, overflowHidden, double);
+    }
+
+    /**
+     * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれにトゥイーンを設定します。
+     * @static
+     * @param {string} targetQuery 対象要素を指定するクエリ
+     * @param {number} time 時間（秒）
+     * @param {(Function|null)} [easing=null] イージング関数（デフォルト値：Ease24._Linear）
+     * @param {number} spacing 文字間の調整（px）
+     * @param {boolean} [overflowHidden=false] overflow:hidden を設定するか
+     * @param {boolean} [double=false] テキストを下側に複製するか
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static tweenText(targetQuery:string, time:number, easing:Function|null = null, spacing:number, overflowHidden:boolean = false, double:boolean = false): Tween24 {
+        return Tween24._tweenText(Tween24._TYPE_TWEEN_TEXT, targetQuery, time, easing, spacing, overflowHidden, double);
+    }
+
+    /**
+     * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれに速度を指定するトゥイーンを設定します。
+     * 
+     * このトゥイーンは、指定された速度とパラメータの変化量から時間を自動設定します。
+     * 複数パラメータを変化させる場合、変化量の一番大きい値を基準にします。
+     * x,y の座標系パラメータは、計算後の距離を変化量とします。
+     * @static
+     * @param {string} targetQuery 対象要素を指定するクエリ
+     * @param {number} velocity 1秒間の変化量（速度）
+     * @param {(Function|null)} [easing=null] イージング関数（デフォルト値：Ease24._Linear）
+     * @param {number} spacing 文字間の調整（px）
+     * @param {boolean} [overflowHidden=false] overflow:hidden を設定するか
+     * @param {boolean} [double=false] テキストを下側に複製するか
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static tweenTextVelocity(targetQuery:string, velocity:number, easing:Function|null = null, spacing:number, overflowHidden:boolean = false, double:boolean = false): Tween24 {
+        return Tween24._tweenText(Tween24._TYPE_TWEEN_VELOCITY, targetQuery, velocity, easing, spacing, overflowHidden, double);
+    }
+
+    private static _tweenText(type:string, targetQuery:string, timeOrVelocity:number, easing:Function|null = null, spacing:number, overflowHidden:boolean = false, double:boolean = false):Tween24 {
+        const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
+        const textElements:any[] = [];
+        for (const target of targets) {
+            const text:Text24|undefined = Text24.getInstance(target);
+            if (text) {
+                textElements.push(...text.targets);
+            }
+            else {
+                const text:Text24 = new Text24(target, target.textContent || "", overflowHidden, double);
+                text.spacing = spacing;
+                textElements.push(...text.targets);
+            }
+        }
+        const tween:Tween24 = new Tween24()._createChildTween(type, textElements, timeOrVelocity, easing, null);
+        tween._targetQuery = targetQuery + " span";
+        return tween;
+    }
+
     /**
      * トゥイーンを待機します。
      * @static
@@ -890,7 +971,11 @@ export class Tween24 {
                 tweens.push(tween);
             }
         }
-        return new Tween24()._createContainerTween(Tween24._TYPE_LAG, tweens);
+        const tween:Tween24 = new Tween24()._createContainerTween(Tween24._TYPE_LAG, tweens);
+        tween._lagTime = lagTime;
+        tween._lagSort = sort;
+        tween._originalChildTween = childTween;
+        return tween;
     }
 
     /**
@@ -956,7 +1041,12 @@ export class Tween24 {
                 tweens.push(tween);
             }
         }
-        return new Tween24()._createContainerTween(Tween24._TYPE_LAG, tweens);
+        const tween:Tween24 = new Tween24()._createContainerTween(Tween24._TYPE_LAG, tweens);
+        tween._totalLagTime = totalLagTime;
+        tween._lagSort = sort;
+        tween._lagEasing = easing;
+        tween._originalChildTween = childTween;
+        return tween;
     }
     
     private _createChildTween(type:string, target:any, timeOrVelocity:number, easing:Function|null, params:{[key:string]:number}|null): Tween24 {
@@ -967,7 +1057,7 @@ export class Tween24 {
         this._allUpdaters = [];
         this._isContainerTween = false;
 
-        if (type == Tween24._TYPE_TWEEN_VELOCITY) {
+        if (type == Tween24._TYPE_TWEEN_VELOCITY || type == Tween24._TYPE_TWEEN_TEXT_VELOCITY) {
             this._time = 0;
             this._velocity = timeOrVelocity;
         }
@@ -1128,7 +1218,7 @@ export class Tween24 {
     }
 
     __clone(base:any, baseQuery:string|null):Tween24 {
-        const copy:Tween24 = new Tween24();
+        let copy:Tween24 = new Tween24();
         let target:any;
         if (this._targetQuery && baseQuery) {
             for (const query of this._targetQuery.split(",")) {
@@ -1138,7 +1228,7 @@ export class Tween24 {
                 else {
                     const reg:RegExp = new RegExp("^" + baseQuery + " ")
                     if (reg.test(this._targetQuery)) {
-                        target = HTMLUtil.querySelectorAllWithBase(base, this._targetQuery.replace(reg, ""))
+                        target = HTMLUtil.querySelectorAllWithBase(base, this._targetQuery.replace(reg, ""));
                     }
                     else {
                         target = this._singleTarget || this._multiTarget;
@@ -1151,8 +1241,11 @@ export class Tween24 {
         }
         switch (this._type) {
             case Tween24._TYPE_TWEEN :
-            case Tween24._TYPE_PROP  :
-            case Tween24._TYPE_TWEEN_VELOCITY:
+            case Tween24._TYPE_TWEEN_VELOCITY :
+            case Tween24._TYPE_TWEEN_TEXT :
+            case Tween24._TYPE_TWEEN_TEXT_VELOCITY :
+            case Tween24._TYPE_PROP :
+            case Tween24._TYPE_PROP_TEXT :
                 copy._createChildTween(this._type, target, this._velocity || this._time, this._easing, null);
                 if (this._allUpdaters?.length) {
                     if (this._singleTarget && copy._multiTarget) {
@@ -1172,7 +1265,6 @@ export class Tween24 {
                 break;
             case Tween24._TYPE_SERIAL   :
             case Tween24._TYPE_PARALLEL :
-            case Tween24._TYPE_LAG      :
                 const tweens:Tween24[] = [];
                 if (this._childTween) {
                     for (const tween of this._childTween) {
@@ -1180,6 +1272,20 @@ export class Tween24 {
                     }
                 }
                 copy._createContainerTween(this._type, tweens);
+                break;
+            case Tween24._TYPE_LAG:
+                const lagTweens:Tween24[] = [];
+                if (this._originalChildTween) {
+                    for (const tween of this._originalChildTween) {
+                        lagTweens.push(tween.__clone(base, baseQuery));
+                    }
+                }
+                if (!isNaN(this._lagTime)) {
+                    copy = Tween24.lagSort(this._lagTime, this._lagSort || Sort24._Normal, ...lagTweens);
+                }
+                else {
+                    copy = Tween24.lagTotalSortEase(this._totalLagTime, this._lagSort || Sort24._Normal, this._lagEasing || Ease24._Linear, ...lagTweens);
+                }
                 break;
             case Tween24._TYPE_FUNC :
                 copy._type = this._type;
@@ -1194,6 +1300,7 @@ export class Tween24 {
             }
         }
         copy.delay(this._delayTime).fps(this.__fps).debug(this._debugMode);
+        copy._targetQuery = this._targetQuery;
         return copy;
     }
 
@@ -1221,8 +1328,10 @@ export class Tween24 {
         switch (this._type) {
             case Tween24._TYPE_TWEEN :
             case Tween24._TYPE_WAIT :
+            case Tween24._TYPE_TWEEN_TEXT :
                 param += " time:" + this._time + " "; break;
             case Tween24._TYPE_TWEEN_VELOCITY :
+            case Tween24._TYPE_TWEEN_TEXT_VELOCITY :
                 param += " velocity:" + this._velocity + " "; break;
         }
         if (this._delayTime) {

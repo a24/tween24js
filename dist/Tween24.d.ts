@@ -3,10 +3,15 @@ import { Ease24 } from "./Ease24";
 export declare class Tween24 {
     static readonly VERSION: string;
     private static readonly _TYPE_TWEEN;
+    private static readonly _TYPE_TWEEN_VELOCITY;
+    private static readonly _TYPE_TWEEN_TEXT;
+    private static readonly _TYPE_TWEEN_TEXT_VELOCITY;
     private static readonly _TYPE_PROP;
+    private static readonly _TYPE_PROP_TEXT;
     private static readonly _TYPE_WAIT;
     private static readonly _TYPE_SERIAL;
     private static readonly _TYPE_PARALLEL;
+    private static readonly _TYPE_LAG;
     private static readonly _TYPE_FUNC;
     static ticker: Ticker24;
     static ease: Ease24;
@@ -20,6 +25,7 @@ export declare class Tween24 {
     private _easing;
     private _type;
     private _time;
+    private _velocity;
     private _delayTime;
     private _startTime;
     private _progress;
@@ -28,6 +34,7 @@ export declare class Tween24 {
     private _serialNumber;
     private _tweenId;
     private _targetString;
+    private _targetQuery;
     private _objectUpdater;
     private _objectMultiUpdater;
     private _transformUpdater;
@@ -40,16 +47,22 @@ export declare class Tween24 {
     private _next;
     private _useStyle;
     private _inited;
+    private _played;
+    private _paused;
     private _isRoot;
-    private _isPlayed;
-    private _isPaused;
+    private _firstUpdated;
     private _isContainerTween;
     private _functionExecuters;
     private _firstTween;
     private _childTween;
     private _playingChildTween;
+    private _originalChildTween;
     private _numChildren;
     private _numCompleteChildren;
+    private _lagTime;
+    private _totalLagTime;
+    private _lagSort;
+    private _lagEasing;
     __fps: number;
     __beforeTime: number;
     constructor();
@@ -276,8 +289,9 @@ export declare class Tween24 {
      */
     style(name: string, value: number | string): Tween24;
     /**
-     * トゥイーン単体のFPS（1秒間の更新回数）を設定します。
+     * トゥイーン毎のFPS（1秒間の更新回数）を設定します。
      * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
+     * （※ 子以下のトゥイーンには設定できません。）
      * @param {number} fps FPSの値
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
@@ -379,6 +393,23 @@ export declare class Tween24 {
         [key: string]: number;
     } | null): Tween24;
     /**
+     * 速度を指定するトゥイーンを設定します。
+     *
+     * このトゥイーンは、指定された速度とパラメータの変化量から時間を自動設定します。
+     * 複数パラメータを変化させる場合、変化量の一番大きい値を基準にします。
+     * x,y の座標系パラメータは、計算後の距離を変化量とします。
+     * @static
+     * @param {*} target 対象オブジェクト
+     * @param {number} velocity 1秒間の変化量（速度）
+     * @param {(Function|null)} [easing=null] イージング関数（デフォルト値：Ease24._Linear）
+     * @param {({ [key: string]: number } | null)} [params=null] トゥイーンさせるパラメータ（省略可）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static tweenVelocity(target: any, velocity: number, easing?: Function | null, params?: {
+        [key: string]: number;
+    } | null): Tween24;
+    /**
      * プロパティを設定します。
      * @static
      * @param {*} target 対象オブジェクト
@@ -389,6 +420,48 @@ export declare class Tween24 {
     static prop(target: any, params?: {
         [key: string]: number;
     } | null): Tween24;
+    /**
+     * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれにプロパティを設定します。
+     * @static
+     * @param {string} targetQuery 対象要素を指定するクエリ
+     * @param {number} spacing 文字間の調整（px）
+     * @param {boolean} [overflowHidden=false] overflow:hidden を設定するか
+     * @param {boolean} [double=false] テキストを下側に複製するか
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static propText(targetQuery: string, spacing: number, overflowHidden?: boolean, double?: boolean): Tween24;
+    /**
+     * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれにトゥイーンを設定します。
+     * @static
+     * @param {string} targetQuery 対象要素を指定するクエリ
+     * @param {number} time 時間（秒）
+     * @param {(Function|null)} [easing=null] イージング関数（デフォルト値：Ease24._Linear）
+     * @param {number} spacing 文字間の調整（px）
+     * @param {boolean} [overflowHidden=false] overflow:hidden を設定するか
+     * @param {boolean} [double=false] テキストを下側に複製するか
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static tweenText(targetQuery: string, time: number, easing?: Function | null, spacing?: number, overflowHidden?: boolean, double?: boolean): Tween24;
+    /**
+     * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれに速度を指定するトゥイーンを設定します。
+     *
+     * このトゥイーンは、指定された速度とパラメータの変化量から時間を自動設定します。
+     * 複数パラメータを変化させる場合、変化量の一番大きい値を基準にします。
+     * x,y の座標系パラメータは、計算後の距離を変化量とします。
+     * @static
+     * @param {string} targetQuery 対象要素を指定するクエリ
+     * @param {number} velocity 1秒間の変化量（速度）
+     * @param {(Function|null)} [easing=null] イージング関数（デフォルト値：Ease24._Linear）
+     * @param {number} spacing 文字間の調整（px）
+     * @param {boolean} [overflowHidden=false] overflow:hidden を設定するか
+     * @param {boolean} [double=false] テキストを下側に複製するか
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static tweenTextVelocity(targetQuery: string, velocity: number, easing?: Function | null, spacing?: number, overflowHidden?: boolean, double?: boolean): Tween24;
+    private static _tweenText;
     /**
      * トゥイーンを待機します。
      * @static
@@ -431,6 +504,65 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     static parallel(...childTween: Tween24[]): Tween24;
+    /**
+     * 子トゥイーンの対象が複数指定されていた場合、時差を設定します。
+     * @static
+     * @param {number} lagTime 対象毎の時差（秒数）
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static lag(lagTime: number, ...childTween: Tween24[]): Tween24;
+    /**
+     * 子トゥイーンの対象が複数指定されていた場合、再生順をソートして時差を設定します。
+     * @static
+     * @param {number} lagTime 対象毎の時差（秒数）
+     * @param {Function} sort 再生順をソートする関数
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static lagSort(lagTime: number, sort: Function, ...childTween: Tween24[]): Tween24;
+    /**
+     * 子トゥイーンの対象が複数指定されていた場合、トータル時間を元に時差を設定します。
+     * @static
+     * @param {number} totalLagTime 時差のトータル時間（秒数）
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static lagTotal(totalLagTime: number, ...childTween: Tween24[]): Tween24;
+    /**
+     * 子トゥイーンの対象が複数指定されていた場合、トータル時間を元にイージングをかけながら時差を設定します。
+     * @static
+     * @param {number} totalLagTime 時差のトータル時間（秒数）
+     * @param {Function} easing 時差の時間量のイージング
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static lagTotalEase(totalLagTime: number, easing: Function, ...childTween: Tween24[]): Tween24;
+    /**
+     * 子トゥイーンの対象が複数指定されていた場合、再生順をソートして、トータル時間を元に時差を設定します。
+     * @static
+     * @param {number} totalLagTime 時差のトータル時間（秒数）
+     * @param {Function} sort 再生順をソートする関数
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static lagTotalSort(totalLagTime: number, sort: Function, ...childTween: Tween24[]): Tween24;
+    /**
+     * 子トゥイーンの対象が複数指定されていた場合、再生順をソートして、トータル時間を元にイージングをかけながら時差を設定します。
+     * @static
+     * @param {number} totalLagTime 時差のトータル時間（秒数）
+     * @param {Function} sort 再生順をソートする関数
+     * @param {Function} easing 時差の時間量のイージング
+     * @param {...Tween24[]} childTween 実行するトゥイーンたち
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static lagTotalSortEase(totalLagTime: number, sort: Function, easing: Function, ...childTween: Tween24[]): Tween24;
     private _createChildTween;
     private _createContainerTween;
     private _createActionTween;
@@ -458,6 +590,7 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     static debugMode(flag: boolean): void;
+    __clone(base: any, baseQuery: string | null): Tween24;
     toString(): string;
     private _debugLog;
     private getTweenTypeString;

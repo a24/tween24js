@@ -25,5 +25,7 @@ export declare class TransformUpdater implements Updater {
     update(progress: number): void;
     overwrite(updater: TransformUpdater): void;
     complete(): void;
+    getMaxAbsDelta(): number;
+    clone(target?: HTMLElement): TransformUpdater;
     toString(): string;
 }

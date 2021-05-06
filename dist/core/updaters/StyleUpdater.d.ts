@@ -15,6 +15,8 @@ export declare class StyleUpdater implements Updater {
     init(): void;
     update(progress: number): void;
     overwrite(updater: StyleUpdater): void;
+    getMaxAbsDelta(): number;
+    clone(target?: any): StyleUpdater;
     toString(): string;
     addProp(key: string, value: number): void;
     complete(): void;

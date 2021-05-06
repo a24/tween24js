@@ -7,5 +7,7 @@ export declare class StyleColorUpdater {
     constructor(key: string, colorCode: string);
     init(start: string): void;
     update(progress: number): string;
+    getDelta(): number;
+    clone(): StyleColorUpdater;
     toString(): string;
 }

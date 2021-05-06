@@ -13,6 +13,8 @@ export declare class ObjectUpdater implements Updater {
     init(): void;
     update(progress: number): void;
     overwrite(updater: ObjectUpdater): void;
-    complete(): void;
+    getMaxAbsDelta(): number;
+    clone(target?: any): ObjectUpdater;
     toString(): string;
+    complete(): void;
 }

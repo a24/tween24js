@@ -680,73 +680,66 @@ export class Tween24 {
 
     /**
      * トゥイーン再生時に、実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onPlay (scope:any, func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.PLAY, scope, func, args); }
+    onPlay (func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.PLAY, func, func, args); }
     
     /**
      * トゥイーン開始時に、実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onInit (scope:any, func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.INIT, scope, func, args); }
+    onInit (func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.INIT, func, func, args); }
     
     /**
      * トゥイーン実行中に、実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onUpdate (scope:any, func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.UPDATE, scope, func, args); }
+    onUpdate (func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.UPDATE, func, func, args); }
     
     /**
      * トゥイーンが一時停止した時に、実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onPause (scope:any, func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.PAUSE, scope, func, args); }
+    onPause (func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.PAUSE, func, func, args); }
 
     /**
      * トゥイーンが一時停止中から、再開した時に実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onResume (scope:any, func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.RESUME, scope, func, args); }
+    onResume (func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.RESUME, func, func, args); }
 
     /**
      * トゥイーンが停止された時に、実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onStop (scope:any, func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.STOP, scope, func, args); }
+    onStop (func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.STOP, func, func, args); }
     
     /**
      * トゥイーンが完了した時に、実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onComplete (scope:any, func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.COMPLATE, scope, func, args); }
+    onComplete (func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.COMPLATE, func, func, args); }
 
     private _setFunctionExecute(key:string, scope:any, func:Function, args:any[]):Tween24 {
         this._functionExecuters ||= {};
@@ -894,14 +887,13 @@ export class Tween24 {
     /**
      * 関数を実行します。
      * @static
-     * @param {*} scope 関数が定義されているオブジェクト
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static func(scope: any, func: Function, ...args: any[]): Tween24 {
-        return new Tween24()._createActionTween(Tween24._TYPE_FUNC, scope, func, args);
+    static func(func: Function, ...args: any[]): Tween24 {
+        return new Tween24()._createActionTween(Tween24._TYPE_FUNC, func, func, args);
     }
     
     /**

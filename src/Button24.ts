@@ -44,13 +44,10 @@ export class Button24 {
         if (resizeAndReset) {
             Event24.add(window, "resize", 
                 Tween24.serial(
-                    Tween24.func(this,
-                    function () {
-                        Event24.removeAllByTarget(buttonQuery),
-                        Text24.removeByTarget(textQuery);
-                    }),
-                    Tween24.wait(0.001),
-                    Tween24.func(this, createButton)
+                    Tween24.func(Event24.removeAllByTarget, buttonQuery),
+                    Tween24.func(Text24.removeByTarget, textQuery),
+                    Tween24.wait(0.01),
+                    Tween24.func(createButton)
                 )
             );
         }

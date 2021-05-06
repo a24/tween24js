@@ -316,67 +316,60 @@ export declare class Tween24 {
     private _setStyle;
     /**
      * トゥイーン再生時に、実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onPlay(scope: any, func: Function, ...args: any[]): Tween24;
+    onPlay(func: Function, ...args: any[]): Tween24;
     /**
      * トゥイーン開始時に、実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onInit(scope: any, func: Function, ...args: any[]): Tween24;
+    onInit(func: Function, ...args: any[]): Tween24;
     /**
      * トゥイーン実行中に、実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onUpdate(scope: any, func: Function, ...args: any[]): Tween24;
+    onUpdate(func: Function, ...args: any[]): Tween24;
     /**
      * トゥイーンが一時停止した時に、実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onPause(scope: any, func: Function, ...args: any[]): Tween24;
+    onPause(func: Function, ...args: any[]): Tween24;
     /**
      * トゥイーンが一時停止中から、再開した時に実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onResume(scope: any, func: Function, ...args: any[]): Tween24;
+    onResume(func: Function, ...args: any[]): Tween24;
     /**
      * トゥイーンが停止された時に、実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onStop(scope: any, func: Function, ...args: any[]): Tween24;
+    onStop(func: Function, ...args: any[]): Tween24;
     /**
      * トゥイーンが完了した時に、実行する関数を設定します。
-     * @param {*} scope 実行する関数のスコープ（関数の定義場所）
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    onComplete(scope: any, func: Function, ...args: any[]): Tween24;
+    onComplete(func: Function, ...args: any[]): Tween24;
     private _setFunctionExecute;
     private _functionExecute;
     /**
@@ -430,7 +423,7 @@ export declare class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static propText(targetQuery: string, spacing: number, overflowHidden?: boolean, double?: boolean): Tween24;
+    static propText(targetQuery: string, spacing: number): Tween24;
     /**
      * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれにトゥイーンを設定します。
      * @static
@@ -443,7 +436,7 @@ export declare class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static tweenText(targetQuery: string, time: number, easing?: Function | null, spacing?: number, overflowHidden?: boolean, double?: boolean): Tween24;
+    static tweenText(targetQuery: string, time: number, easing?: Function | null, spacing?: number): Tween24;
     /**
      * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれに速度を指定するトゥイーンを設定します。
      *
@@ -460,7 +453,7 @@ export declare class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static tweenTextVelocity(targetQuery: string, velocity: number, easing?: Function | null, spacing?: number, overflowHidden?: boolean, double?: boolean): Tween24;
+    static tweenTextVelocity(targetQuery: string, velocity: number, easing?: Function | null, spacing?: number): Tween24;
     private static _tweenText;
     /**
      * トゥイーンを待機します。
@@ -473,13 +466,12 @@ export declare class Tween24 {
     /**
      * 関数を実行します。
      * @static
-     * @param {*} scope 関数が定義されているオブジェクト
      * @param {Function} func 実行する関数
      * @param {...any[]} args 引数（省略可）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static func(scope: any, func: Function, ...args: any[]): Tween24;
+    static func(func: Function, ...args: any[]): Tween24;
     /**
      * console.log() を実行します。
      * @static

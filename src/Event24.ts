@@ -76,11 +76,23 @@ export class Event24 {
      * @static
      * @param {(any|any[])} target イベントの対象
      * @param {(string|string[])} playEventType トゥイーンを再生するイベントタイプ
+     * @param {Tween24} tween イベントに合わせて再生されるトゥイーン
+     * @memberof Event24
+     */
+    public static add(target:any|any[], playEventType:string|string[], tween:Tween24):void {
+        Event24.addWithStopEvent(target, playEventType, null, tween);
+    }
+
+    /**
+     * イベントに合わせて再生、停止されるトゥイーンを設定します。
+     * @static
+     * @param {(any|any[])} target イベントの対象
+     * @param {(string|string[])} playEventType トゥイーンを再生するイベントタイプ
      * @param {(string|string[]|null)} stopEventType トゥイーンを停止するイベントタイプ
      * @param {Tween24} tween イベントに合わせて再生されるトゥイーン
      * @memberof Event24
      */
-    public static add(target:any|any[], playEventType:string|string[], stopEventType:string|string[]|null, tween:Tween24):void {
+    public static addWithStopEvent(target:any|any[], playEventType:string|string[], stopEventType:string|string[]|null, tween:Tween24):void {
 
         const playEventTypes = Array.isArray(playEventType) ? playEventType : [playEventType];
         const stopEventTypes = stopEventType ? (Array.isArray(stopEventType) ? stopEventType : [stopEventType]) : null;

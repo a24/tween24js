@@ -16,7 +16,7 @@ import { Text24 }           from "./utils/Text24";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.8.0";
+    static readonly VERSION:string = "0.8.1";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -821,8 +821,8 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static propText(targetQuery:string, spacing:number, overflowHidden:boolean = false, double:boolean = false): Tween24 {
-        return Tween24._tweenText(Tween24._TYPE_PROP_TEXT, targetQuery, 0, null, spacing, overflowHidden, double);
+    static propText(targetQuery:string, spacing:number): Tween24 {
+        return Tween24._tweenText(Tween24._TYPE_PROP_TEXT, targetQuery, 0, null, spacing);
     }
 
     /**
@@ -837,8 +837,8 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static tweenText(targetQuery:string, time:number, easing:Function|null = null, spacing:number = 0, overflowHidden:boolean = false, double:boolean = false): Tween24 {
-        return Tween24._tweenText(Tween24._TYPE_TWEEN_TEXT, targetQuery, time, easing, spacing, overflowHidden, double);
+    static tweenText(targetQuery:string, time:number, easing:Function|null = null, spacing:number = 0): Tween24 {
+        return Tween24._tweenText(Tween24._TYPE_TWEEN_TEXT, targetQuery, time, easing, spacing);
     }
 
     /**
@@ -857,11 +857,11 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static tweenTextVelocity(targetQuery:string, velocity:number, easing:Function|null = null, spacing:number = 0, overflowHidden:boolean = false, double:boolean = false): Tween24 {
-        return Tween24._tweenText(Tween24._TYPE_TWEEN_VELOCITY, targetQuery, velocity, easing, spacing, overflowHidden, double);
+    static tweenTextVelocity(targetQuery:string, velocity:number, easing:Function|null = null, spacing:number = 0): Tween24 {
+        return Tween24._tweenText(Tween24._TYPE_TWEEN_VELOCITY, targetQuery, velocity, easing, spacing);
     }
 
-    private static _tweenText(type:string, targetQuery:string, timeOrVelocity:number, easing:Function|null = null, spacing:number, overflowHidden:boolean = false, double:boolean = false):Tween24 {
+    private static _tweenText(type:string, targetQuery:string, timeOrVelocity:number, easing:Function|null = null, spacing:number):Tween24 {
         const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
         const textElements:any[] = [];
         for (const target of targets) {
@@ -870,7 +870,7 @@ export class Tween24 {
                 textElements.push(...text.targets);
             }
             else {
-                const text:Text24 = new Text24(target, target.textContent || "", overflowHidden, double);
+                const text:Text24 = new Text24(target, target.textContent || "", false, false);
                 text.spacing = spacing;
                 textElements.push(...text.targets);
             }

@@ -837,7 +837,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static tweenText(targetQuery:string, time:number, easing:Function|null = null, spacing:number, overflowHidden:boolean = false, double:boolean = false): Tween24 {
+    static tweenText(targetQuery:string, time:number, easing:Function|null = null, spacing:number = 0, overflowHidden:boolean = false, double:boolean = false): Tween24 {
         return Tween24._tweenText(Tween24._TYPE_TWEEN_TEXT, targetQuery, time, easing, spacing, overflowHidden, double);
     }
 
@@ -857,7 +857,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static tweenTextVelocity(targetQuery:string, velocity:number, easing:Function|null = null, spacing:number, overflowHidden:boolean = false, double:boolean = false): Tween24 {
+    static tweenTextVelocity(targetQuery:string, velocity:number, easing:Function|null = null, spacing:number = 0, overflowHidden:boolean = false, double:boolean = false): Tween24 {
         return Tween24._tweenText(Tween24._TYPE_TWEEN_VELOCITY, targetQuery, velocity, easing, spacing, overflowHidden, double);
     }
 

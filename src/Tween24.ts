@@ -16,7 +16,7 @@ import { Text24 }           from "./utils/Text24";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.8.1";
+    static readonly VERSION:string = "0.8.2";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -386,7 +386,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    x (value: number): Tween24 { return this._setPropety("x", value); }
+    x (value:number): Tween24 { return this._setPropety("x", value); }
     
     /**
      * 目標とするY座標を設定します。
@@ -395,7 +395,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    y (value: number): Tween24 { return this._setPropety("y", value); }
+    y (value:number): Tween24 { return this._setPropety("y", value); }
     
     /**
      * 目標とするXとY座標を設定します。
@@ -405,7 +405,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    xy (x: number, y: number): Tween24 { return this._setPropety("x", x)._setPropety("y", y); }
+    xy (x:number, y:number): Tween24 { return this._setPropety("x", x)._setPropety("y", y); }
     
     /**
      * 目標とする透明度を設定します。
@@ -414,7 +414,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    alpha (value: number): Tween24 { return this._useStyle ? this._setStyle("opacity", value) : this._setPropety("alpha", value); }
+    alpha (value:number): Tween24 { return this._useStyle ? this._setStyle("opacity", value) : this._setPropety("alpha", value); }
     
     /**
      * 目標とする透明度を設定します。
@@ -422,7 +422,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    opacity (value: number): Tween24 { return this._useStyle ? this._setStyle("opacity", value) : this._setPropety("opacity", value); }
+    opacity (value:number): Tween24 { return this._useStyle ? this._setStyle("opacity", value) : this._setPropety("opacity", value); }
 
     /**
      * 目標とする水平スケールを設定します。
@@ -431,7 +431,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    scaleX (value: number): Tween24 { return this._setPropety("scaleX", value); }
+    scaleX (value:number): Tween24 { return this._setPropety("scaleX", value); }
     
     /**
      * 目標とする垂直スケールを設定します。
@@ -440,7 +440,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    scaleY (value: number): Tween24 { return this._setPropety("scaleY", value); }
+    scaleY (value:number): Tween24 { return this._setPropety("scaleY", value); }
     
     /**
      * 目標とするスケールを設定します。
@@ -449,7 +449,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    scale (value: number): Tween24 { return this._setPropety("scaleX", value)._setPropety("scaleY", value); }
+    scale (value:number): Tween24 { return this._setPropety("scaleX", value)._setPropety("scaleY", value); }
     
     /**
      * 目標とする水平・垂直スケールを設定します。
@@ -459,7 +459,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    scaleXY (scaleX: number, scaleY: number): Tween24 { return this._setPropety("scaleX", scaleX)._setPropety("scaleY", scaleY); }
+    scaleXY (scaleX:number, scaleY:number): Tween24 { return this._setPropety("scaleX", scaleX)._setPropety("scaleY", scaleY); }
     
     /**
      * 目標とする水平傾斜を設定します。
@@ -468,7 +468,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    skewX (value: number): Tween24 { return this._setPropety("skewX", value); }
+    skewX (value:number): Tween24 { return this._setPropety("skewX", value); }
     
     /**
      * 目標とする垂直傾斜を設定します。
@@ -477,7 +477,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    skewY (value: number): Tween24 { return this._setPropety("skewY", value); }
+    skewY (value:number): Tween24 { return this._setPropety("skewY", value); }
     
     /**
      * 目標とする水平＆垂直傾斜を設定します。
@@ -486,7 +486,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    skew (value: number): Tween24 { return this._setPropety("skewX", value)._setPropety("skewY", value); }
+    skew (value:number): Tween24 { return this._setPropety("skewX", value)._setPropety("skewY", value); }
     
     /**
      * 目標とする水平・垂直傾斜を設定します。
@@ -496,7 +496,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    skewXY (skewX: number, skewY: number): Tween24 { return this._setPropety("skewX", skewX)._setPropety("skewY", skewY); }
+    skewXY (skewX:number, skewY:number): Tween24 { return this._setPropety("skewX", skewX)._setPropety("skewY", skewY); }
     
     /**
      * 目標とする回転角度を設定します。
@@ -505,39 +505,39 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    rotation (value: number): Tween24 { return this._setPropety("rotation", value); }
+    rotation (value:number): Tween24 { return this._setPropety("rotation", value); }
     
     /**
      * CSS:top を設定します。
-     * @param {number} 上からの配置位置（距離）
+     * @param {number|string} 上からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    top (value: number): Tween24 { return this._setStyle("top", value); }
+    top (value:number|string): Tween24 { return this._setStyle("top", value); }
     
     /**
      * CSS:right を設定します。
-     * @param {number} 右からの配置位置（距離）
+     * @param {number|string} 右からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    right (value: number): Tween24 { return this._setStyle("right", value); }
+    right (value:number|string): Tween24 { return this._setStyle("right", value); }
     
     /**
      * CSS:bottom を設定します。
-     * @param {number} value 下からの配置位置（距離）
+     * @param {number|string} value 下からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    bottom (value: number): Tween24 { return this._setStyle("bottom", value); }
+    bottom (value:number|string): Tween24 { return this._setStyle("bottom", value); }
 
     /**
      * CSS:left を設定します。
-     * @param {number} value 左からの配置位置（距離）
+     * @param {number|string} value 左からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    left (value: number): Tween24 { return this._setStyle("left", value); }
+    left (value:number|string): Tween24 { return this._setStyle("left", value); }
 
     /**
      * 目標とする幅を設定します。
@@ -546,7 +546,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    width (value: number): Tween24 { return this._useStyle ? this._setStyle("width", value) : this._setPropety("width", value); }
+    width (value:number): Tween24 { return this._useStyle ? this._setStyle("width", value) : this._setPropety("width", value); }
 
     /**
      * 目標とする高さを設定します。
@@ -555,7 +555,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    height (value: number): Tween24 { return this._useStyle ? this._setStyle("height", value) : this._setPropety("height", value); }
+    height (value:number): Tween24 { return this._useStyle ? this._setStyle("height", value) : this._setPropety("height", value); }
     
     /**
      * CSS:color を設定します。
@@ -563,7 +563,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    color (colorCode: string): Tween24 { return this._setStyle("color", colorCode); }
+    color (colorCode:string): Tween24 { return this._setStyle("color", colorCode); }
     
     /**
      * CSS:background-color（背景色）を設定します。
@@ -571,7 +571,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    backgroundColor (colorCode: string): Tween24 { return this._setStyle("background-color", colorCode); }
+    backgroundColor (colorCode:string): Tween24 { return this._setStyle("background-color", colorCode); }
 
     /**
      * CSS:border-width（枠の太さ）を設定します。
@@ -579,7 +579,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    borderWidth (value: number): Tween24 { return this._setStyle("border-width", value); }
+    borderWidth (value:number): Tween24 { return this._setStyle("border-width", value); }
 
     /**
      * CSS:border-color（枠の色）を設定します。
@@ -587,7 +587,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    borderColor (value: number): Tween24 { return this._setStyle("border-color", value); }
+    borderColor (value:number): Tween24 { return this._setStyle("border-color", value); }
 
     /**
      * CSS:border-radius（角丸）を設定します。
@@ -595,7 +595,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    borderRadius (value: number): Tween24 { return this._setStyle("border-radius", value); }
+    borderRadius (value:number): Tween24 { return this._setStyle("border-radius", value); }
 
     /**
      * トゥイーンの遅延時間を設定します。
@@ -603,7 +603,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    delay (value: number): Tween24 { this._delayTime += value; return this; }
+    delay (value:number): Tween24 { this._delayTime += value; return this; }
 
     /**
      * 目標とするスタイルシートの値を設定します。
@@ -613,7 +613,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    style (name: string, value: number|string): Tween24 { return this._setStyle(name, value); }
+    style (name:string, value: number|string): Tween24 { return this._setStyle(name, value); }
 
     /**
      * トゥイーン毎のFPS（1秒間の更新回数）を設定します。

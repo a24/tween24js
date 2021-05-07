@@ -1,8 +1,7 @@
 node_modules
 .DS_Store
 /sample/test.html
+/sample/test.js
 /sample/tweenmax
 /.idea
-
-# src フォルダーでは TypeScript ファイルのみ管理
 src/**/*.js

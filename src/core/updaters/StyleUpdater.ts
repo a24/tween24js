@@ -6,8 +6,8 @@ import { StyleColorUpdater } from "./StyleColorUpdater";
 export class StyleUpdater implements Updater {
     static className:string = "StyleUpdater";
 
-    static readonly PARAM_REG:RegExp = new RegExp(/^[0-9.]{1,99}/);
-    static readonly UNIT_REG :RegExp = new RegExp(/[^0-9.]./);
+    static readonly PARAM_REG:RegExp = new RegExp(/^[0-9]*/);
+    static readonly UNIT_REG :RegExp = new RegExp(/[^0-9].*/);
 
     private _target       : HTMLElement;
     private _param        : {[key:string]:ParamUpdater|StyleColorUpdater}|null;

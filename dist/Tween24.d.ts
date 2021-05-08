@@ -195,32 +195,32 @@ export declare class Tween24 {
     rotation(value: number): Tween24;
     /**
      * CSS:top を設定します。
-     * @param {number} 上からの配置位置（距離）
+     * @param {number|string} 上からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    top(value: number): Tween24;
+    top(value: number | string): Tween24;
     /**
      * CSS:right を設定します。
-     * @param {number} 右からの配置位置（距離）
+     * @param {number|string} 右からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    right(value: number): Tween24;
+    right(value: number | string): Tween24;
     /**
      * CSS:bottom を設定します。
-     * @param {number} value 下からの配置位置（距離）
+     * @param {number|string} value 下からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    bottom(value: number): Tween24;
+    bottom(value: number | string): Tween24;
     /**
      * CSS:left を設定します。
-     * @param {number} value 左からの配置位置（距離）
+     * @param {number|string} value 左からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    left(value: number): Tween24;
+    left(value: number | string): Tween24;
     /**
      * 目標とする幅を設定します。
      * 対象が HTMLElement の場合は、CSS:width が適用されます。

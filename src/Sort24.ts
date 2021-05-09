@@ -19,8 +19,6 @@ export class Sort24 {
      * @memberof Sort24
      */
     static _Reverse(list:any[]):any[] {
-        console.log(list);
-        console.log(list.concat().reverse());
         return list.concat().reverse();
     }
 

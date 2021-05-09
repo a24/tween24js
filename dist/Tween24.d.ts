@@ -82,28 +82,31 @@ export declare class Tween24 {
     /**
      * 目標とするX座標を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
-     * @param {number} value X座標
+     * また、パーセント値で指定された場合は、囲みボックスの寸法に対する相対値が設定されます。
+     * @param {number|string} value X座標
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    x(value: number): Tween24;
+    x(value: number | string): Tween24;
     /**
      * 目標とするY座標を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
-     * @param {number} value Y座標
+     * また、パーセント値で指定された場合は、囲みボックスの寸法に対する相対値が設定されます。
+     * @param {number|string} value Y座標
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    y(value: number): Tween24;
+    y(value: number | string): Tween24;
     /**
      * 目標とするXとY座標を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
-     * @param {number} x Y座標
-     * @param {number} y Y座標
+     * また、パーセント値で指定された場合は、囲みボックスの寸法に対する相対値が設定されます。
+     * @param {number|string} x X座標
+     * @param {number|string} y Y座標
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    xy(x: number, y: number): Tween24;
+    xy(x: number | string, y: number | string): Tween24;
     /**
      * 目標とする透明度を設定します。
      * 対象が HTMLElement の場合は、CSS:opacity が適用されます。
@@ -313,6 +316,7 @@ export declare class Tween24 {
      */
     id(id: string): Tween24;
     private _setPropety;
+    private _setPropetyStr;
     private _setStyle;
     /**
      * トゥイーン再生時に、実行する関数を設定します。

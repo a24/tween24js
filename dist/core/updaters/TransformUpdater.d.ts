@@ -18,6 +18,8 @@ export declare class TransformUpdater implements Updater {
     private _updateSkewX;
     private _updateSkewY;
     private _updateRotation;
+    private _percentX;
+    private _percentY;
     constructor(target: any);
     init(): void;
     addProp(key: string, value: number): void;

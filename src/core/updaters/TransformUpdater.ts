@@ -27,6 +27,9 @@ export class TransformUpdater implements Updater {
     private _updateSkewY   : boolean;
     private _updateRotation: boolean;
 
+    private _percentX:string|null;
+    private _percentY:string|null;
+
     constructor(target: any) {
         if (!TransformUpdater._chache) TransformUpdater._chache = new Map<HTMLElement, Matrix>();
 
@@ -48,6 +51,9 @@ export class TransformUpdater implements Updater {
         this._updateSkewX    = false;
         this._updateSkewY    = false;
         this._updateRotation = false;
+
+        this._percentX = null;
+        this._percentY = null;
     }
 
     init() {
@@ -75,19 +81,31 @@ export class TransformUpdater implements Updater {
     }
 
     addProp(key: string, value: number) {
-        let p: ParamUpdater|null = null;
         switch (key) {
-            case "x"       : p = this._x        = new ParamUpdater(key, value); break;
-            case "y"       : p = this._y        = new ParamUpdater(key, value); break;
-            case "scaleX"  : p = this._scaleX   = new ParamUpdater(key, value); break;
-            case "scaleY"  : p = this._scaleY   = new ParamUpdater(key, value); break;
-            case "skewX"   : p = this._skewX    = new ParamUpdater(key, value); break;
-            case "skewY"   : p = this._skewY    = new ParamUpdater(key, value); break;
-            case "rotation": p = this._rotation = new ParamUpdater(key, value); break;
+            case "x"       : this._x        = new ParamUpdater(key, value); break;
+            case "y"       : this._y        = new ParamUpdater(key, value); break;
+            case "scaleX"  : this._scaleX   = new ParamUpdater(key, value); break;
+            case "scaleY"  : this._scaleY   = new ParamUpdater(key, value); break;
+            case "skewX"   : this._skewX    = new ParamUpdater(key, value); break;
+            case "skewY"   : this._skewY    = new ParamUpdater(key, value); break;
+            case "rotation": this._rotation = new ParamUpdater(key, value); break;
         }
     }
     
     addPropStr(key:string, value:string) {
+        switch (key) {
+            case "x" :
+                this._percentX = value;
+                console.log(this._percentX)
+                if (value.slice(-1) == "%")
+                    this._x = new ParamUpdater(key, this._target.offsetWidth * (parseFloat(value) / 100));
+                break;
+            case "y" :
+                this._percentY = value;
+                if (value.slice(-1) == "%")
+                    this._y = new ParamUpdater(key, this._target.offsetHeight * (parseFloat(value) / 100));
+                break;
+        }
     }
 
     update(progress: number) {
@@ -129,18 +147,24 @@ export class TransformUpdater implements Updater {
         const dx = this._x ? this._x.getDelta() : 0;
         const dy = this._y ? this._y.getDelta() : 0;
         deltas.push(Math.sqrt(dx * dx + dy * dy));
+        
         if (this._scaleX  ) deltas.push(Math.abs(this._scaleX  .getDelta()));
         if (this._scaleY  ) deltas.push(Math.abs(this._scaleY  .getDelta()));
         if (this._skewX   ) deltas.push(Math.abs(this._skewX   .getDelta()));
         if (this._skewY   ) deltas.push(Math.abs(this._skewY   .getDelta()));
         if (this._rotation) deltas.push(Math.abs(this._rotation.getDelta()));
+
         return Math.max(...deltas);
     }
 
     clone(target:HTMLElement = this._target):TransformUpdater {
         const copy:TransformUpdater = new TransformUpdater(target);
-        if (this._x       ) copy._x        = this._x       .clone();
-        if (this._y       ) copy._y        = this._y       .clone();
+
+        if (this._percentX) copy.addPropStr("x", this._percentX);
+        else if   (this._x) copy._x = this._x.clone();
+        if (this._percentY) copy.addPropStr("y", this._percentY);
+        else if   (this._y) copy._y = this._y.clone();
+
         if (this._scaleX  ) copy._scaleX   = this._scaleX  .clone();
         if (this._scaleY  ) copy._scaleY   = this._scaleY  .clone();
         if (this._skewX   ) copy._skewX    = this._skewX   .clone();

@@ -16,7 +16,7 @@ import { Text24 }           from "./utils/Text24";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.8.2";
+    static readonly VERSION:string = "0.8.3";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -382,30 +382,33 @@ export class Tween24 {
     /**
      * 目標とするX座標を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
-     * @param {number} value X座標
+     * また、パーセント値で指定された場合は、囲みボックスの寸法に対する相対値が設定されます。
+     * @param {number|string} value X座標
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    x (value:number): Tween24 { return this._setPropety("x", value); }
+    x (value:number|string): Tween24 { return ClassUtil.isNumber(value) ? this._setPropety("x", parseFloat(value as string)) : this._setPropetyStr("x", value as string); }
     
     /**
      * 目標とするY座標を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
-     * @param {number} value Y座標
+     * また、パーセント値で指定された場合は、囲みボックスの寸法に対する相対値が設定されます。
+     * @param {number|string} value Y座標
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    y (value:number): Tween24 { return this._setPropety("y", value); }
+    y (value:number|string): Tween24 { return ClassUtil.isNumber(value) ? this._setPropety("y", parseFloat(value as string)) : this._setPropetyStr("y", value as string); }
     
     /**
      * 目標とするXとY座標を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
-     * @param {number} x Y座標
-     * @param {number} y Y座標
+     * また、パーセント値で指定された場合は、囲みボックスの寸法に対する相対値が設定されます。
+     * @param {number|string} x X座標
+     * @param {number|string} y Y座標
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    xy (x:number, y:number): Tween24 { return this._setPropety("x", x)._setPropety("y", y); }
+    xy (x:number|string, y:number|string): Tween24 { return this.x(x).y(y); }
     
     /**
      * 目標とする透明度を設定します。
@@ -650,6 +653,17 @@ export class Tween24 {
         else if (this._multiTarget) {
             if      (this._objectMultiUpdater   ) this._objectMultiUpdater   .addProp(key, value);
             else if (this._transformMultiUpdater) this._transformMultiUpdater.addProp(key, value);
+        }
+        return this;
+    }
+
+    private _setPropetyStr(key:string, value:string):Tween24 {
+        console.log(key)
+        if (this._singleTarget) {
+            if (this._transformUpdater) this._transformUpdater.addPropStr(key, value);
+        }
+        else if (this._multiTarget) {
+            if (this._transformMultiUpdater) this._transformMultiUpdater.addPropStr(key, value);
         }
         return this;
     }

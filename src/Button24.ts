@@ -30,7 +30,7 @@ export class Button24 {
             const setEvent:Function = function() {
                 Event24.addWithStopEvent(buttonQuery, "mouseover", "mouseout", 
                     Tween24.lagTotalSort(overTotalLagTime, sort,
-                        Tween24.tweenTextVelocity(textQuery, velocity, easing).y(-text.height)
+                        Tween24.tweenTextVelocity(textQuery, velocity, easing).y("-100%")
                     )
                 );
                 Event24.addWithStopEvent(buttonQuery, "mouseout", "mouseover", 

@@ -13,5 +13,5 @@ export declare class Button24 {
      * @param {boolean} [resizeAndReset=false] ウィンドウのリサイズ時に、
      * @memberof Button24
      */
-    static setRollUpTextCharacterAnimation(buttonQuery: string, textQuery: string, velocity: number, overTotalLagTime: number, outTotalLagTime: number, easing: Function | null, sort: Function, textSpacing: number, resizeAndReset?: boolean): void;
+    static setRollUpTextCharacterAnimation(buttonQuery: string, textQuery: string, velocity: number, overTotalLagTime: number, outTotalLagTime: number, easing: Function | null, sort: Function, textSpacing: number, resizeAndReset?: boolean, lineHeight?: string): void;
 }

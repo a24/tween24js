@@ -12,24 +12,28 @@ export class Text24 {
     private _singleHtml:string[];
     private _doubleHtml:string[];
 
-    constructor (target:HTMLElement, text:string, overflowHidden:boolean, double:boolean) {
+    constructor (target:HTMLElement, text:string, overflowHidden:boolean, double:boolean, lineHeight:string = "1.5") {
         this._target  = target;
         this._text    = text;
         this._spacing = NaN;
-        this._height  = parseFloat(window.getComputedStyle(target).height);
         this._originalOverflow = target.style.overflow;
         
-        target.innerText     = "";
-        target.style.display = "flex";
-        target.style.height  = this._height + "px";
+        target.style.display    = "flex";
+        target.style.lineHeight = lineHeight;
+        
+        this._height  = parseFloat(window.getComputedStyle(target).height);
+        target.style.height = this._height + "px";
+        target.innerText    = "";
 
         const spans:HTMLSpanElement[] = this._spans = [];
         const st:string[] = this._singleHtml = [];
         const dt:string[] = this._doubleHtml = [];
 
         text.split("").map(function (word:string):void {
+            word = word === " " ? "&nbsp;" : word;
             const span = document.createElement("span");
             span.style.display = "block";
+            span.style.lineHeight = lineHeight;
             st.push(word);
             dt.push(word + "<br>" + word);
             spans.push(span);
@@ -43,10 +47,10 @@ export class Text24 {
     }
 
     reset() {
-        this._target.innerHTML = "";
-        this._target.innerText = this._text;
+        this._target.innerHTML    = "";
+        this._target.innerText    = this._text;
         this._target.style.width  = "auto";
-        this._target.style.height  = "auto";
+        this._target.style.height = "auto";
         Text24._allTexts.delete(this._target);
     }
 

@@ -16,7 +16,7 @@ import { Text24 }           from "./utils/Text24";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.8.3";
+    static readonly VERSION:string = "0.8.4";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -658,7 +658,6 @@ export class Tween24 {
     }
 
     private _setPropetyStr(key:string, value:string):Tween24 {
-        console.log(key)
         if (this._singleTarget) {
             if (this._transformUpdater) this._transformUpdater.addPropStr(key, value);
         }

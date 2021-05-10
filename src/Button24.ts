@@ -19,12 +19,12 @@ export class Button24 {
      * @param {boolean} [resizeAndReset=false] ウィンドウのリサイズ時に、
      * @memberof Button24
      */
-    static setRollUpTextCharacterAnimation(buttonQuery:string, textQuery:string, velocity:number, overTotalLagTime:number, outTotalLagTime:number, easing:Function|null, sort:Function, textSpacing:number, resizeAndReset:boolean = false) {
+    static setRollUpTextCharacterAnimation(buttonQuery:string, textQuery:string, velocity:number, overTotalLagTime:number, outTotalLagTime:number, easing:Function|null, sort:Function, textSpacing:number, resizeAndReset:boolean = false, lineHeight:string = "1.5") {
         const createButton:Function = function() {
             const targets:HTMLElement[] = HTMLUtil.querySelectorAll(textQuery);
             let text:Text24;
             for (const target of targets) {
-                text = new Text24(target, target.textContent || "", true, true);
+                text = new Text24(target, target.textContent || "", true, true, lineHeight);
                 text.spacing = textSpacing;
             }
             const setEvent:Function = function() {

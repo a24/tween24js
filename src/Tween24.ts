@@ -16,7 +16,7 @@ import { Text24 }           from "./utils/Text24";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.8.4";
+    static readonly VERSION:string = "0.8.5";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -876,7 +876,7 @@ export class Tween24 {
                 textElements.push(...text.targets);
             }
             else {
-                const text:Text24 = new Text24(target, target.textContent || "", false, false);
+                const text:Text24 = new Text24(target, target.textContent?.trim() || "", false, false);
                 text.spacing = spacing;
                 textElements.push(...text.targets);
             }

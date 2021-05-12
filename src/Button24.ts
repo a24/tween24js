@@ -24,16 +24,16 @@ export class Button24 {
             const targets:HTMLElement[] = HTMLUtil.querySelectorAll(textQuery);
             let text:Text24;
             for (const target of targets) {
-                text = new Text24(target, target.textContent || "", true, true, lineHeight);
+                text = new Text24(target, target.textContent?.trim() || "", true, true, lineHeight);
                 text.spacing = textSpacing;
             }
             const setEvent:Function = function() {
-                Event24.addWithStopEvent(buttonQuery, "mouseover", "mouseout", 
+                Event24.addWithStopEvent(buttonQuery, Event24.MOUSE_ENTER, Event24.MOUSE_LEAVE, 
                     Tween24.lagTotalSort(overTotalLagTime, sort,
                         Tween24.tweenTextVelocity(textQuery, velocity, easing).y("-100%")
                     )
                 );
-                Event24.addWithStopEvent(buttonQuery, "mouseout", "mouseover", 
+                Event24.addWithStopEvent(buttonQuery, Event24.MOUSE_LEAVE, Event24.MOUSE_ENTER, 
                     Tween24.lagTotalSort(outTotalLagTime, sort,
                         Tween24.tweenTextVelocity(textQuery, velocity, easing).y(0)
                     )

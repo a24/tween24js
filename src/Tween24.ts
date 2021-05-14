@@ -16,7 +16,7 @@ import { Text24 }           from "./utils/Text24";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.8.5";
+    static readonly VERSION:string = "0.8.6";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -253,17 +253,17 @@ export class Tween24 {
     }
 
     public _update(nowTime:number) {
+        this._updateProgress(this._time, this._startTime, nowTime);
+
+        // Delay
+        if (this._progress < 0) return;
+
         // Init
         if (!this._inited) {
             this._inited = true;
             this._initParam();
             this._functionExecute(Tween24Event.INIT);
         }
-
-        this._updateProgress(this._time, this._startTime, nowTime);
-
-        // Delay
-        if (this._progress < 0) return;
 
         // Container Tween
         if (this._isContainerTween) {

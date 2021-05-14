@@ -10,18 +10,18 @@ export class StyleUpdater implements Updater {
     static readonly UNIT_REG :RegExp = new RegExp(/[^0-9].*/);
 
     private _target       : HTMLElement;
-    private _param        : {[key:string]:ParamUpdater|StyleColorUpdater}|null;
-    private _key          : string[]|null;
-    private _unit         : {[key:string]:string}|null;
+    private _param        : {[key:string]:ParamUpdater|StyleColorUpdater};
+    private _key          : string[];
+    private _unit         : {[key:string]:string};
     private _tweenKey     : string[]|null|null;
     private _onceParam    : {[key:string]:string}|null;
     private _isUpdatedOnce: boolean;
 
     constructor(target:any) {
         this._target        = target;
-        this._param         = null;
-        this._key           = null;
-        this._unit          = null;
+        this._param       ||= {};
+        this._key         ||= [];
+        this._unit        ||= {};
         this._tweenKey      = null;
         this._onceParam     = null;
         this._isUpdatedOnce = false;
@@ -30,21 +30,14 @@ export class StyleUpdater implements Updater {
     addPropStr(key:string, value:string) {
         const val :RegExpMatchArray|null = String(value).match(StyleUpdater.PARAM_REG);
         const unit:RegExpMatchArray|null = String(value).match(StyleUpdater.UNIT_REG);
-        if (val) {
-            this._param ||= {};
-            this._key   ||= [];
-            this._unit  ||= {};
-
-            this._param[key] = new ParamUpdater(key, Number(val));
-            this._unit [key] = unit ? unit[0] : "";
+        
+         if (value.substr(0, 1) == "#") {
+            this._param[key] = new StyleColorUpdater(key, value);
             this._key.push(key);
         }
-        else if (value.substr(0, 1) == "#") {
-            this._param ||= {};
-            this._key   ||= [];
-            this._unit  ||= {};
-
-            this._param[key] = new StyleColorUpdater(key, value);
+        else if (val) {
+            this._param[key] = new ParamUpdater(key, Number(val));
+            this._unit [key] = unit ? unit[0] : "";
             this._key.push(key);
         }
         else {
@@ -55,21 +48,18 @@ export class StyleUpdater implements Updater {
 
     init() {
         this._isUpdatedOnce = false;
-
-        if (this._key && this._param && this._unit) {
-            this._tweenKey = this._key.concat();
-            for (const key of this._tweenKey) {
-                const value:string = HTMLUtil.getStyle(this._target).getPropertyValue(key);
-                if (value.substr(0, 3) == "rgb") {
-                    (this._param[key] as StyleColorUpdater).init(value);
-                    this._unit[key] ||= "";
-                }
-                else {
-                    const val :RegExpMatchArray|null = value.match(StyleUpdater.PARAM_REG);
-                    const unit:RegExpMatchArray|null = value.match(StyleUpdater.UNIT_REG);
-                    this._unit[key] ||= unit ? unit[0] : "";
-                    (this._param[key] as ParamUpdater).init(Number(val ? val : 0));
-                }
+        this._tweenKey = this._key.concat();
+        for (const key of this._tweenKey) {
+            const value:string = HTMLUtil.getStyle(this._target).getPropertyValue(key);
+            if (value.substr(0, 3) == "rgb") {
+                (this._param[key] as StyleColorUpdater).init(value);
+                this._unit[key] ||= "";
+            }
+            else {
+                const val :RegExpMatchArray|null = value.match(StyleUpdater.PARAM_REG);
+                const unit:RegExpMatchArray|null = value.match(StyleUpdater.UNIT_REG);
+                this._unit[key] ||= unit ? unit[0] : "";
+                (this._param[key] as ParamUpdater).init(Number(val ? val : 0));
             }
         }
     }
@@ -81,7 +71,7 @@ export class StyleUpdater implements Updater {
             }
             this._isUpdatedOnce = true;
         }
-        if (this._tweenKey && this._param && this._unit) {
+        if (this._tweenKey) {
             for (const key of this._tweenKey) {
                 HTMLUtil.setStyleProp(this._target, key, this._param[key].update(progress) + this._unit[key]);
             }

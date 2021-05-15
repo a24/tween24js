@@ -148,6 +148,19 @@ export class Tween24 {
         }
         this._played = true;
         this._startTime = Ticker24.getTime() + this._delayTime * 1000;
+
+        // Velocity
+        if (this._type == Tween24._TYPE_TWEEN_VELOCITY || this._type == Tween24._TYPE_TWEEN_TEXT_VELOCITY) {
+            const deltas:number[] = [0];
+            if (this._allUpdaters?.length) {
+                for (const updater of this._allUpdaters) {
+                    updater.init();
+                    deltas.push(updater.getMaxAbsDelta());
+                }
+            }
+            this._time = Math.max(...deltas) / this._velocity;
+        }
+        Tween24._playingTweens.push(this);
         this._debugLog("play");
     }
 
@@ -202,17 +215,6 @@ export class Tween24 {
                 updater.init();
             }
         }
-
-        // Velocity
-        if (this._type == Tween24._TYPE_TWEEN_VELOCITY || this._type == Tween24._TYPE_TWEEN_TEXT_VELOCITY) {
-            const deltas:number[] = [0];
-            if (this._allUpdaters?.length) {
-                for (const updater of this._allUpdaters) {
-                    deltas.push(updater.getMaxAbsDelta());
-                }
-            }
-            this._time = Math.max(...deltas) / this._velocity;
-        }
         
         // Overwrite
         if (this._singleTarget)
@@ -222,7 +224,6 @@ export class Tween24 {
                 this._overwrite(target);
             }
         }
-        Tween24._playingTweens.push(this);
     }
 
     private _overwrite(target:any) {
@@ -274,6 +275,7 @@ export class Tween24 {
                         if (this._firstTween) {
                             this._playingChildTween?.push(this._firstTween);
                             this._firstTween._play();
+                            this._firstTween._update(nowTime);
                         }
                         break;
                     case Tween24._TYPE_PARALLEL:
@@ -282,6 +284,7 @@ export class Tween24 {
                             for (const tween of this._childTween) {
                                 this._playingChildTween?.push(tween);
                                 tween._play();
+                                tween._update(nowTime);
                             }
                         }
                         break;
@@ -827,7 +830,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static propText(targetQuery:string, spacing:number): Tween24 {
+    static propText(targetQuery:string, spacing:number = NaN): Tween24 {
         return Tween24._tweenText(Tween24._TYPE_PROP_TEXT, targetQuery, 0, null, spacing);
     }
 
@@ -843,7 +846,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static tweenText(targetQuery:string, time:number, easing:Function|null = null, spacing:number = 0): Tween24 {
+    static tweenText(targetQuery:string, time:number, easing:Function|null = null, spacing:number = NaN): Tween24 {
         return Tween24._tweenText(Tween24._TYPE_TWEEN_TEXT, targetQuery, time, easing, spacing);
     }
 
@@ -863,7 +866,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static tweenTextVelocity(targetQuery:string, velocity:number, easing:Function|null = null, spacing:number = 0): Tween24 {
+    static tweenTextVelocity(targetQuery:string, velocity:number, easing:Function|null = null, spacing:number = NaN): Tween24 {
         return Tween24._tweenText(Tween24._TYPE_TWEEN_VELOCITY, targetQuery, velocity, easing, spacing);
     }
 
@@ -873,11 +876,12 @@ export class Tween24 {
         for (const target of targets) {
             const text:Text24|undefined = Text24.getInstance(target);
             if (text) {
+                if (!isNaN(spacing)) text.spacing = spacing;
                 textElements.push(...text.targets);
             }
             else {
                 const text:Text24 = new Text24(target, target.textContent?.trim() || "", false, false);
-                text.spacing = spacing;
+                text.spacing = spacing || 0;
                 textElements.push(...text.targets);
             }
         }

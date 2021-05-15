@@ -1,3 +1,4 @@
+import { ColorUtil } from "../../utils/ColorUtil";
 import { ParamUpdater } from "./ParamUpdater";
 
 export class StyleColorUpdater {
@@ -12,25 +13,17 @@ export class StyleColorUpdater {
         this._key   = key;
         this._color = colorCode;
 
-        colorCode = colorCode.substring(1);
-
-        if(colorCode.length === 3) {
-            colorCode = colorCode.substr(0, 1).repeat(2) + colorCode.substr(1, 1).repeat(2) + colorCode.substr(2, 1).repeat(2);
-        }
-        
-        const c:number = parseInt(colorCode, 16);
-        this._r = new ParamUpdater("r", c >> 16 & 0xFF);
-        this._g = new ParamUpdater("g", c >>  8 & 0xFF);
-        this._b = new ParamUpdater("b", c       & 0xFF);
+        const rgb:number[] = ColorUtil.getRGBList(colorCode);
+        this._r = new ParamUpdater("r", rgb[0]);
+        this._g = new ParamUpdater("g", rgb[1]);
+        this._b = new ParamUpdater("b", rgb[2]);
     }
 
     init(start:string) {
-        const rgb :RegExpMatchArray|null = start.match(/\d+/g);
-        if (rgb) {
-            this._r.init(Number(rgb[0]));
-            this._g.init(Number(rgb[1]));
-            this._b.init(Number(rgb[2]));
-        }
+        const rgb:number[] = ColorUtil.getRGBList(start);
+        this._r.init(Number(rgb[0]));
+        this._g.init(Number(rgb[1]));
+        this._b.init(Number(rgb[2]));
     }
 
     update(progress:number):string {

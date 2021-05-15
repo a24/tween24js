@@ -31,7 +31,7 @@ export class StyleUpdater implements Updater {
         const val :RegExpMatchArray|null = String(value).match(StyleUpdater.PARAM_REG);
         const unit:RegExpMatchArray|null = String(value).match(StyleUpdater.UNIT_REG);
         
-         if (value.substr(0, 1) == "#") {
+        if (value.substr(0, 1) == "#" || value.substr(0, 4) == "rgb(") {
             this._param[key] = new StyleColorUpdater(key, value);
             this._key.push(key);
         }

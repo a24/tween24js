@@ -2,7 +2,12 @@ import { Updater } from "./Updater";
 export declare class TransformUpdater implements Updater {
     static className: string;
     private static _chache;
+    private static _pseudoChache;
     private _target;
+    private _query;
+    private _pseudo;
+    private _style;
+    private _tweenQuery;
     private _matrix;
     private _x;
     private _y;
@@ -20,14 +25,17 @@ export declare class TransformUpdater implements Updater {
     private _updateRotation;
     private _percentX;
     private _percentY;
-    constructor(target: any);
+    constructor(target: HTMLElement, query: string | null);
     init(): void;
     addProp(key: string, value: number): void;
     addPropStr(key: string, value: string): void;
     update(progress: number): void;
+    private _getChache;
+    private _setChache;
+    private _deleteChache;
     overwrite(updater: TransformUpdater): void;
     complete(): void;
     getMaxAbsDelta(): number;
-    clone(target?: HTMLElement): TransformUpdater;
+    clone(target?: HTMLElement, query?: string | null): TransformUpdater;
     toString(): string;
 }

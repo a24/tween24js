@@ -45,13 +45,14 @@ export declare class Tween24 {
     private _root;
     private _parent;
     private _next;
-    private _useStyle;
+    private _isDOM;
+    private _isRoot;
     private _inited;
     private _played;
     private _paused;
-    private _isRoot;
     private _firstUpdated;
     private _isContainerTween;
+    private _createdBasicUpdater;
     private _functionExecuters;
     private _firstTween;
     private _childTween;
@@ -318,6 +319,7 @@ export declare class Tween24 {
     private _setPropety;
     private _setPropetyStr;
     private _setStyle;
+    private createBasicUpdater;
     /**
      * トゥイーン再生時に、実行する関数を設定します。
      * @param {Function} func 実行する関数
@@ -427,7 +429,7 @@ export declare class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static propText(targetQuery: string, spacing: number): Tween24;
+    static propText(targetQuery: string, spacing?: number): Tween24;
     /**
      * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれにトゥイーンを設定します。
      * @static
@@ -562,7 +564,7 @@ export declare class Tween24 {
     private _createChildTween;
     private _createContainerTween;
     private _createActionTween;
-    private _createCommon;
+    private _commonProcess;
     /**
      * トゥイーン全体のFPS（1秒間の更新回数）を設定します。
      * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
@@ -589,6 +591,7 @@ export declare class Tween24 {
     __clone(base: any, baseQuery: string | null): Tween24;
     toString(): string;
     private _debugLog;
+    private _warningLog;
     private getTweenTypeString;
     private getTweenParamString;
 }

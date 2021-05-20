@@ -4,7 +4,7 @@ export interface Updater {
     init(): void;
     complete(): void;
     toString(): string;
-    clone(target: any): Updater;
+    clone(target: any, query: string | null): Updater;
     update(progress: number): void;
     addProp(key: string, value: number): void;
     addPropStr(key: string, value: string): void;

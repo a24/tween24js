@@ -2,36 +2,44 @@ import { Updater }           from "./Updater";
 import { ParamUpdater }      from "./ParamUpdater";
 import { HTMLUtil }          from "../../utils/HTMLUtil";
 import { StyleColorUpdater } from "./StyleColorUpdater";
+import { ColorUtil } from "../../utils/ColorUtil";
 
 export class StyleUpdater implements Updater {
     static className:string = "StyleUpdater";
 
-    static readonly PARAM_REG:RegExp = new RegExp(/^[0-9]*/);
-    static readonly UNIT_REG :RegExp = new RegExp(/[^0-9].*/);
+    static readonly PARAM_REG:RegExp = new RegExp(/^[0-9.]*/);
+    static readonly UNIT_REG :RegExp = new RegExp(/[^0-9.].*/);
 
-    private _target       : HTMLElement;
-    private _param        : {[key:string]:ParamUpdater|StyleColorUpdater};
-    private _key          : string[];
-    private _unit         : {[key:string]:string};
-    private _tweenKey     : string[]|null|null;
-    private _onceParam    : {[key:string]:string}|null;
-    private _isUpdatedOnce: boolean;
+    private _target       :HTMLElement;
+    private _query        :string|null;
+    private _styleIndex   :number;
+    private _param        :{[key:string]:ParamUpdater|StyleColorUpdater};
+    private _key          :string[];
+    private _unit         :{[key:string]:string};
+    private _tweenKey     :string[]|null;
+    private _onceParam    :{[key:string]:string}|null;
+    private _isUpdatedOnce:boolean;
+    private _pseudo       :string|null;
+    private _style        :CSSStyleDeclaration|undefined;
 
-    constructor(target:any) {
+    constructor(target:HTMLElement, query:string|null) {
         this._target        = target;
+        this._query         = query;
+        this._styleIndex    = NaN;
         this._param       ||= {};
         this._key         ||= [];
         this._unit        ||= {};
         this._tweenKey      = null;
         this._onceParam     = null;
         this._isUpdatedOnce = false;
+        this._pseudo        = this._query ? HTMLUtil.getPseudoQuery(this._query) : null;
     }
     
     addPropStr(key:string, value:string) {
         const val :RegExpMatchArray|null = String(value).match(StyleUpdater.PARAM_REG);
         const unit:RegExpMatchArray|null = String(value).match(StyleUpdater.UNIT_REG);
         
-        if (value.substr(0, 1) == "#" || value.substr(0, 4) == "rgb(") {
+        if (ColorUtil.isColorCode(value)) {
             this._param[key] = new StyleColorUpdater(key, value);
             this._key.push(key);
         }
@@ -47,11 +55,15 @@ export class StyleUpdater implements Updater {
     }
 
     init() {
+        if (!this._style && this._pseudo && this._query) {
+            this._style = HTMLUtil.getAddedStyleByElement(this._target, this._pseudo);
+        }
+
         this._isUpdatedOnce = false;
         this._tweenKey = this._key.concat();
         for (const key of this._tweenKey) {
-            const value:string = HTMLUtil.getStyle(this._target).getPropertyValue(key);
-            if (value.substr(0, 3) == "rgb") {
+            const value:string = HTMLUtil.getComputedStyle(this._target, this._pseudo).getPropertyValue(key);
+            if (ColorUtil.isColorCode(value)) {
                 (this._param[key] as StyleColorUpdater).init(value);
                 this._unit[key] ||= "";
             }
@@ -67,13 +79,17 @@ export class StyleUpdater implements Updater {
     update(progress:number) {
         if (!this._isUpdatedOnce) {
             for (const key in this._onceParam) {
-                HTMLUtil.setStyleProp(this._target, key, this._onceParam[key]);
+                const value:string = this._onceParam[key];
+                if (this._style) this._style.setProperty(key, value);
+                else HTMLUtil.setStyleProp(this._target, key, value);
             }
             this._isUpdatedOnce = true;
         }
         if (this._tweenKey) {
             for (const key of this._tweenKey) {
-                HTMLUtil.setStyleProp(this._target, key, this._param[key].update(progress) + this._unit[key]);
+                const value:string = this._param[key].update(progress) + this._unit[key];
+                if (this._style) this._style.setProperty(key, value);
+                else HTMLUtil.setStyleProp(this._target, key, value);
             }
         }
     }
@@ -99,14 +115,13 @@ export class StyleUpdater implements Updater {
         return Math.max(...deltas);
     }
 
-    clone(target:any = this._target):StyleUpdater {
-        const copy:StyleUpdater = new StyleUpdater(target);
+    clone(target:any = this._target, query:string|null = this._query):StyleUpdater {
+        const copy:StyleUpdater = new StyleUpdater(target, query);
         if (this._param) {
             copy._param = {};
             for (const key in this._param) 
                 copy._param[key] = this._param[key].clone();
         }
-
         if (this._key      ) copy._key        = [ ...this._key ];
         if (this._unit     ) copy._unit       = { ...this._unit };
         if (this._onceParam) copy._onceParam  = { ...this._onceParam };

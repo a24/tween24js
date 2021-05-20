@@ -1,9 +1,149 @@
 import { Tween24  } from "./Tween24";
+import { Ease24, Sort24   } from "./index";
 import { Event24  } from "./Event24";
 import { Text24   } from "./utils/Text24";
 import { HTMLUtil } from "./utils/HTMLUtil";
+import { ButtonTemplate24 } from "./ButtonTemplate24";
 
 export class Button24 {
+    private static _DEFAULT_IN_EVENT :string = Event24.MOUSE_ENTER;
+    private static _DEFAULT_OUT_EVENT:string = Event24.MOUSE_LEAVE;
+
+    private _targetQuery:string;
+    private _inEventType:string;
+    private _outEventType:string;
+    private _templates:ButtonTemplate24[];
+    private _inTweens:Tween24[];
+    private _outTweens:Tween24[];
+    private _stopInTweens:Tween24[];
+    private _stopOutTweens:Tween24[];
+    private _onResizeBinded:any;
+
+    constructor(targetQuery:string, inEventType:string, outEventType:string, templates:ButtonTemplate24[]) {
+        
+        this._targetQuery  = targetQuery;
+        this._templates    = templates;
+        this._inEventType  = inEventType;
+        this._outEventType = outEventType;
+        
+        this._inTweens      = [];
+        this._outTweens     = [];
+        this._stopInTweens  = [];
+        this._stopOutTweens = [];
+
+        this._onResizeBinded = this._onResize.bind(this);
+
+        for (const template of templates) {
+            if (template.inTween     ) this._inTweens     .push(template.inTween);
+            if (template.outTween    ) this._outTweens    .push(template.outTween);
+            if (template.stopInTween ) this._stopInTweens .push(template.stopInTween);
+            if (template.stopOutTween) this._stopOutTweens.push(template.stopOutTween);
+        }
+
+        this._addEvent();
+    }
+
+    private _addEvent() {
+        if (this._inTweens .length) Event24.add(this._targetQuery, this._inEventType , Tween24.parallel(...this._inTweens));
+        if (this._outTweens.length) Event24.add(this._targetQuery, this._outEventType, Tween24.parallel(...this._outTweens));
+
+        if (this._stopInTweens .length) Event24.addWithStopEvent(this._targetQuery, this._inEventType , this._outEventType, Tween24.parallel(...this._stopInTweens));
+        if (this._stopOutTweens.length) Event24.addWithStopEvent(this._targetQuery, this._outEventType, this._inEventType , Tween24.parallel(...this._stopOutTweens));
+    }
+
+    private _onResize(event:Event) {
+        Tween24.serial(
+            Tween24.func(Event24.removeAllByTarget, this._targetQuery),
+            Tween24.func(this._onResizeTemplate.bind(this)),
+            Tween24.wait(0.01),
+            Tween24.func(this._addEvent.bind(this))
+        ).play();
+    }
+
+    private _onResizeTemplate() {
+        for (const template of this._templates) {
+            template.onResize();
+        }
+    }
+
+    resizeAndReset():Button24 {
+        window.addEventListener("resize", this._onResizeBinded, false);
+        return this;
+    }
+
+    removeResize():Button24 {
+        window.removeEventListener("resize", this._onResizeBinded, false);
+        return this;
+    }
+
+    
+
+    // ------------------------------------------
+    //
+    // Static method
+    //
+    // ------------------------------------------
+
+    static set(targetQuery:string, ...templates:ButtonTemplate24[]):Button24 {
+        const btn:Button24 = new Button24(targetQuery, Button24._DEFAULT_IN_EVENT, Button24._DEFAULT_OUT_EVENT, templates);
+        return btn;
+    }
+
+    static _ColorChange(targetQuery:string, color:string):ButtonTemplate24 {
+        const template:ButtonTemplate24 = new ButtonTemplate24();
+        const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
+        template.setStopInTween (Tween24.tween(targetQuery, 0.3, Ease24._4_QuartOut).color(color));
+        template.setStopOutTween(
+            Tween24.serial(
+                Tween24.prop(targetQuery).color(color),
+                Tween24.tween(targetQuery, 0.6, Ease24._4_QuartOut).color(window.getComputedStyle(targets[0]).color)
+            )
+        );
+        return template;
+    }
+
+    static _TextRollUp(targetQuery:string, sort:Function = Sort24._Normal, textSpacing:number = 0, lineHeight:string = "1.5"):ButtonTemplate24 {
+        const template:ButtonTemplate24 = new ButtonTemplate24();
+        const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
+        const createText:Function = function() {
+            for (const target of targets) {
+                const text:Text24 = Text24.getInstance(target) || new Text24(target, target.textContent?.trim() || "", true, true, lineHeight);
+                text.spacing = textSpacing;
+            }
+        }
+        createText();
+        template.setInTween(
+            Tween24.serial(
+                Tween24.propText(targetQuery).y(0),
+                Tween24.lagTotalSort(0.2, sort,
+                    Tween24.tweenTextVelocity(targetQuery, 40, Ease24._6_ExpoOut).y("-100%")
+                )
+            )
+        );
+        template.setResizeFunc(function():void {
+            Text24.removeByTarget(targetQuery);
+            createText();
+        });
+        return template;
+    }
+
+    static _FadeInOutArrow(targetQuery:string, startX:number|string = "-80%"):ButtonTemplate24 {
+        const template:ButtonTemplate24 = new ButtonTemplate24();
+        template.setStopInTween(
+            Tween24.serial(
+                Tween24.prop(targetQuery).x(startX).opacity(0),
+                Tween24.tween(targetQuery, 0.4, Ease24._4_QuartOut).x(0).opacity(1)
+            )
+        );
+        template.setStopOutTween(
+            Tween24.parallel(
+                Tween24.tween(targetQuery, 0.12, Ease24._Linear).opacity(0),
+                Tween24.tween(targetQuery, 0.6, Ease24._4_QuartOut).x(startX)
+            )
+        );
+        Tween24.prop(targetQuery).x(startX).opacity(0).play();
+        return template;
+    }
 
     /**
      * ボタンのテキストを、1文字ずつロールアップさせるアニメーションを設定します。

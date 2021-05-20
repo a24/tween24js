@@ -25,4 +25,10 @@ export class ColorUtil {
         else
             return [0, 0, 0];
     }
+
+    private static _regColor:RegExp = new RegExp(/^#/);
+    private static _regRGB  :RegExp = new RegExp(/^rgb\(/);
+    static isColorCode(value:string):boolean {
+        return (ColorUtil._regColor.test(value) || ColorUtil._regRGB.test(value))
+    }
 }

@@ -6,32 +6,36 @@ import { TransformUpdater } from "./TransformUpdater";
 export class MultiUpdater implements Updater {
     static type:string = "MultiUpdater";
 
-    private _updaters:Updater[];
+    private _targets    :any[];
+    private _query      :string|null;
+    private _updaters   :Updater[];
     private _updaterType:string|null;
-    private _targets:any[];
 
-    constructor(targets:any[], updaterType:string|null, updater:Updater|null) {
-        this._targets = targets;
+    constructor(targets:any[], query:string|null) {
+        this._targets     = targets;
+        this._query       = query;
+        this._updaterType = null;
+        this._updaters    = [];
+    }
+
+    setupByType(updaterType:string):MultiUpdater {
         this._updaterType = updaterType;
-        this._updaters = [];
+        for (const t of this._targets)
+            this._updaters.push(this._getUpdaterInstance(t, this._updaterType));
+        return this;
+    }
 
-        if (updaterType) {
-            for (const t of this._targets) {
-                this._updaters.push(this._getUpdaterInstance(t, this._updaterType));
-            }
-        }
-        else if (updater) {
-            for (const t of targets) {
-                this._updaters.push(updater.clone(t));
-            }
-        }
+    setupByUpdater(updater:Updater):MultiUpdater {
+        for (const t of this._targets)
+            this._updaters.push(updater.clone(t, this._query));
+        return this;
     }
 
     private _getUpdaterInstance(target:any, UpdaterType:string|null):Updater {
         let updater:Updater;
         switch (UpdaterType) {
-            case TransformUpdater.className : updater = new TransformUpdater(target); break;
-            case StyleUpdater    .className : updater = new StyleUpdater    (target); break;
+            case TransformUpdater.className : updater = new TransformUpdater(target, this._query); break;
+            case StyleUpdater    .className : updater = new StyleUpdater    (target, this._query); break;
             default                         : updater = new ObjectUpdater   (target);
         }
         return updater;
@@ -91,19 +95,18 @@ export class MultiUpdater implements Updater {
         return Math.max(...deltas);
     }
 
-    clone(target:any = this._targets):Updater {
+    clone(target:any = this._targets, query:string|null = this._query):Updater {
+        const updater = this._updaters[0];
         if (Array.isArray(target)) {
-            const copy:MultiUpdater = new MultiUpdater(target, null, null);
+            const copy:MultiUpdater = new MultiUpdater(target, query);
             copy._updaterType = this._updaterType;
-            for (const updater of this._updaters) {
-                for (const t of copy._targets) {
-                    copy._updaters.push(updater.clone(t));
-                }
+            for (const t of copy._targets) {
+                copy._updaters.push(updater.clone(t, query));
             }
             return copy;
         }
         else {
-            return this._updaters[0].clone(target);
+            return updater.clone(target, query);
         }
     }
 

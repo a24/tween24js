@@ -6,34 +6,39 @@ import { HTMLUtil }     from "../../utils/HTMLUtil";
 export class TransformUpdater implements Updater {
     static className:string = "TransformUpdater";
     
-    private static _chache:Map<HTMLElement, Matrix>;
+    private static _chache      :Map<HTMLElement, Matrix> = new Map<HTMLElement, Matrix>();
+    // private static _pseudoChache:Map<HTMLElement     , Matrix> = new Map<HTMLElement     , Matrix>();
+    private static _pseudoChache:Map<string     , Matrix> = new Map<string     , Matrix>();
 
-    private _target: HTMLElement;
-    private _matrix: Matrix;
+    private _target    :HTMLElement;
+    private _query     :string|null;
+    private _pseudo    :string|null;
+    private _style     :CSSStyleDeclaration|undefined;
+    private _tweenQuery:string|null;
 
-    private _x       : ParamUpdater|null;
-    private _y       : ParamUpdater|null;
-    private _scaleX  : ParamUpdater|null;
-    private _scaleY  : ParamUpdater|null;
-    private _skewX   : ParamUpdater|null;
-    private _skewY   : ParamUpdater|null;
-    private _rotation: ParamUpdater|null;
+    private _matrix  :Matrix;
+    private _x       :ParamUpdater|null;
+    private _y       :ParamUpdater|null;
+    private _scaleX  :ParamUpdater|null;
+    private _scaleY  :ParamUpdater|null;
+    private _skewX   :ParamUpdater|null;
+    private _skewY   :ParamUpdater|null;
+    private _rotation:ParamUpdater|null;
 
-    private _updateX       : boolean;
-    private _updateY       : boolean;
-    private _updateScaleX  : boolean;
-    private _updateScaleY  : boolean;
-    private _updateSkewX   : boolean;
-    private _updateSkewY   : boolean;
-    private _updateRotation: boolean;
+    private _updateX       :boolean;
+    private _updateY       :boolean;
+    private _updateScaleX  :boolean;
+    private _updateScaleY  :boolean;
+    private _updateSkewX   :boolean;
+    private _updateSkewY   :boolean;
+    private _updateRotation:boolean;
 
     private _percentX:string|null;
     private _percentY:string|null;
 
-    constructor(target: any) {
-        if (!TransformUpdater._chache) TransformUpdater._chache = new Map<HTMLElement, Matrix>();
-
+    constructor(target:HTMLElement, query:string|null) {
         this._target = target;
+        this._query  = query;
         this._matrix = new Matrix();
 
         this._x        = null;
@@ -54,14 +59,52 @@ export class TransformUpdater implements Updater {
 
         this._percentX = null;
         this._percentY = null;
+        
+        this._pseudo     = this._query  ? HTMLUtil.getPseudoQuery(this._query) : null;
+        this._tweenQuery = null;
     }
 
     init() {
-        const chache: Matrix|undefined = TransformUpdater._chache.get(this._target);
+        // Setting style
+        if (!this._style) {
+            if (this._pseudo && this._query) {
+                this._style = HTMLUtil.getAddedStyleByElement(this._target, this._pseudo);
+                if (this._style && HTMLUtil.getComputedStyle(this._target, this._pseudo).display == "inline") {
+                    this._style.setProperty("display", "inline-block");
+                }
+                this._tweenQuery = HTMLUtil.getTweenElementQuery(this._target, this._pseudo);
+            }
+            else {
+                this._style = this._target.style;
+
+            }
+        }
+
+        // Setting chahe
+        const chache:Matrix|undefined = this._getChache();
         if (chache)
             this._matrix = Matrix.copy(this._matrix, chache);
         else
-            this._matrix.setMatrixByCSSTransform(HTMLUtil.getTransformMatrix(this._target));
+            this._matrix.setMatrixByCSSTransform(HTMLUtil.getTransformMatrix(this._target, this._pseudo));
+
+        // Setting param
+        if (this._percentX || this._percentY) {
+            if (this._pseudo) {
+                const sty = HTMLUtil.getComputedStyle(this._target, this._pseudo);
+                if (this._percentX) {
+                    if (this._style && !this._style.width) this._style.setProperty("width", "auto");
+                    this._x = new ParamUpdater("x", parseFloat(sty.width) * parseFloat(this._percentX) / 100);
+                }
+                if (this._percentY) {
+                    if (this._style && !this._style.height) this._style.setProperty("height", "auto");
+                    this._y = new ParamUpdater("y", parseFloat(sty.height) * parseFloat(this._percentY) / 100);
+                }
+            }
+            else {
+                if (this._percentX) this._x = new ParamUpdater("x", this._target.offsetWidth  * parseFloat(this._percentX) / 100);
+                if (this._percentY) this._y = new ParamUpdater("y", this._target.offsetHeight * parseFloat(this._percentY) / 100);
+            }
+        }
         
         this._updateX        = this._x        ? true : false;
         this._updateY        = this._y        ? true : false;
@@ -95,21 +138,16 @@ export class TransformUpdater implements Updater {
     addPropStr(key:string, value:string) {
         switch (key) {
             case "x" :
-                this._percentX = value;
-                console.log(this._percentX)
-                if (value.slice(-1) == "%")
-                    this._x = new ParamUpdater(key, this._target.offsetWidth * (parseFloat(value) / 100));
+                if (value.slice(-1) == "%") this._percentX = value;
                 break;
             case "y" :
-                this._percentY = value;
-                if (value.slice(-1) == "%")
-                    this._y = new ParamUpdater(key, this._target.offsetHeight * (parseFloat(value) / 100));
+                if (value.slice(-1) == "%") this._percentY = value;
                 break;
         }
     }
 
     update(progress: number) {
-        const chache: Matrix|undefined = TransformUpdater._chache.get(this._target);
+        const chache: Matrix|undefined = this._getChache();
         if (chache && chache != this._matrix)
             this._matrix = Matrix.copy(this._matrix, chache);
 
@@ -122,8 +160,31 @@ export class TransformUpdater implements Updater {
         if (this._updateRotation && this._rotation) this._matrix.rotation = this._rotation.update(progress);
 
         this._matrix.updateMatrix();
-        HTMLUtil.setTransformMatrix(this._target, this._matrix.toString());
-        TransformUpdater._chache.set(this._target, this._matrix);
+        this._style?.setProperty("transform", this._matrix.toString());
+        this._setChache(this._matrix);
+        
+        if (progress == 1) this.complete();
+    }
+
+    private _getChache():Matrix|undefined {
+        if (this._pseudo)
+            return (this._tweenQuery) ? TransformUpdater._pseudoChache.get(this._tweenQuery) : undefined;
+        else 
+            return TransformUpdater._chache.get(this._target);
+    }
+
+    private _setChache(matrix:Matrix) {
+        if (this._pseudo)
+            if (this._tweenQuery) TransformUpdater._pseudoChache.set(this._tweenQuery, matrix);
+        else 
+            TransformUpdater._chache.set(this._target, matrix);
+    }
+
+    private _deleteChache() {
+        if (this._pseudo)
+            if (this._tweenQuery) TransformUpdater._pseudoChache.delete(this._tweenQuery);
+        else 
+            TransformUpdater._chache.delete(this._target);
     }
 
     overwrite(updater: TransformUpdater) {
@@ -139,7 +200,7 @@ export class TransformUpdater implements Updater {
     }
 
     complete() {
-        TransformUpdater._chache.delete(this._target);
+        this._deleteChache();
     }
 
     getMaxAbsDelta():number {
@@ -157,8 +218,8 @@ export class TransformUpdater implements Updater {
         return Math.max(...deltas);
     }
 
-    clone(target:HTMLElement = this._target):TransformUpdater {
-        const copy:TransformUpdater = new TransformUpdater(target);
+    clone(target:HTMLElement = this._target, query:string|null = this._query):TransformUpdater {
+        const copy:TransformUpdater = new TransformUpdater(target, query);
 
         if (this._percentX) copy.addPropStr("x", this._percentX);
         else if   (this._x) copy._x = this._x.clone();

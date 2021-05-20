@@ -16,7 +16,7 @@ import { Text24 }           from "./utils/Text24";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.9.0";
+    static readonly VERSION:string = "0.9.1";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -28,6 +28,7 @@ export class Tween24 {
     private static readonly _TYPE_SERIAL             :string = "serial";
     private static readonly _TYPE_PARALLEL           :string = "parallel";
     private static readonly _TYPE_LAG                :string = "lag";
+    private static readonly _TYPE_LOOP               :string = "loop";
     private static readonly _TYPE_FUNC               :string = "func";
 
     static ticker:Ticker24;
@@ -100,6 +101,10 @@ export class Tween24 {
     private _totalLagTime:number = NaN;
     private _lagSort     :Function|null = null;
     private _lagEasing   :Function|null = null;
+
+    // Loop
+    private _numLoops:number = NaN;
+    private _currentLoops:number = NaN;
     
     // Tween FPS
     __fps:number = 0;
@@ -286,6 +291,7 @@ export class Tween24 {
                         break;
                     case Tween24._TYPE_PARALLEL:
                     case Tween24._TYPE_LAG     :
+                    case Tween24._TYPE_LOOP    :
                         if (this._childTween) {
                             for (const tween of this._childTween) {
                                 this._playingChildTween?.push(tween);
@@ -338,6 +344,16 @@ export class Tween24 {
 
     private _complete() {
         this._debugLog("complete");
+
+        if (this._type == Tween24._TYPE_LOOP) {
+            this._currentLoops ++;
+            if (this._numLoops == 0 || this._numLoops > this._currentLoops) {
+                this._numCompleteChildren = 0;
+                this._play();
+                return;
+            }
+        }
+
         this._tweenStop();
         if (this._parent) this._parent._completeChildTween(this);
         this._functionExecute(Tween24Event.COMPLATE);
@@ -359,7 +375,7 @@ export class Tween24 {
         // this._debugLog("completeChildTween");
         this._numCompleteChildren ++;
         if (this._numChildren == this._numCompleteChildren) {
-            this._complete();
+            // this._complete();
         }
         else if (this._playingChildTween) {
             ArrayUtil.removeItemFromArray(this._playingChildTween, tween);
@@ -1084,6 +1100,22 @@ export class Tween24 {
         tween._originalChildTween = childTween;
         return tween;
     }
+
+    /**
+     * 繰り返し再生させるトゥイーンを設定します。
+     * ループ回数に「0」を指定すると、無制限に繰り返します。
+     * @static
+     * @param {number} numLoops ループさせる回数
+     * @param {Tween24} tween ループさせるトゥイーン
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static loop(numLoops:number, tween:Tween24):Tween24 {
+        const loopTween:Tween24 = new Tween24()._createContainerTween(Tween24._TYPE_LOOP, [tween]);
+        loopTween._numLoops = numLoops;
+        loopTween._currentLoops = 0;
+        return loopTween;
+    }
     
     private _createChildTween(type:string, target:any, timeOrVelocity:number, easing:Function|null, params:{[key:string]:number}|null): Tween24 {
         this._type        = type;
@@ -1284,6 +1316,7 @@ export class Tween24 {
                 break;
             case Tween24._TYPE_SERIAL   :
             case Tween24._TYPE_PARALLEL :
+            case Tween24._TYPE_LOOP     :
                 const tweens:Tween24[] = [];
                 if (this._childTween) {
                     for (const tween of this._childTween) {
@@ -1291,6 +1324,7 @@ export class Tween24 {
                     }
                 }
                 copy._createContainerTween(this._type, tweens);
+                copy._numLoops = this._numLoops;
                 break;
             case Tween24._TYPE_LAG:
                 const lagTweens:Tween24[] = [];

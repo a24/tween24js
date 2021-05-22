@@ -1,9 +1,10 @@
 import { Tween24  } from "./Tween24";
-import { Ease24, Sort24   } from "./index";
+import { Ease24   } from "./index";
+import { Sort24   } from "./index";
 import { Event24  } from "./Event24";
 import { Text24   } from "./utils/Text24";
 import { HTMLUtil } from "./utils/HTMLUtil";
-import { ButtonTemplate24 } from "./ButtonTemplate24";
+import { ButtonTween24 } from "./ButtonTween24";
 
 export class Button24 {
     private static _DEFAULT_IN_EVENT :string = Event24.MOUSE_ENTER;
@@ -12,14 +13,14 @@ export class Button24 {
     private _targetQuery:string;
     private _inEventType:string;
     private _outEventType:string;
-    private _templates:ButtonTemplate24[];
+    private _templates:ButtonTween24[];
     private _inTweens:Tween24[];
     private _outTweens:Tween24[];
     private _stopInTweens:Tween24[];
     private _stopOutTweens:Tween24[];
     private _onResizeBinded:any;
 
-    constructor(targetQuery:string, inEventType:string, outEventType:string, templates:ButtonTemplate24[]) {
+    constructor(targetQuery:string, inEventType:string, outEventType:string, templates:ButtonTween24[]) {
         
         this._targetQuery  = targetQuery;
         this._templates    = templates;
@@ -33,12 +34,16 @@ export class Button24 {
 
         this._onResizeBinded = this._onResize.bind(this);
 
+        let needResizse:boolean = false;
         for (const template of templates) {
             if (template.inTween     ) this._inTweens     .push(template.inTween);
             if (template.outTween    ) this._outTweens    .push(template.outTween);
             if (template.stopInTween ) this._stopInTweens .push(template.stopInTween);
             if (template.stopOutTween) this._stopOutTweens.push(template.stopOutTween);
+            needResizse ||= template.needResize;
+            console.log(needResizse)
         }
+        if (needResizse) this.resizeAndReset();
 
         this._addEvent();
     }
@@ -47,23 +52,27 @@ export class Button24 {
         if (this._inTweens .length) Event24.add(this._targetQuery, this._inEventType , Tween24.parallel(...this._inTweens));
         if (this._outTweens.length) Event24.add(this._targetQuery, this._outEventType, Tween24.parallel(...this._outTweens));
 
-        if (this._stopInTweens .length) Event24.addWithStopEvent(this._targetQuery, this._inEventType , this._outEventType, Tween24.parallel(...this._stopInTweens));
-        if (this._stopOutTweens.length) Event24.addWithStopEvent(this._targetQuery, this._outEventType, this._inEventType , Tween24.parallel(...this._stopOutTweens));
+        if (this._stopInTweens .length) Event24.add(this._targetQuery, this._inEventType , Tween24.parallel(...this._stopInTweens )).addStopEvent(this._outEventType);
+        if (this._stopOutTweens.length) Event24.add(this._targetQuery, this._outEventType, Tween24.parallel(...this._stopOutTweens)).addStopEvent(this._inEventType);
     }
 
     private _onResize(event:Event) {
-        Tween24.serial(
-            Tween24.func(Event24.removeAllByTarget, this._targetQuery),
-            Tween24.func(this._onResizeTemplate.bind(this)),
-            Tween24.wait(0.01),
-            Tween24.func(this._addEvent.bind(this))
-        ).play();
+        this.reset();
     }
 
     private _onResizeTemplate() {
         for (const template of this._templates) {
             template.onResize();
         }
+    }
+
+    reset() {
+        Tween24.serial(
+            Tween24.func(Event24.removeAllByTarget, this._targetQuery),
+            Tween24.func(this._onResizeTemplate.bind(this)),
+            Tween24.wait(0.01),
+            Tween24.func(this._addEvent.bind(this))
+        ).play();
     }
 
     resizeAndReset():Button24 {
@@ -84,13 +93,13 @@ export class Button24 {
     //
     // ------------------------------------------
 
-    static set(targetQuery:string, ...templates:ButtonTemplate24[]):Button24 {
+    static set(targetQuery:string, ...templates:ButtonTween24[]):Button24 {
         const btn:Button24 = new Button24(targetQuery, Button24._DEFAULT_IN_EVENT, Button24._DEFAULT_OUT_EVENT, templates);
         return btn;
     }
 
-    static _ColorChange(targetQuery:string, color:string):ButtonTemplate24 {
-        const template:ButtonTemplate24 = new ButtonTemplate24();
+    static _ColorChange(targetQuery:string, color:string):ButtonTween24 {
+        const template:ButtonTween24 = new ButtonTween24();
         const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
         template.setStopInTween (Tween24.tween(targetQuery, 0.3, Ease24._4_QuartOut).color(color));
         template.setStopOutTween(
@@ -102,8 +111,8 @@ export class Button24 {
         return template;
     }
 
-    static _TextRollUp(targetQuery:string, sort:Function = Sort24._Normal, textSpacing:number = 0, lineHeight:string = "1.5"):ButtonTemplate24 {
-        const template:ButtonTemplate24 = new ButtonTemplate24();
+    static _TextRollUp(targetQuery:string, sort:Function = Sort24._Normal, textSpacing:number = 0, lineHeight:string = "1.5"):ButtonTween24 {
+        const template:ButtonTween24 = new ButtonTween24();
         const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
         const createText:Function = function() {
             for (const target of targets) {
@@ -124,11 +133,12 @@ export class Button24 {
             Text24.removeByTarget(targetQuery);
             createText();
         });
+        template.needResize = true;
         return template;
     }
 
-    static _FadeInOutArrow(targetQuery:string, startX:number|string = "-80%"):ButtonTemplate24 {
-        const template:ButtonTemplate24 = new ButtonTemplate24();
+    static _FadeInOutArrow(targetQuery:string, startX:number|string = "-80%"):ButtonTween24 {
+        const template:ButtonTween24 = new ButtonTween24();
         template.setStopInTween(
             Tween24.serial(
                 Tween24.prop(targetQuery).x(startX).opacity(0),
@@ -142,6 +152,7 @@ export class Button24 {
             )
         );
         Tween24.prop(targetQuery).x(startX).opacity(0).play();
+        template.needResize = true;
         return template;
     }
 
@@ -168,16 +179,16 @@ export class Button24 {
                 text.spacing = textSpacing;
             }
             const setEvent:Function = function() {
-                Event24.addWithStopEvent(buttonQuery, Event24.MOUSE_ENTER, Event24.MOUSE_LEAVE, 
+                Event24.add(buttonQuery, Event24.MOUSE_ENTER, 
                     Tween24.lagTotalSort(overTotalLagTime, sort,
                         Tween24.tweenTextVelocity(textQuery, velocity, easing).y("-100%")
                     )
-                );
-                Event24.addWithStopEvent(buttonQuery, Event24.MOUSE_LEAVE, Event24.MOUSE_ENTER, 
+                ).addStopEvent(Event24.MOUSE_LEAVE);
+                Event24.add(buttonQuery, Event24.MOUSE_LEAVE, 
                     Tween24.lagTotalSort(outTotalLagTime, sort,
                         Tween24.tweenTextVelocity(textQuery, velocity, easing).y(0)
                     )
-                );
+                ).addStopEvent(Event24.MOUSE_ENTER);
             }
             setEvent();
         }

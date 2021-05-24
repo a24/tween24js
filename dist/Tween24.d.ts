@@ -12,6 +12,7 @@ export declare class Tween24 {
     private static readonly _TYPE_SERIAL;
     private static readonly _TYPE_PARALLEL;
     private static readonly _TYPE_LAG;
+    private static readonly _TYPE_LOOP;
     private static readonly _TYPE_FUNC;
     static ticker: Ticker24;
     static ease: Ease24;
@@ -64,6 +65,8 @@ export declare class Tween24 {
     private _totalLagTime;
     private _lagSort;
     private _lagEasing;
+    private _numLoops;
+    private _currentLoops;
     __fps: number;
     __beforeTime: number;
     constructor();
@@ -561,6 +564,16 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     static lagTotalSortEase(totalLagTime: number, sort: Function, easing: Function, ...childTween: Tween24[]): Tween24;
+    /**
+     * 繰り返し再生させるトゥイーンを設定します。
+     * ループ回数に「0」を指定すると、無制限に繰り返します。
+     * @static
+     * @param {number} numLoops ループさせる回数
+     * @param {Tween24} tween ループさせるトゥイーン
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static loop(numLoops: number, tween: Tween24): Tween24;
     private _createChildTween;
     private _createContainerTween;
     private _createActionTween;

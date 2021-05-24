@@ -1,4 +1,4 @@
-import { ButtonTemplate24 } from "./ButtonTemplate24";
+import { ButtonTween24 } from "./ButtonTween24";
 export declare class Button24 {
     private static _DEFAULT_IN_EVENT;
     private static _DEFAULT_OUT_EVENT;
@@ -11,16 +11,17 @@ export declare class Button24 {
     private _stopInTweens;
     private _stopOutTweens;
     private _onResizeBinded;
-    constructor(targetQuery: string, inEventType: string, outEventType: string, templates: ButtonTemplate24[]);
+    constructor(targetQuery: string, inEventType: string, outEventType: string, templates: ButtonTween24[]);
     private _addEvent;
     private _onResize;
     private _onResizeTemplate;
+    reset(): void;
     resizeAndReset(): Button24;
     removeResize(): Button24;
-    static set(targetQuery: string, ...templates: ButtonTemplate24[]): Button24;
-    static _ColorChange(targetQuery: string, color: string): ButtonTemplate24;
-    static _TextRollUp(targetQuery: string, sort?: Function, textSpacing?: number, lineHeight?: string): ButtonTemplate24;
-    static _FadeInOutArrow(targetQuery: string, startX?: number | string): ButtonTemplate24;
+    static set(targetQuery: string, ...templates: ButtonTween24[]): Button24;
+    static _ColorChange(targetQuery: string, color: string): ButtonTween24;
+    static _TextRollUp(targetQuery: string, sort?: Function, textSpacing?: number, lineHeight?: string): ButtonTween24;
+    static _FadeInOutArrow(targetQuery: string, startX?: number | string): ButtonTween24;
     /**
      * ボタンのテキストを、1文字ずつロールアップさせるアニメーションを設定します。
      * @static

@@ -114,7 +114,8 @@ export declare class Event24 {
      * @param {(string|string[])} eventType トゥイーンを停止するイベントタイプ
      * @memberof Event24
      */
-    addStopEvent(eventType: string | string[]): void;
+    addStopEvent(eventType: string | string[]): Event24;
+    willChange(use: boolean): Event24;
     /**
      * イベントに合わせて再生されるトゥイーンを設定します。
      * @static

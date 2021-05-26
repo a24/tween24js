@@ -11,7 +11,7 @@ export declare class MultiUpdater implements Updater {
     private _getUpdaterInstance;
     addProp(key: string, value: number): void;
     addPropStr(key: string, value: string): void;
-    init(): void;
+    init(useWillChange: boolean): void;
     update(progress: number): void;
     overwrite(updater: Updater): void;
     overwriteTo(target: Updater): void;

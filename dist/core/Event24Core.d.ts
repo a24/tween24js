@@ -10,6 +10,7 @@ export declare class Event24Core {
     setEventListener(): void;
     removeEventListener(): void;
     addStopEvent(stopEventType: string | string[]): void;
+    willChange(use: boolean): this;
     private _play;
     private _stop;
 }

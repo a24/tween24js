@@ -5,7 +5,6 @@ export declare class StyleUpdater implements Updater {
     static readonly UNIT_REG: RegExp;
     private _target;
     private _query;
-    private _styleIndex;
     private _param;
     private _key;
     private _unit;
@@ -14,9 +13,10 @@ export declare class StyleUpdater implements Updater {
     private _isUpdatedOnce;
     private _pseudo;
     private _style;
+    private _useWillChange;
     constructor(target: HTMLElement, query: string | null);
     addPropStr(key: string, value: string): void;
-    init(): void;
+    init(useWillChange: boolean): void;
     update(progress: number): void;
     overwrite(updater: StyleUpdater): void;
     getMaxAbsDelta(): number;

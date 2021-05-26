@@ -21,6 +21,7 @@ export declare class Tween24 {
     private static _defaultEasing;
     private static _debugMode;
     private static _numCreateTween;
+    private static _useWillChange;
     private _singleTarget;
     private _multiTarget;
     private _easing;
@@ -36,6 +37,7 @@ export declare class Tween24 {
     private _tweenId;
     private _targetString;
     private _targetQuery;
+    private _useWillChange;
     private _objectUpdater;
     private _objectMultiUpdater;
     private _transformUpdater;
@@ -295,6 +297,15 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     style(name: string, value: number | string): Tween24;
+    /**
+     * トゥイーン実行時に willChange を有効にするか設定します。
+     * 有効にすると強力な最適化をブラウザーが行い、アニメーションが滑らかになります。
+     * 対象が HTMLElement の場合にのみ適用されます。
+     * @param {boolean} [use=true]
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    willChange(use?: boolean): Tween24;
     /**
      * トゥイーン毎のFPS（1秒間の更新回数）を設定します。
      * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。

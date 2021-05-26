@@ -1,7 +1,7 @@
 import { MultiUpdater } from "./MultiUpdater";
 export interface Updater {
     constructor: Function;
-    init(): void;
+    init(useWillChange: boolean): void;
     complete(): void;
     toString(): string;
     clone(target: any, query: string | null): Updater;

@@ -8,6 +8,7 @@ export declare class TransformUpdater implements Updater {
     private _pseudo;
     private _style;
     private _tweenQuery;
+    private _useWillChange;
     private _matrix;
     private _x;
     private _y;
@@ -26,7 +27,7 @@ export declare class TransformUpdater implements Updater {
     private _percentX;
     private _percentY;
     constructor(target: HTMLElement, query: string | null);
-    init(): void;
+    init(useWillChange: boolean): void;
     addProp(key: string, value: number): void;
     addPropStr(key: string, value: string): void;
     update(progress: number): void;

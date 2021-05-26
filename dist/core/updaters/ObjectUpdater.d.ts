@@ -10,7 +10,7 @@ export declare class ObjectUpdater implements Updater {
     constructor(target: any);
     addProp(key: string, value: number): void;
     addPropStr(key: string, value: string): void;
-    init(): void;
+    init(useWillChange: boolean): void;
     update(progress: number): void;
     overwrite(updater: ObjectUpdater): void;
     getMaxAbsDelta(): number;

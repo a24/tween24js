@@ -7,7 +7,6 @@ export class TransformUpdater implements Updater {
     static className:string = "TransformUpdater";
     
     private static _chache      :Map<HTMLElement, Matrix> = new Map<HTMLElement, Matrix>();
-    // private static _pseudoChache:Map<HTMLElement     , Matrix> = new Map<HTMLElement     , Matrix>();
     private static _pseudoChache:Map<string     , Matrix> = new Map<string     , Matrix>();
 
     private _target    :HTMLElement;
@@ -15,6 +14,8 @@ export class TransformUpdater implements Updater {
     private _pseudo    :string|null;
     private _style     :CSSStyleDeclaration|undefined;
     private _tweenQuery:string|null;
+
+    private _useWillChange:boolean;
 
     private _matrix  :Matrix;
     private _x       :ParamUpdater|null;
@@ -62,9 +63,13 @@ export class TransformUpdater implements Updater {
         
         this._pseudo     = this._query  ? HTMLUtil.getPseudoQuery(this._query) : null;
         this._tweenQuery = null;
+
+        this._useWillChange = true;
     }
 
-    init() {
+    init(useWillChange:boolean) {
+        this._useWillChange = useWillChange;
+
         // Setting style
         if (!this._style) {
             if (this._pseudo && this._query) {
@@ -87,6 +92,11 @@ export class TransformUpdater implements Updater {
         else
             this._matrix.setMatrixByCSSTransform(HTMLUtil.getTransformMatrix(this._target, this._pseudo));
 
+        // Set will-change
+        if (this._useWillChange) {
+            this._style?.setProperty("will-change", "transform");
+        }
+        
         // Setting param
         if (this._percentX || this._percentY) {
             if (this._pseudo) {
@@ -201,6 +211,10 @@ export class TransformUpdater implements Updater {
 
     complete() {
         this._deleteChache();
+
+        if (this._useWillChange) {
+            this._style?.setProperty("will-change", "");
+        }
     }
 
     getMaxAbsDelta():number {

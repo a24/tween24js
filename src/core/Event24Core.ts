@@ -45,6 +45,11 @@ export class Event24Core {
         }
     }
 
+    willChange(use:boolean) {
+        this._tween.willChange(use);
+        return this;
+    }
+
     private _play(event:Event):void {
         this._tween.play();
     }

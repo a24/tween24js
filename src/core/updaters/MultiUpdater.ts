@@ -53,9 +53,9 @@ export class MultiUpdater implements Updater {
         }
     }
 
-    init() {
+    init(useWillChange:boolean) {
         for (const updater of this._updaters) {
-            updater.init();
+            updater.init(useWillChange);
         }
     }
 

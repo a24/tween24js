@@ -10,28 +10,40 @@ export class Button24 {
     private static _DEFAULT_IN_EVENT :string = Event24.MOUSE_ENTER;
     private static _DEFAULT_OUT_EVENT:string = Event24.MOUSE_LEAVE;
 
-    private _targetQuery:string;
-    private _inEventType:string;
-    private _outEventType:string;
-    private _templates:ButtonTween24[];
-    private _inTweens:Tween24[];
-    private _outTweens:Tween24[];
-    private _stopInTweens:Tween24[];
-    private _stopOutTweens:Tween24[];
+    private _targetQuery   :string;
+    private _inEventType   :string;
+    private _outEventType  :string;
+    private _templates     :ButtonTween24[];
+
+    private _inTweens      :Tween24[];
+    private _outTweens     :Tween24[];
+    private _stopInTweens  :Tween24[];
+    private _stopOutTweens :Tween24[];
+
+    private _inEvent       :Event24|null;
+    private _outEvent      :Event24|null;
+    private _stopInEvent   :Event24|null;
+    private _stopOutEvent  :Event24|null;
+
     private _onResizeBinded:any;
 
     constructor(targetQuery:string, inEventType:string, outEventType:string, templates:ButtonTween24[]) {
         
-        this._targetQuery  = targetQuery;
-        this._templates    = templates;
-        this._inEventType  = inEventType;
-        this._outEventType = outEventType;
+        this._targetQuery   = targetQuery;
+        this._templates     = templates;
+        this._inEventType   = inEventType;
+        this._outEventType  = outEventType;
         
         this._inTweens      = [];
         this._outTweens     = [];
         this._stopInTweens  = [];
         this._stopOutTweens = [];
 
+        this._inEvent       = null;
+        this._outEvent      = null;
+        this._stopInEvent   = null;
+        this._stopOutEvent  = null;
+        
         this._onResizeBinded = this._onResize.bind(this);
 
         let needResizse:boolean = false;
@@ -41,7 +53,6 @@ export class Button24 {
             if (template.stopInTween ) this._stopInTweens .push(template.stopInTween);
             if (template.stopOutTween) this._stopOutTweens.push(template.stopOutTween);
             needResizse ||= template.needResize;
-            console.log(needResizse)
         }
         if (needResizse) this.resizeAndReset();
 
@@ -49,11 +60,11 @@ export class Button24 {
     }
 
     private _addEvent() {
-        if (this._inTweens .length) Event24.add(this._targetQuery, this._inEventType , Tween24.parallel(...this._inTweens));
-        if (this._outTweens.length) Event24.add(this._targetQuery, this._outEventType, Tween24.parallel(...this._outTweens));
+        if (this._inTweens .length) this._inEvent  = Event24.add(this._targetQuery, this._inEventType , Tween24.parallel(...this._inTweens));
+        if (this._outTweens.length) this._outEvent = Event24.add(this._targetQuery, this._outEventType, Tween24.parallel(...this._outTweens));
 
-        if (this._stopInTweens .length) Event24.add(this._targetQuery, this._inEventType , Tween24.parallel(...this._stopInTweens )).addStopEvent(this._outEventType);
-        if (this._stopOutTweens.length) Event24.add(this._targetQuery, this._outEventType, Tween24.parallel(...this._stopOutTweens)).addStopEvent(this._inEventType);
+        if (this._stopInTweens .length) this._stopInEvent  = Event24.add(this._targetQuery, this._inEventType , Tween24.parallel(...this._stopInTweens )).addStopEvent(this._outEventType);
+        if (this._stopOutTweens.length) this._stopOutEvent = Event24.add(this._targetQuery, this._outEventType, Tween24.parallel(...this._stopOutTweens)).addStopEvent(this._inEventType);
     }
 
     private _onResize(event:Event) {
@@ -85,6 +96,14 @@ export class Button24 {
         return this;
     }
 
+    willChange(use:boolean = true):Button24 {
+        this._inEvent     ?.willChange(use);
+        this._outEvent    ?.willChange(use);
+        this._stopInEvent ?.willChange(use);
+        this._stopOutEvent?.willChange(use);
+        return this;
+    }
+
     
 
     // ------------------------------------------
@@ -111,7 +130,7 @@ export class Button24 {
         return template;
     }
 
-    static _TextRollUp(targetQuery:string, sort:Function = Sort24._Normal, textSpacing:number = 0, lineHeight:string = "1.5"):ButtonTween24 {
+    static _TextRollUp(targetQuery:string, velocity:number = 40, sort:Function = Sort24._Normal, textSpacing:number = 0, lineHeight:string = "1.5"):ButtonTween24 {
         const template:ButtonTween24 = new ButtonTween24();
         const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
         const createText:Function = function() {
@@ -125,8 +144,39 @@ export class Button24 {
             Tween24.serial(
                 Tween24.propText(targetQuery).y(0),
                 Tween24.lagTotalSort(0.2, sort,
+                    Tween24.tweenTextVelocity(targetQuery, velocity, Ease24._6_ExpoOut).y("-100%")
+                )
+            )
+        );
+        template.setResizeFunc(function():void {
+            Text24.removeByTarget(targetQuery);
+            createText();
+        });
+        template.needResize = true;
+        return template;
+    }
+
+    static _TextRollUpDown(targetQuery:string, sort:Function = Sort24._Normal, textSpacing:number = 0, lineHeight:string = "1.5"):ButtonTween24 {
+        const template:ButtonTween24 = new ButtonTween24();
+        const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
+        const createText:Function = function() {
+            for (const target of targets) {
+                const text:Text24 = Text24.getInstance(target) || new Text24(target, target.textContent?.trim() || "", true, true, lineHeight);
+                text.spacing = textSpacing;
+            }
+        }
+        createText();
+        template.setStopInTween(
+            Tween24.serial(
+                Tween24.propText(targetQuery).y(0),
+                Tween24.lagTotalSort(0.2, sort,
                     Tween24.tweenTextVelocity(targetQuery, 40, Ease24._6_ExpoOut).y("-100%")
                 )
+            )
+        );
+        template.setStopOutTween(
+            Tween24.lagTotalSort(0.2, sort,
+                Tween24.tweenTextVelocity(targetQuery, 40, Ease24._6_ExpoOut).y(0)
             )
         );
         template.setResizeFunc(function():void {

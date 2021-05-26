@@ -181,10 +181,18 @@ export class Event24 {
      * @param {(string|string[])} eventType トゥイーンを停止するイベントタイプ
      * @memberof Event24
      */
-    addStopEvent(eventType:string|string[]) {
+    addStopEvent(eventType:string|string[]):Event24 {
         for (const eventCore of this._eventCores) {
             eventCore.addStopEvent(eventType);
         }
+        return this;
+    }
+
+    willChange(use:boolean):Event24 {
+        for (const eventCore of this._eventCores) {
+            eventCore.willChange(use);
+        }
+        return this;
     }
 
 

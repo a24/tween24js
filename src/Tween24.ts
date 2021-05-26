@@ -16,7 +16,7 @@ import { Text24 }           from "./utils/Text24";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.9.2";
+    static readonly VERSION:string = "0.9.3";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -38,8 +38,9 @@ export class Tween24 {
     private static _playingTweensByTarget:Map<any, Tween24[]>;
 
     private static _defaultEasing  :Function = Ease24._Linear;
-    private static _debugMode      :boolean = false;
-    private static _numCreateTween :number = 0;
+    private static _debugMode      :boolean  = false;
+    private static _numCreateTween :number   = 0;
+    private static _useWillChange  :boolean  = false;
 
     // Tween param
     private _singleTarget:any      |null = null;
@@ -53,12 +54,13 @@ export class Tween24 {
     private _startTime:number  = NaN;
     private _progress :number  = 0;
 
-    private _debugMode   :boolean = false;
-    private _numLayers   :number  = 0;
-    private _serialNumber:number  = 0;
-    private _tweenId     :string  = "";
-    private _targetString:string  = "";
-    private _targetQuery :string|null = null;
+    private _debugMode    :boolean     = false;
+    private _numLayers    :number      = 0;
+    private _serialNumber :number      = 0;
+    private _tweenId      :string      = "";
+    private _targetString :string      = "";
+    private _targetQuery  :string|null = null;
+    private _useWillChange:boolean     = false;
 
     // Updater
     private _objectUpdater        :ObjectUpdater   |null = null;
@@ -160,7 +162,7 @@ export class Tween24 {
             const deltas:number[] = [0];
             if (this._allUpdaters?.length) {
                 for (const updater of this._allUpdaters) {
-                    updater.init();
+                    updater.init(false);
                     deltas.push(updater.getMaxAbsDelta());
                 }
             }
@@ -220,10 +222,11 @@ export class Tween24 {
         if (this._isDOM && this._targetQuery && HTMLUtil.isPseudoQuery(this._targetQuery))
             HTMLUtil.setTweenElementQuery(this._singleTarget || this._multiTarget, this._targetQuery);
 
+        
         // Updater init
         if (this._allUpdaters?.length) {
             for (const updater of this._allUpdaters) {
-                updater.init();
+                updater.init(this._root?._useWillChange || this._parent?._useWillChange || this._useWillChange);
             }
         }
         
@@ -642,6 +645,16 @@ export class Tween24 {
      * @memberof Tween24
      */
     style (name:string, value: number|string): Tween24 { return this._setStyle(name, value); }
+
+    /**
+     * トゥイーン実行時に willChange を有効にするか設定します。
+     * 有効にすると強力な最適化をブラウザーが行い、アニメーションが滑らかになります。
+     * 対象が HTMLElement の場合にのみ適用されます。
+     * @param {boolean} [use=true]
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    willChange(use:boolean = true): Tween24 { this._useWillChange = use; return this; }
 
     /**
      * トゥイーン毎のFPS（1秒間の更新回数）を設定します。
@@ -1352,6 +1365,7 @@ export class Tween24 {
                 copy._functionExecuters[key] = this._functionExecuters[key].clone();
             }
         }
+        copy.willChange(this._useWillChange);
         copy.delay(this._delayTime).fps(this.__fps).debug(this._debugMode);
         return copy;
     }

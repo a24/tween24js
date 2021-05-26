@@ -28,7 +28,7 @@ export class ObjectUpdater implements Updater {
     addPropStr(key:string, value:string) {
     }
 
-    init() {
+    init(useWillChange:boolean) {
         this._tweenKey = this._key.concat();
         for (const key of this._tweenKey) {
             this._startParam[key] = this._target[key];

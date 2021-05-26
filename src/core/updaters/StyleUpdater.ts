@@ -12,20 +12,21 @@ export class StyleUpdater implements Updater {
 
     private _target       :HTMLElement;
     private _query        :string|null;
-    private _styleIndex   :number;
     private _param        :{[key:string]:ParamUpdater|StyleColorUpdater};
     private _key          :string[];
     private _unit         :{[key:string]:string};
     private _tweenKey     :string[]|null;
+
     private _onceParam    :{[key:string]:string}|null;
     private _isUpdatedOnce:boolean;
+
     private _pseudo       :string|null;
     private _style        :CSSStyleDeclaration|undefined;
+    private _useWillChange: boolean;
 
     constructor(target:HTMLElement, query:string|null) {
         this._target        = target;
         this._query         = query;
-        this._styleIndex    = NaN;
         this._param       ||= {};
         this._key         ||= [];
         this._unit        ||= {};
@@ -33,6 +34,7 @@ export class StyleUpdater implements Updater {
         this._onceParam     = null;
         this._isUpdatedOnce = false;
         this._pseudo        = this._query ? HTMLUtil.getPseudoQuery(this._query) : null;
+        this._useWillChange = false;
     }
     
     addPropStr(key:string, value:string) {
@@ -54,7 +56,9 @@ export class StyleUpdater implements Updater {
         }
     }
 
-    init() {
+    init(useWillChange:boolean) {
+        this._useWillChange = useWillChange;
+
         if (!this._style && this._pseudo && this._query) {
             this._style = HTMLUtil.getAddedStyleByElement(this._target, this._pseudo);
         }
@@ -72,6 +76,11 @@ export class StyleUpdater implements Updater {
                 const unit:RegExpMatchArray|null = value.match(StyleUpdater.UNIT_REG);
                 this._unit[key] ||= unit ? unit[0] : "";
                 (this._param[key] as ParamUpdater).init(Number(val ? val : 0));
+            }
+            this._useWillChange = true;
+            if (this._useWillChange) {
+                if (this._style) this._style.setProperty("will-change", key);
+                else HTMLUtil.setStyleProp(this._target, "will-change", key);
             }
         }
     }
@@ -92,6 +101,8 @@ export class StyleUpdater implements Updater {
                 else HTMLUtil.setStyleProp(this._target, key, value);
             }
         }
+        
+        if (progress == 1) this.complete();
     }
 
     overwrite(updater:StyleUpdater):void {
@@ -142,5 +153,9 @@ export class StyleUpdater implements Updater {
     }
 
     complete() {
+        if (this._useWillChange) {
+            if (this._style) this._style.setProperty("will-change", "");
+            else HTMLUtil.setStyleProp(this._target, "will-change", "");
+        }
     }
 }

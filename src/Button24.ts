@@ -130,21 +130,21 @@ export class Button24 {
         return template;
     }
 
-    static _TextRollUp(targetQuery:string, velocity:number = 40, sort:Function = Sort24._Normal, textSpacing:number = 0, lineHeight:string = "1.5"):ButtonTween24 {
+    static _TextRollUp(targetQuery:string, velocity:number = 40, sort:Function = Sort24._Normal, textSpacing:number = 0):ButtonTween24 {
         const template:ButtonTween24 = new ButtonTween24();
         const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
         const createText:Function = function() {
             for (const target of targets) {
-                const text:Text24 = Text24.getInstance(target) || new Text24(target, target.textContent?.trim() || "", true, true, lineHeight);
+                const text:Text24 = Text24.getInstance(target) || new Text24(target, target.textContent?.trim() || "", true, true);
                 text.spacing = textSpacing;
             }
         }
         createText();
         template.setInTween(
             Tween24.serial(
-                Tween24.propText(targetQuery).y(0),
+                Tween24.propText(targetQuery).y("100%"),
                 Tween24.lagTotalSort(0.2, sort,
-                    Tween24.tweenTextVelocity(targetQuery, velocity, Ease24._6_ExpoOut).y("-100%")
+                    Tween24.tweenTextVelocity(targetQuery, velocity, Ease24._6_ExpoOut).y(0)
                 )
             )
         );
@@ -156,27 +156,31 @@ export class Button24 {
         return template;
     }
 
-    static _TextRollUpDown(targetQuery:string, sort:Function = Sort24._Normal, textSpacing:number = 0, lineHeight:string = "1.5"):ButtonTween24 {
+    static _TextRollUpDown(targetQuery:string, sort:Function = Sort24._Normal, textSpacing:number = 0):ButtonTween24 {
         const template:ButtonTween24 = new ButtonTween24();
         const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
         const createText:Function = function() {
             for (const target of targets) {
-                const text:Text24 = Text24.getInstance(target) || new Text24(target, target.textContent?.trim() || "", true, true, lineHeight);
+                const text:Text24 = Text24.getInstance(target) || new Text24(target, target.textContent?.trim() || "", true, true);
                 text.spacing = textSpacing;
             }
         }
         createText();
         template.setStopInTween(
             Tween24.serial(
-                Tween24.propText(targetQuery).y(0),
+                Tween24.propText(targetQuery).y("100%"),
                 Tween24.lagTotalSort(0.2, sort,
-                    Tween24.tweenTextVelocity(targetQuery, 40, Ease24._6_ExpoOut).y("-100%")
+                    Tween24.tweenTextVelocity(targetQuery, 40, Ease24._6_ExpoOut).y(0)
                 )
             )
         );
         template.setStopOutTween(
-            Tween24.lagTotalSort(0.2, sort,
-                Tween24.tweenTextVelocity(targetQuery, 40, Ease24._6_ExpoOut).y(0)
+            Tween24.serial(
+                Tween24.propText(targetQuery).y(0),
+                Tween24.lagTotalSort(0.2, sort,
+                    Tween24.tweenTextVelocity(targetQuery, 40, Ease24._6_ExpoOut).y("100%")
+                ),
+                Tween24.propText(targetQuery).y(0)
             )
         );
         template.setResizeFunc(function():void {
@@ -220,12 +224,12 @@ export class Button24 {
      * @param {boolean} [resizeAndReset=false] ウィンドウのリサイズ時に、
      * @memberof Button24
      */
-    static setRollUpTextCharacterAnimation(buttonQuery:string, textQuery:string, velocity:number, overTotalLagTime:number, outTotalLagTime:number, easing:Function|null, sort:Function, textSpacing:number, resizeAndReset:boolean = false, lineHeight:string = "1.5") {
+    static setRollUpTextCharacterAnimation(buttonQuery:string, textQuery:string, velocity:number, overTotalLagTime:number, outTotalLagTime:number, easing:Function|null, sort:Function, textSpacing:number, resizeAndReset:boolean = false) {
         const createButton:Function = function() {
             const targets:HTMLElement[] = HTMLUtil.querySelectorAll(textQuery);
             let text:Text24;
             for (const target of targets) {
-                text = new Text24(target, target.textContent?.trim() || "", true, true, lineHeight);
+                text = new Text24(target, target.textContent?.trim() || "", true, true);
                 text.spacing = textSpacing;
             }
             const setEvent:Function = function() {

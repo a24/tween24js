@@ -9,33 +9,26 @@ export class Text24 {
     private _spacing:number;
     private _originalOverflow:string;
     private _spans:HTMLSpanElement[];
-    private _singleHtml:string[];
-    private _doubleHtml:string[];
 
-    constructor (target:HTMLElement, text:string, overflowHidden:boolean, double:boolean, lineHeight:string = "1.5") {
+    constructor (target:HTMLElement, text:string, overflowHidden:boolean, double:boolean) {
         this._target  = target;
         this._text    = text;
         this._spacing = NaN;
         this._originalOverflow = target.style.overflow;
         
-        target.style.display    = "flex";
-        target.style.lineHeight = lineHeight;
-        
-        this._height  = parseFloat(window.getComputedStyle(target).height);
+        const lineHeight = target.style.lineHeight;
+        this._height = parseFloat(window.getComputedStyle(target).height);
         target.style.height = this._height + "px";
         target.innerText    = "";
 
         const spans:HTMLSpanElement[] = this._spans = [];
-        const st:string[] = this._singleHtml = [];
-        const dt:string[] = this._doubleHtml = [];
 
         text.split("").map(function (word:string):void {
             word = word === " " ? "&nbsp;" : word;
             const span = document.createElement("span");
-            span.style.display = "block";
+            span.style.display = "inline-block";
             span.style.lineHeight = lineHeight;
-            st.push(word);
-            dt.push(word + "<br>" + word);
+            span.innerHTML = word;
             spans.push(span);
             target.appendChild(span);
         });
@@ -66,9 +59,9 @@ export class Text24 {
     }
 
     set double(flag:boolean) {
-        const html:string[] = flag ? this._doubleHtml : this._singleHtml;
-        for (let i = 0; i < this._spans.length; i++)
-            this._spans[i].innerHTML = html[i];
+        for (const span of this._spans) {
+            span.style.textShadow = flag ? `0 -${this._height}px`: "none";
+        }
     }
 
     get targets():HTMLSpanElement[] {

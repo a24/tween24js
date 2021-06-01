@@ -6,9 +6,7 @@ export declare class Text24 {
     private _spacing;
     private _originalOverflow;
     private _spans;
-    private _singleHtml;
-    private _doubleHtml;
-    constructor(target: HTMLElement, text: string, overflowHidden: boolean, double: boolean, lineHeight?: string);
+    constructor(target: HTMLElement, text: string, overflowHidden: boolean, double: boolean);
     reset(): void;
     set spacing(spacing: number);
     set overflowHidden(flag: boolean);

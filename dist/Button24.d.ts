@@ -25,8 +25,8 @@ export declare class Button24 {
     willChange(use?: boolean): Button24;
     static set(targetQuery: string, ...templates: ButtonTween24[]): Button24;
     static _ColorChange(targetQuery: string, color: string): ButtonTween24;
-    static _TextRollUp(targetQuery: string, velocity?: number, sort?: Function, textSpacing?: number, lineHeight?: string): ButtonTween24;
-    static _TextRollUpDown(targetQuery: string, sort?: Function, textSpacing?: number, lineHeight?: string): ButtonTween24;
+    static _TextRollUp(targetQuery: string, velocity?: number, sort?: Function, textSpacing?: number): ButtonTween24;
+    static _TextRollUpDown(targetQuery: string, sort?: Function, textSpacing?: number): ButtonTween24;
     static _FadeInOutArrow(targetQuery: string, startX?: number | string): ButtonTween24;
     /**
      * ボタンのテキストを、1文字ずつロールアップさせるアニメーションを設定します。
@@ -42,5 +42,5 @@ export declare class Button24 {
      * @param {boolean} [resizeAndReset=false] ウィンドウのリサイズ時に、
      * @memberof Button24
      */
-    static setRollUpTextCharacterAnimation(buttonQuery: string, textQuery: string, velocity: number, overTotalLagTime: number, outTotalLagTime: number, easing: Function | null, sort: Function, textSpacing: number, resizeAndReset?: boolean, lineHeight?: string): void;
+    static setRollUpTextCharacterAnimation(buttonQuery: string, textQuery: string, velocity: number, overTotalLagTime: number, outTotalLagTime: number, easing: Function | null, sort: Function, textSpacing: number, resizeAndReset?: boolean): void;
 }

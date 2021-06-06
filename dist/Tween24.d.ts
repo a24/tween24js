@@ -203,6 +203,13 @@ export declare class Tween24 {
      */
     rotation(value: number): Tween24;
     /**
+     * 目標とする角度を設定します。
+     * @param {number} value 角度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    angle(value: number): Tween24;
+    /**
      * CSS:top を設定します。
      * @param {number|string} 上からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス

@@ -539,6 +539,14 @@ export class Tween24 {
     rotation (value:number): Tween24 { return this._setPropety("rotation", value); }
     
     /**
+     * 目標とする角度を設定します。
+     * @param {number} value 角度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    angle (value:number): Tween24 { return this._isDOM ? this._setStyle("rotation", value) : this._setPropety("angle", value); }
+    
+    /**
      * CSS:top を設定します。
      * @param {number|string} 上からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス

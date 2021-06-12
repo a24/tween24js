@@ -379,7 +379,7 @@ export class Tween24 {
         // this._debugLog("completeChildTween");
         this._numCompleteChildren ++;
         if (this._numChildren == this._numCompleteChildren) {
-            // this._complete();
+            this._complete();
         }
         else if (this._playingChildTween) {
             ArrayUtil.removeItemFromArray(this._playingChildTween, tween);
@@ -976,7 +976,6 @@ export class Tween24 {
      * @memberof Tween24
      */
     static func(func: Function, ...args: any[]): Tween24 {
-        // console.log(func, args)
         return new Tween24()._createActionTween(Tween24._TYPE_FUNC, func, func, args);
     }
     

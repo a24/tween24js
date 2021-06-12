@@ -12,6 +12,7 @@ import { ClassUtil }        from "./utils/ClassUtil";
 import { HTMLUtil }         from "./utils/HTMLUtil";
 import { Sort24 }           from "./index";
 import { Text24 }           from "./utils/Text24";
+import { StringUtil } from "./utils/StringUtil";
 
 export class Tween24 {
 
@@ -718,6 +719,8 @@ export class Tween24 {
     }
 
     private _setStyle(name: string, value: number|string):Tween24 {
+        name = StringUtil.toKebab(name);
+
         if (this._singleTarget) {
             if (!this._styleUpdater) {
                 this._styleUpdater = new StyleUpdater(this._singleTarget, this._targetQuery);

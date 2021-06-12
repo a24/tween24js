@@ -74,8 +74,10 @@ export class StyleUpdater implements Updater {
             else {
                 const val :RegExpMatchArray|null = value.match(StyleUpdater.PARAM_REG);
                 const unit:RegExpMatchArray|null = value.match(StyleUpdater.UNIT_REG);
-                this._unit[key] ||= unit ? unit[0] : "";
+                
+                this._unit[key] ||= unit && val && val[0].length ? unit[0] : "";
                 (this._param[key] as ParamUpdater).init(Number(val ? val : 0));
+                
             }
             this._useWillChange = true;
             if (this._useWillChange) {

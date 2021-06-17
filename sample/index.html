@@ -34,6 +34,13 @@
             text-align: center;
             color: #247570;
         }
+        section.lag div {
+            width: 30px;
+            height: 30px;
+        }
+        section p {
+            font-size: 80px;
+        }
     </style>
 </head>
 <body>
@@ -41,48 +48,42 @@
     <!----------- Single Tween ----------->
 
     <section id="single">
-        <div id="box1"></div>
+        <div id="box"></div>
     </section>
     <p>- Single Tween -</p>
 
     <script>
-        const target = document.getElementById("box1");
+        Tween24.loop(0,
+            Tween24.serial(
+                // boxを、1秒かけてX座標860にトゥイーンします
+                Tween24.tween("#box", 1).x(860),
 
-        const single = Tween24.serial(
-
-            // box1を、1秒かけてX座標860にトゥイーンします
-            Tween24.tween(target, 1).x(860),
-
-            // ループ対応処理
-            Tween24.wait(1), // 1秒待機
-            Tween24.prop(target).x(0) // 座標をリセット
-        );
-        // ループ設定
-        single.onComplete(single, single.play);
-        single.play();
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop("#box").x(0) // 座標をリセット
+            )
+        ).play();
     </script>
 
     <!----------- Blend Easing Tween ----------->
 
     <section id="blend">
-        <div id="bl-box1"></div>
+        <div id="bl-box"></div>
     </section>
     <p>- Blend Easing Tween -</p>
 
     <script>
         const blendEasing = Ease24._Blend(Ease24._6_ExpoIn, Ease24._BounceOut, Ease24._6_ExpoInOut);
-        const blend = Tween24.serial(
+        Tween24.loop(0,
+            Tween24.serial(
+                // ブレンドしたイージングでトゥイーン
+                Tween24.tween("#bl-box", 1, blendEasing).x(860),
 
-            // イージングをブレンド
-            Tween24.tween("#bl-box1", 1, blendEasing).x(860),
-
-            // ループ対応処理
-            Tween24.wait(1), // 1秒待機
-            Tween24.prop("#bl-box1").x(0) // 座標をリセット
-        );
-        // ループ設定
-        blend.onComplete(blend, blend.play);
-        blend.play();
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop("#bl-box").x(0) // 座標をリセット
+            )
+        ).play();
     </script>
 
     <!------------ Serial Tween ----------->
@@ -96,19 +97,18 @@
 
     <script>
         // まとめて透明度を0に設定し、順番にフェードインしながらX座標を860に
-        const serial = Tween24.serial(
-            Tween24.prop(".sr-box").opacity(0),
-            Tween24.tween("#sr-box1", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
-            Tween24.tween("#sr-box2", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
-            Tween24.tween("#sr-box3", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.prop(".sr-box").opacity(0),
+                Tween24.tween("#sr-box1", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
+                Tween24.tween("#sr-box2", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
+                Tween24.tween("#sr-box3", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
 
-            // ループ対応処理
-            Tween24.wait(1), // 1秒待機
-            Tween24.prop(".sr-box").x(0) // 座標をリセット
-        );
-        // ループ設定
-        serial.onComplete(serial, serial.play);
-        serial.play();
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop(".sr-box").x(0).opacity(0) // リセット
+            )
+        ).play();
     </script>
 
     <!----------- Parallel Tween ----------->
@@ -121,21 +121,20 @@
     <p>- Parallel Tween -</p>
 
     <script>
-        const parallel = Tween24.serial(
-            // まとめて透明度を0に設定し、同時にフェードインしながらX座標を860に
-            Tween24.parallel(
-                Tween24.prop(".pr-box").opacity(0),
-                Tween24.tween("#pr-box1", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
-                Tween24.tween("#pr-box2", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
-                Tween24.tween("#pr-box3", 1, Ease24._6_ExpoInOut).x(860).opacity(1)
-            ),
-            // ループ対応処理
-            Tween24.wait(1), // 1秒待機
-            Tween24.prop(".pr-box").x(0) // 座標をリセット
-        );
-        // ループ設定
-        parallel.onComplete(parallel, parallel.play);
-        parallel.play();
+        Tween24.loop(0,
+            Tween24.serial(
+                // まとめて透明度を0に設定し、同時にフェードインしながらX座標を860に
+                Tween24.parallel(
+                    Tween24.prop(".pr-box").opacity(0),
+                    Tween24.tween("#pr-box1", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
+                    Tween24.tween("#pr-box2", 1, Ease24._6_ExpoInOut).x(860).opacity(1),
+                    Tween24.tween("#pr-box3", 1, Ease24._6_ExpoInOut).x(860).opacity(1)
+                ),
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop(".pr-box").x(0).opacity(0) // リセット
+            )
+        ).play();
     </script>
 
     <!----------- Serial & Parallel Tween ----------->
@@ -148,23 +147,215 @@
     <p>- Serial & Parallel Tween -</p>
     
     <script>
-        const seripara = Tween24.serial(
-            Tween24.parallel(
-                Tween24.tween(".sp-box", 2, Ease24._6_ExpoInOut).x(860), // 右に移動しながら
-                Tween24.serial(
-                    Tween24.tween(".sp-box", 1, Ease24._3_CubicIn).scaleX(1.3).skewX(70), // 前半で傾斜とスケールを変更し
-                    Tween24.tween(".sp-box", 1, Ease24._3_CubicOut).scaleX(1).skewX(0) // 後半で戻す
-                )
-            ),
-            // その後、角丸＆回転しつつ座標を戻す
-            Tween24.tween(".sp-box", 1.5, Ease24._6_ExpoOut).x(0).rotation(180).borderRadius(50),
-            // ループ対応処理
-            Tween24.wait(1), // 1秒待機
-            Tween24.prop(".sp-box").rotation(0).borderRadius(0) // 座標をリセット
-        );
-        // ループ設定
-        seripara.onComplete(seripara, seripara.play);
-        seripara.play();
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.parallel(
+                    Tween24.tween(".sp-box", 2, Ease24._6_ExpoInOut).x(860), // 右に移動しながら
+                    Tween24.serial(
+                        Tween24.tween(".sp-box", 1, Ease24._3_CubicIn).scaleX(1.3).skewX(70), // 前半で傾斜とスケールを変更し
+                        Tween24.tween(".sp-box", 1, Ease24._3_CubicOut).scaleX(1).skewX(0) // 後半で戻す
+                    )
+                ),
+                // その後、角丸＆回転しつつ座標を戻す
+                Tween24.tween(".sp-box", 1.5, Ease24._6_ExpoOut).x(0).rotation(180).borderRadius(50),
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop(".sp-box").rotation(0).borderRadius(0) // リセット
+            )
+        ).play();
     </script>
+
+    <!----------- Loop Tween ----------->
+
+    <section id="loop">
+        <div id="loop-box"></div>
+    </section>
+    <p>- Loop Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                // 1秒かけてX座標860にトゥイーンします
+                Tween24.tween("#loop-box", 1, Ease24._6_ExpoInOut).x(860).rotation(90),
+                // 1秒かけてX座標0にトゥイーンします
+                Tween24.tween("#loop-box", 1, Ease24._6_ExpoInOut).x(0).rotation(0)
+            )
+        ).play();
+    </script>
+
+    <!----------- Lag Tween ----------->
+
+    <section id="lag" class="lag">
+        <div class="lag-box"></div>
+        <div class="lag-box"></div>
+        <div class="lag-box"></div>
+        <div class="lag-box"></div>
+        <div class="lag-box"></div>
+        <div class="lag-box"></div>
+        <div class="lag-box"></div>
+        <div class="lag-box"></div>
+        <div class="lag-box"></div>
+        <div class="lag-box"></div>
+    </section>
+    <p>- Lag Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.lag(0.05,
+                    // 1秒かけてX座標930にトゥイーンします
+                    Tween24.tween(".lag-box", 1, Ease24._6_ExpoInOut).x(930)
+                ),
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop(".lag-box").x(0)// リセット
+            )
+        ).play();
+    </script>
+
+    <!----------- Lag Total Tween ----------->
+
+    <section id="lagTotal" class="lag">
+        <div class="lag-total-box"></div>
+        <div class="lag-total-box"></div>
+        <div class="lag-total-box"></div>
+        <div class="lag-total-box"></div>
+        <div class="lag-total-box"></div>
+        <div class="lag-total-box"></div>
+        <div class="lag-total-box"></div>
+        <div class="lag-total-box"></div>
+        <div class="lag-total-box"></div>
+        <div class="lag-total-box"></div>
+    </section>
+    <p>- Total Lag Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.lagTotal(2,
+                    // 1秒かけてX座標930にトゥイーンします
+                    Tween24.tween(".lag-total-box", 1, Ease24._6_ExpoInOut).x(930)
+                ),
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop(".lag-total-box").x(0)// リセット
+            )
+        ).play();
+    </script>
+
+    <!----------- Lag with Sort Tween ----------->
+
+    <section id="lagSort" class="lag">
+        <div class="lag-sort-box"></div>
+        <div class="lag-sort-box"></div>
+        <div class="lag-sort-box"></div>
+        <div class="lag-sort-box"></div>
+        <div class="lag-sort-box"></div>
+        <div class="lag-sort-box"></div>
+        <div class="lag-sort-box"></div>
+        <div class="lag-sort-box"></div>
+        <div class="lag-sort-box"></div>
+        <div class="lag-sort-box"></div>
+    </section>
+    <p>- Lag with Sort Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.lagSort(0.05, Sort24._Mountain, // 山型に遅延させる
+                    // 1秒かけてX座標930にトゥイーンします
+                    Tween24.tween(".lag-sort-box", 1, Ease24._6_ExpoInOut).x(930)
+                ),
+                Tween24.prop(".lag-sort-box").x(0),// リセット
+
+                Tween24.lagSort(0.05, Sort24._Valley, // 谷型させる
+                    Tween24.tween(".lag-sort-box", 1, Ease24._6_ExpoInOut).x(930)
+                ),
+                Tween24.prop(".lag-sort-box").x(0),// リセット
+
+                Tween24.lagSort(0.05, Sort24._Shuffle, // ランダムに遅延させる
+                    Tween24.tween(".lag-sort-box", 1, Ease24._6_ExpoInOut).x(930)
+                ),
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop(".lag-sort-box").x(0)// リセット
+            )
+        ).play();
+    </script>
+
+    <!----------- Lag Total with Easing Tween ----------->
+
+    <section id="lagTotalEase" class="lag">
+        <div class="lag-ease-box"></div>
+        <div class="lag-ease-box"></div>
+        <div class="lag-ease-box"></div>
+        <div class="lag-ease-box"></div>
+        <div class="lag-ease-box"></div>
+        <div class="lag-ease-box"></div>
+        <div class="lag-ease-box"></div>
+        <div class="lag-ease-box"></div>
+        <div class="lag-ease-box"></div>
+        <div class="lag-ease-box"></div>
+    </section>
+    <p>- Total Lag with Easing Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.lagTotalEase(2, Ease24._6_ExpoOut,
+                    // 1秒かけてX座標930にトゥイーンします
+                    Tween24.tween(".lag-ease-box", 1, Ease24._2_QuadOut).x(930)
+                ),
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop(".lag-ease-box").x(0)// リセット
+            )
+        ).play();
+    </script>
+
+    <!----------- Velocity Tween ----------->
+
+    <section id="tweenVelocity">
+        <div id="velocity-box1" class="velocity"></div>
+        <div id="velocity-box2" class="velocity"></div>
+    </section>
+    <p>- Velocity Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.parallel(
+                    // 毎秒1000pxの速度で400px移動する
+                    Tween24.tweenVelocity("#velocity-box1", 1000).x(430).rotation(90),
+                    // 毎秒1000pxの速度で860px移動する
+                    Tween24.tweenVelocity("#velocity-box2", 1000).x(860).rotation(180)
+                ),
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop(".velocity").x(0).rotation(0) // リセット
+            )
+        ).play();
+    </script>
+
+    <!----------- Text Tween ----------->
+
+    <section id="tweenText">
+        <p id="tween-text">TEXT TWEEN</p>
+    </section>
+    <p>- Text Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.propText("#tween-text", 30).y(-100).opacity(0).scaleXY(0.5, 3),
+                Tween24.lagSort(0.06, Sort24._Shuffle,
+                    Tween24.tweenText("#tween-text", 1, Ease24._6_ExpoOut).y(0).opacity(1).scale(1)
+                ),
+                // ループ対応処理
+                Tween24.wait(1) // 1秒待機
+            )
+        ).play();
+    </script>
+
 </body>
 </html>

@@ -177,24 +177,30 @@ export class TransformUpdater implements Updater {
     }
 
     private _getChache():Matrix|undefined {
-        if (this._pseudo)
+        if (this._pseudo) {
             return (this._tweenQuery) ? TransformUpdater._pseudoChache.get(this._tweenQuery) : undefined;
-        else 
+        }
+        else {
             return TransformUpdater._chache.get(this._target);
+        }
     }
 
     private _setChache(matrix:Matrix) {
-        if (this._pseudo)
+        if (this._pseudo) {
             if (this._tweenQuery) TransformUpdater._pseudoChache.set(this._tweenQuery, matrix);
-        else 
+        }
+        else {
             TransformUpdater._chache.set(this._target, matrix);
+        }
     }
 
     private _deleteChache() {
-        if (this._pseudo)
+        if (this._pseudo) {
             if (this._tweenQuery) TransformUpdater._pseudoChache.delete(this._tweenQuery);
-        else 
+        }
+        else {
             TransformUpdater._chache.delete(this._target);
+        }
     }
 
     overwrite(updater: TransformUpdater) {

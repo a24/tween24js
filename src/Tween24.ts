@@ -127,7 +127,7 @@ export class Tween24 {
     //
     // ------------------------------------------
 
-    play() {
+    play = () => {
         if (!this._paused) {
             if (!this._played) {
                 this._root   = this;
@@ -187,7 +187,7 @@ export class Tween24 {
         }
     }
 
-    pause() {
+    pause = () => {
         if (this._isRoot) {
             this._played = false;
             this._paused = true;
@@ -196,7 +196,7 @@ export class Tween24 {
         }
     }
 
-    stop() {
+    stop = () => {
         this._stop();
         this._functionExecute(Tween24Event.STOP);
     }
@@ -1276,7 +1276,7 @@ export class Tween24 {
      * @param {number} [fps=0] FPSの値
      * @memberof Tween24
      */
-    static setFPS(fps:number = 0) {
+    static setFPS = (fps:number = 0) => {
         Tween24.ticker.fps = fps;
     }
 
@@ -1286,7 +1286,7 @@ export class Tween24 {
      * @param {Function} [easing=Ease24._Linear] デフォルトのイージング
      * @memberof Tween24
      */
-    static setDefaultEasing(easing:Function = Ease24._Linear) {
+    static setDefaultEasing = (easing:Function = Ease24._Linear) => {
         Tween24._defaultEasing = easing;
     }
 
@@ -1297,7 +1297,7 @@ export class Tween24 {
      * @param {boolean} flag デバッグモードを使用するか
      * @memberof Tween24
      */
-    static debugMode(flag:boolean) {
+    static debugMode = (flag:boolean) => {
         Tween24._debugMode = flag;
     }
 

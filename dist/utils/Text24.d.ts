@@ -13,7 +13,7 @@ export declare class Text24 {
     set double(flag: boolean);
     get targets(): HTMLSpanElement[];
     get height(): number;
-    static getInstance(target: HTMLElement): Text24 | undefined;
-    static removeByTarget(targetQuery: string): void;
-    static removeAll(): void;
+    static getInstance: (target: HTMLElement) => Text24 | undefined;
+    static removeByTarget: (targetQuery: string) => void;
+    static removeAll: () => void;
 }

@@ -72,16 +72,16 @@ export class Text24 {
         return this._height;
     }
 
-    static getInstance(target:HTMLElement):Text24|undefined {
+    static getInstance = (target:HTMLElement):Text24|undefined => {
         return Text24._allTexts.get(target);
     }
 
-    static removeByTarget(targetQuery:string) {
+    static removeByTarget = (targetQuery:string) => {
         for (const target of HTMLUtil.querySelectorAll(targetQuery))
             Text24._allTexts.get(target)?.reset();
     }
 
-    static removeAll() {
+    static removeAll = () => {
         Text24._allTexts.forEach(function(text:Text24):void {
             text.reset();
         });

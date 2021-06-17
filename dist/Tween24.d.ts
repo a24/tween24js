@@ -465,6 +465,14 @@ export declare class Tween24 {
      */
     static tweenText(targetQuery: string, time: number, easing?: Function | null, spacing?: number): Tween24;
     /**
+     * 1文字ずつに分解したテキストを、元に戻します。
+     * @static
+     * @param {string} targetQuery 対象要素を指定するクエリ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static resetText(targetQuery: string): Tween24;
+    /**
      * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれに速度を指定するトゥイーンを設定します。
      *
      * このトゥイーンは、指定された速度とパラメータの変化量から時間を自動設定します。

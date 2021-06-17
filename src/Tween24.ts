@@ -915,6 +915,17 @@ export class Tween24 {
     static tweenText(targetQuery:string, time:number, easing:Function|null = null, spacing:number = NaN): Tween24 {
         return Tween24._tweenText(Tween24._TYPE_TWEEN_TEXT, targetQuery, time, easing, spacing);
     }
+    
+    /**
+     * 1文字ずつに分解したテキストを、元に戻します。
+     * @static
+     * @param {string} targetQuery 対象要素を指定するクエリ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static resetText(targetQuery:string): Tween24 {
+        return Tween24.func(Text24.removeByTarget, targetQuery);
+    }
 
     /**
      * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれに速度を指定するトゥイーンを設定します。

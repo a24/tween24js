@@ -79,10 +79,9 @@ export class StyleUpdater implements Updater {
                 (this._param[key] as ParamUpdater).init(Number(val ? val : 0));
                 
             }
-            if (this._useWillChange) {
-                if (this._style) this._style.setProperty("will-change", key);
-                else HTMLUtil.setStyleProp(this._target, "will-change", key);
-            }
+        }
+        if (this._useWillChange) {
+            HTMLUtil.addWillChange(this._style || this._target.style, this._key);
         }
     }
 
@@ -102,7 +101,6 @@ export class StyleUpdater implements Updater {
                 else HTMLUtil.setStyleProp(this._target, key, value);
             }
         }
-        
         if (progress == 1) this.complete();
     }
 
@@ -155,8 +153,7 @@ export class StyleUpdater implements Updater {
 
     complete() {
         if (this._useWillChange) {
-            if (this._style) this._style.setProperty("will-change", "");
-            else HTMLUtil.setStyleProp(this._target, "will-change", "");
+            HTMLUtil.removeWillChange(this._style || this._target.style, this._key);
         }
     }
 }

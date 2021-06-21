@@ -81,7 +81,6 @@ export class TransformUpdater implements Updater {
             }
             else {
                 this._style = this._target.style;
-
             }
         }
 
@@ -93,8 +92,8 @@ export class TransformUpdater implements Updater {
             this._matrix.setMatrixByCSSTransform(HTMLUtil.getTransformMatrix(this._target, this._pseudo));
 
         // Set will-change
-        if (this._useWillChange) {
-            this._style?.setProperty("will-change", "transform");
+        if (this._style && this._useWillChange) {
+            HTMLUtil.addWillChange(this._style, ["transform"]);
         }
         
         // Setting param
@@ -218,8 +217,8 @@ export class TransformUpdater implements Updater {
     complete() {
         this._deleteChache();
 
-        if (this._useWillChange) {
-            this._style?.setProperty("will-change", "");
+        if (this._style && this._useWillChange) {
+            HTMLUtil.removeWillChange(this._style, ["transform"]);
         }
     }
 

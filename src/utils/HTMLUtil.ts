@@ -1,3 +1,4 @@
+import { ArrayUtil } from "./ArrayUtil";
 import { ClassUtil } from "./ClassUtil";
 
 export class HTMLUtil {
@@ -45,6 +46,24 @@ export class HTMLUtil {
 
     static setStyleProp(element:HTMLElement, prop:string, value:string|number) {
         element.style.setProperty(prop, value as string);
+    }
+
+    static addWillChange(style:CSSStyleDeclaration, key:string[]) {
+        if (style.willChange.length)
+            style.willChange = style.willChange.split(",").concat(key).join(",");
+        else
+            style.willChange = key.join(",");
+    }
+
+    static removeWillChange(style:CSSStyleDeclaration, key:string[]) {
+        const willChange = style.willChange.split(",");
+        for (let i = 0; i < willChange.length; i++) {
+            willChange[i] = willChange[i].trim();
+        }
+        for (const k of key) {
+            ArrayUtil.removeItemFromArray(willChange, k);
+        }
+        style.willChange = willChange.join(",");
     }
 
     static getComputedStyle(element:HTMLElement, pseudo:string|null = null):CSSStyleDeclaration {

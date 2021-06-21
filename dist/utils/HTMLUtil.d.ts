@@ -8,6 +8,8 @@ export declare class HTMLUtil {
     static isPseudoQuery(query: string): boolean;
     static getPseudoQuery(query: string): string | null;
     static setStyleProp(element: HTMLElement, prop: string, value: string | number): void;
+    static addWillChange(style: CSSStyleDeclaration, key: string[]): void;
+    static removeWillChange(style: CSSStyleDeclaration, key: string[]): void;
     static getComputedStyle(element: HTMLElement, pseudo?: string | null): CSSStyleDeclaration;
     static getTransformMatrix(element: HTMLElement, pseudo?: string | null): string;
     static setTweenElementQuery(target: HTMLElement | HTMLElement[], query: string): void;

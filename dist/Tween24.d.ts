@@ -24,6 +24,7 @@ export declare class Tween24 {
     private static _useWillChange;
     private _singleTarget;
     private _multiTarget;
+    private _targetTexts;
     private _easing;
     private _type;
     private _time;
@@ -72,11 +73,11 @@ export declare class Tween24 {
     __fps: number;
     __beforeTime: number;
     constructor();
-    play(): void;
+    play: () => void;
     private _play;
     private _resume;
-    pause(): void;
-    stop(): void;
+    pause: () => void;
+    stop: () => void;
     private _stop;
     private _initParam;
     private _overwrite;
@@ -289,6 +290,13 @@ export declare class Tween24 {
      */
     borderRadius(value: number): Tween24;
     /**
+     * CSS:letter-spacing（字間）を設定します。
+     * @param {number} value 字間（px）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    letterSpacing(value: number): Tween24;
+    /**
      * トゥイーンの遅延時間を設定します。
      * @param {number} value 遅延時間（秒数）
      * @return {Tween24} Tween24インスタンス
@@ -444,26 +452,20 @@ export declare class Tween24 {
      * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれにプロパティを設定します。
      * @static
      * @param {string} targetQuery 対象要素を指定するクエリ
-     * @param {number} spacing 文字間の調整（px）
-     * @param {boolean} [overflowHidden=false] overflow:hidden を設定するか
-     * @param {boolean} [double=false] テキストを下側に複製するか
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static propText(targetQuery: string, spacing?: number): Tween24;
+    static propText(targetQuery: string): Tween24;
     /**
      * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれにトゥイーンを設定します。
      * @static
      * @param {string} targetQuery 対象要素を指定するクエリ
      * @param {number} time 時間（秒）
      * @param {(Function|null)} [easing=null] イージング関数（デフォルト値：Ease24._Linear）
-     * @param {number} spacing 文字間の調整（px）
-     * @param {boolean} [overflowHidden=false] overflow:hidden を設定するか
-     * @param {boolean} [double=false] テキストを下側に複製するか
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static tweenText(targetQuery: string, time: number, easing?: Function | null, spacing?: number): Tween24;
+    static tweenText(targetQuery: string, time: number, easing?: Function | null): Tween24;
     /**
      * 1文字ずつに分解したテキストを、元に戻します。
      * @static
@@ -482,13 +484,10 @@ export declare class Tween24 {
      * @param {string} targetQuery 対象要素を指定するクエリ
      * @param {number} velocity 1秒間の変化量（速度）
      * @param {(Function|null)} [easing=null] イージング関数（デフォルト値：Ease24._Linear）
-     * @param {number} spacing 文字間の調整（px）
-     * @param {boolean} [overflowHidden=false] overflow:hidden を設定するか
-     * @param {boolean} [double=false] テキストを下側に複製するか
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static tweenTextVelocity(targetQuery: string, velocity: number, easing?: Function | null, spacing?: number): Tween24;
+    static tweenTextVelocity(targetQuery: string, velocity: number, easing?: Function | null): Tween24;
     private static _tweenText;
     /**
      * トゥイーンを待機します。
@@ -611,14 +610,14 @@ export declare class Tween24 {
      * @param {number} [fps=0] FPSの値
      * @memberof Tween24
      */
-    static setFPS(fps?: number): void;
+    static setFPS: (fps?: number) => void;
     /**
      * デフォルトのイージングを設定します。
      * @static
      * @param {Function} [easing=Ease24._Linear] デフォルトのイージング
      * @memberof Tween24
      */
-    static setDefaultEasing(easing?: Function): void;
+    static setDefaultEasing: (easing?: Function) => void;
     /**
      * トゥイーン全体のデバッグモードを設定します。
      * デバッグモードをONにすると、トゥイーンの動作状況がコンソールに表示されます。
@@ -626,7 +625,7 @@ export declare class Tween24 {
      * @param {boolean} flag デバッグモードを使用するか
      * @memberof Tween24
      */
-    static debugMode(flag: boolean): void;
+    static debugMode: (flag: boolean) => void;
     __clone(base: any, baseQuery: string | null): Tween24;
     toString(): string;
     private _debugLog;

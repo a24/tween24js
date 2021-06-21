@@ -24,7 +24,6 @@ export declare class Tween24 {
     private static _useWillChange;
     private _singleTarget;
     private _multiTarget;
-    private _targetTexts;
     private _easing;
     private _type;
     private _time;

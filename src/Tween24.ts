@@ -46,7 +46,6 @@ export class Tween24 {
     // Tween param
     private _singleTarget:any      |null = null;
     private _multiTarget :any[]    |null = null;
-    private _targetTexts :Text24[] |null = null;
     private _easing      :Function |null = null;
     private _type        :string         = "";
 
@@ -312,12 +311,6 @@ export class Tween24 {
                     tween._update(nowTime);
                 }
             }
-            // Text update
-            if (this._targetTexts) {
-                for (const text of this._targetTexts) {
-                    text.updateSpacing();
-                }
-            }
             this._functionExecute(Tween24Event.UPDATE);
             if (this._numChildren == this._numCompleteChildren) this._complete();
         }
@@ -331,12 +324,6 @@ export class Tween24 {
                 if (this._allUpdaters?.length) {
                     for (const updater of this._allUpdaters) {
                         updater.update(prog);
-                    }
-                }
-                // Text update
-                if (this._targetTexts) {
-                    for (const text of this._targetTexts) {
-                        text.updateSpacing();
                     }
                 }
                 this._functionExecute(Tween24Event.UPDATE);
@@ -961,22 +948,18 @@ export class Tween24 {
     private static _tweenText(type:string, targetQuery:string, timeOrVelocity:number, easing:Function|null = null):Tween24 {
         const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
         const textElements:any[] = [];
-        const texts:Text24[] = [];
         for (const target of targets) {
             const text:Text24|undefined = Text24.getInstance(target);
             if (text) {
                 textElements.push(...text.targets);
-                texts.push(text);
             }
             else {
                 const text:Text24 = new Text24(target, target.textContent?.trim() || "", false, false);
                 textElements.push(...text.targets);
-                texts.push(text);
             }
         }
         const tween:Tween24 = new Tween24()._createChildTween(type, textElements, timeOrVelocity, easing, null);
         tween._targetQuery = targetQuery + " span";
-        tween._targetTexts = texts;
         return tween;
     }
 
@@ -1060,16 +1043,12 @@ export class Tween24 {
     static lagSort(lagTime:number, sort:Function, ...childTween: Tween24[]): Tween24 {
         const tweens:Tween24[] = [];
         for (const tween of childTween) {
-            const child:Tween24[] = [];
             if (tween._multiTarget) {
                 const targets:any[] = sort == Sort24._Normal ? tween._multiTarget : sort(tween._multiTarget);
                 for (let i = 0; i < targets.length; i++) {
                     const t = targets[i];
-                    child.push(tween.__clone(t, tween._targetQuery).delay(lagTime * i));
+                    tweens.push(tween.__clone(t, tween._targetQuery).delay(lagTime * i));
                 }
-                const para = new Tween24()._createContainerTween(Tween24._TYPE_PARALLEL, child);
-                if (tween._targetTexts) para._targetTexts = tween._targetTexts.concat();
-                tweens.push(para);
             }
             else {
                 tweens.push(tween);
@@ -1133,17 +1112,13 @@ export class Tween24 {
     static lagTotalSortEase(totalLagTime:number, sort:Function, easing:Function, ...childTween: Tween24[]): Tween24 {
         const tweens:Tween24[] = [];
         for (const tween of childTween) {
-            const child:Tween24[] = [];
             if (tween._multiTarget) {
                 const targets:any[] = sort == Sort24._Normal ? tween._multiTarget : sort(tween._multiTarget);
                 const numTarget:number = targets.length;
                 for (let i = 0; i < numTarget; i++) {
                     const delay:number = easing((i + 1) / numTarget, 0, totalLagTime, 1);
-                    child.push(tween.__clone(targets[i], tween._targetQuery).delay(delay));
+                    tweens.push(tween.__clone(targets[i], tween._targetQuery).delay(delay));
                 }
-                const para = new Tween24()._createContainerTween(Tween24._TYPE_PARALLEL, child);
-                if (tween._targetTexts) para._targetTexts = tween._targetTexts.concat();
-                tweens.push(para);
             }
             else {
                 tweens.push(tween);

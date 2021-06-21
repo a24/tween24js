@@ -28,6 +28,7 @@ export class Text24 {
             const span = document.createElement("span");
             span.style.display = "inline-block";
             span.style.lineHeight = lineHeight;
+            span.style.letterSpacing = target.style.letterSpacing;
             span.innerHTML = word;
             spans.push(span);
             target.appendChild(span);
@@ -37,10 +38,6 @@ export class Text24 {
         this.double = double;
         
         Text24._allTexts.set(target, this);
-    }
-
-    updateSpacing() {
-        this.spacing = parseInt(this._spans[0].style.letterSpacing);
     }
 
     reset() {

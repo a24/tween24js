@@ -552,7 +552,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    top (value:number|string): Tween24 { return this._setStyle("top", value); }
+    top (value:number|string): Tween24 { return this._setStyle("top", StringUtil.addUnit(value)); }
     
     /**
      * CSS:right を設定します。
@@ -560,7 +560,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    right (value:number|string): Tween24 { return this._setStyle("right", value); }
+    right (value:number|string): Tween24 { return this._setStyle("right", StringUtil.addUnit(value)); }
     
     /**
      * CSS:bottom を設定します。
@@ -568,7 +568,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    bottom (value:number|string): Tween24 { return this._setStyle("bottom", value); }
+    bottom (value:number|string): Tween24 { return this._setStyle("bottom", StringUtil.addUnit(value)); }
 
     /**
      * CSS:left を設定します。
@@ -576,7 +576,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    left (value:number|string): Tween24 { return this._setStyle("left", value); }
+    left (value:number|string): Tween24 { return this._setStyle("left", StringUtil.addUnit(value)); }
 
     /**
      * 目標とする幅を設定します。
@@ -585,7 +585,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    width (value:number|string): Tween24 { return this._isDOM ? this._setStyle("width", value) : this._setPropety("width", parseInt(value as string)); }
+    width (value:number|string): Tween24 { return this._isDOM ? this._setStyle("width", StringUtil.addUnit(value)) : this._setPropety("width", parseInt(value as string)); }
 
     /**
      * 目標とする高さを設定します。
@@ -594,7 +594,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    height (value:number|string): Tween24 { return this._isDOM ? this._setStyle("height", value) : this._setPropety("height", parseInt(value as string)); }
+    height (value:number|string): Tween24 { return this._isDOM ? this._setStyle("height", StringUtil.addUnit(value)) : this._setPropety("height", parseInt(value as string)); }
     
     /**
      * CSS:color を設定します。
@@ -618,7 +618,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    borderWidth (value:number|string): Tween24 { return this._setStyle("border-width", value); }
+    borderWidth (value:number|string): Tween24 { return this._setStyle("border-width", StringUtil.addUnit(value)); }
 
     /**
      * CSS:border-color（枠の色）を設定します。
@@ -634,7 +634,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    borderRadius (value:number|string): Tween24 { return this._setStyle("border-radius", value); }
+    borderRadius (value:number|string): Tween24 { return this._setStyle("border-radius", StringUtil.addUnit(value)); }
 
     /**
      * CSS:letter-spacing（字間）を設定します。
@@ -642,7 +642,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    letterSpacing (value:number|string): Tween24 { return this._setStyle("letter-spacing", value); }
+    letterSpacing (value:number|string): Tween24 { return this._setStyle("letter-spacing", StringUtil.addUnit(value)); }
 
     /**
      * トゥイーンの遅延時間を設定します。

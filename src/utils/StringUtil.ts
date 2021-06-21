@@ -1,3 +1,5 @@
+import { ClassUtil } from "./ClassUtil";
+
 export class StringUtil {
     static toCamel(value:string):string {
         value = value.charAt(0).toLowerCase() + value.slice(1);
@@ -18,5 +20,9 @@ export class StringUtil {
         return camel.replace(/[A-Z]/g, function (match) {
             return "-" + match.charAt(0).toLowerCase();
         });
+    }
+
+    static addUnit(value:number|string, unit:string = "px"):string {
+        return ClassUtil.isString(value) ? String(value) : value + unit;
     }
 }

@@ -46,8 +46,14 @@ export class StyleUpdater implements Updater {
             this._key.push(key);
         }
         else if (val) {
-            this._param[key] = new ParamUpdater(key, Number(val));
-            this._unit [key] = unit ? unit[0] : "";
+            const original = this._target.style.getPropertyValue(key);
+            this._target.style.setProperty(key, value);
+            const targetValue = HTMLUtil.getComputedStyle(this._target).getPropertyValue(key);
+            this._target.style.setProperty(key, original);
+            const targetUnit = targetValue.match(StyleUpdater.UNIT_REG);
+
+            this._param[key] = new ParamUpdater(key, parseInt(targetValue));
+            this._unit [key] = targetUnit ? targetUnit[0] : "";
             this._key.push(key);
         }
         else {

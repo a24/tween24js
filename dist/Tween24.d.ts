@@ -240,61 +240,61 @@ export declare class Tween24 {
     /**
      * 目標とする幅を設定します。
      * 対象が HTMLElement の場合は、CSS:width が適用されます。
-     * @param {number} value 要素の幅
+     * @param {number|string} value 要素の幅
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    width(value: number): Tween24;
+    width(value: number | string): Tween24;
     /**
      * 目標とする高さを設定します。
      * 対象が HTMLElement の場合は、CSS:height が適用されます。
-     * @param {number} value 要素の高さ
+     * @param {number|string} value 要素の高さ
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    height(value: number): Tween24;
+    height(value: number | string): Tween24;
     /**
      * CSS:color を設定します。
-     * @param {string} colorCode 「#」から始まるカラー値
+     * @param {string} colorCode 「#」「rgb()」フォーマットのカラー値
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     color(colorCode: string): Tween24;
     /**
      * CSS:background-color（背景色）を設定します。
-     * @param {string} colorCode 「#」から始まるカラー値
+     * @param {string} colorCode 「#」「rgb()」フォーマットのカラー値
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     backgroundColor(colorCode: string): Tween24;
     /**
      * CSS:border-width（枠の太さ）を設定します。
-     * @param {number} value 枠の太さ
+     * @param {number|string} value 枠の太さ
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    borderWidth(value: number): Tween24;
+    borderWidth(value: number | string): Tween24;
     /**
      * CSS:border-color（枠の色）を設定します。
-     * @param {number} value 「#」から始まるカラー値
+     * @param {number} colorCode 「#」「rgb()」フォーマットのカラー値
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    borderColor(value: number): Tween24;
+    borderColor(colorCode: string): Tween24;
     /**
      * CSS:border-radius（角丸）を設定します。
-     * @param {number} value 角丸の値
+     * @param {number|string} value 角丸の値
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    borderRadius(value: number): Tween24;
+    borderRadius(value: number | string): Tween24;
     /**
      * CSS:letter-spacing（字間）を設定します。
-     * @param {number} value 字間（px）
+     * @param {number|string} value 字間
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    letterSpacing(value: number): Tween24;
+    letterSpacing(value: number | string): Tween24;
     /**
      * トゥイーンの遅延時間を設定します。
      * @param {number} value 遅延時間（秒数）

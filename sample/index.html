@@ -173,6 +173,7 @@
     <p>- Loop Tween -</p>
 
     <script>
+        // 無制限のループを設定
         Tween24.loop(0,
             Tween24.serial(
                 // 1秒かけてX座標860にトゥイーンします
@@ -202,8 +203,9 @@
     <script>
         Tween24.loop(0,
             Tween24.serial(
+                // 0.05秒毎の遅延を設定
                 Tween24.lag(0.05,
-                    // 1秒かけてX座標930にトゥイーンします
+                // .lag-boxクラスを持った複数のインスタンスをトゥイーン
                     Tween24.tween(".lag-box", 1, Ease24._6_ExpoInOut).x(930)
                 ),
                 // ループ対応処理
@@ -232,8 +234,8 @@
     <script>
         Tween24.loop(0,
             Tween24.serial(
+                // 合計で2秒の遅延になるように設定
                 Tween24.lagTotal(2,
-                    // 1秒かけてX座標930にトゥイーンします
                     Tween24.tween(".lag-total-box", 1, Ease24._6_ExpoInOut).x(930)
                 ),
                 // ループ対応処理
@@ -262,18 +264,20 @@
     <script>
         Tween24.loop(0,
             Tween24.serial(
-                Tween24.lagSort(0.05, Sort24._Mountain, // 山型に遅延させる
-                    // 1秒かけてX座標930にトゥイーンします
+                // 遅延順を山型に指定
+                Tween24.lagSort(0.05, Sort24._Mountain,
                     Tween24.tween(".lag-sort-box", 1, Ease24._6_ExpoInOut).x(930)
                 ),
                 Tween24.prop(".lag-sort-box").x(0),// リセット
 
-                Tween24.lagSort(0.05, Sort24._Valley, // 谷型させる
+                // 遅延順を谷型に指定
+                Tween24.lagSort(0.05, Sort24._Valley,
                     Tween24.tween(".lag-sort-box", 1, Ease24._6_ExpoInOut).x(930)
                 ),
                 Tween24.prop(".lag-sort-box").x(0),// リセット
 
-                Tween24.lagSort(0.05, Sort24._Shuffle, // ランダムに遅延させる
+                // 遅延順をシャッフル
+                Tween24.lagSort(0.05, Sort24._Shuffle,
                     Tween24.tween(".lag-sort-box", 1, Ease24._6_ExpoInOut).x(930)
                 ),
                 // ループ対応処理
@@ -302,13 +306,43 @@
     <script>
         Tween24.loop(0,
             Tween24.serial(
+                // 始めの遅延は長く、後の遅延を短くする
                 Tween24.lagTotalEase(2, Ease24._6_ExpoOut,
-                    // 1秒かけてX座標930にトゥイーンします
                     Tween24.tween(".lag-ease-box", 1, Ease24._2_QuadOut).x(930)
                 ),
                 // ループ対応処理
                 Tween24.wait(1), // 1秒待機
                 Tween24.prop(".lag-ease-box").x(0)// リセット
+            )
+        ).play();
+    </script>
+
+    <!----------- Lag Total with Sort and Easing Tween ----------->
+
+    <section id="lagTotalSortEase" class="lag">
+        <div class="lag-sort-ease-box"></div>
+        <div class="lag-sort-ease-box"></div>
+        <div class="lag-sort-ease-box"></div>
+        <div class="lag-sort-ease-box"></div>
+        <div class="lag-sort-ease-box"></div>
+        <div class="lag-sort-ease-box"></div>
+        <div class="lag-sort-ease-box"></div>
+        <div class="lag-sort-ease-box"></div>
+        <div class="lag-sort-ease-box"></div>
+        <div class="lag-sort-ease-box"></div>
+    </section>
+    <p>- Total Lag with Sort and Easing Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                // 対象を逆順にし、始めの遅延は長く、後の遅延を短くする
+                Tween24.lagTotalSortEase(2, Sort24._Reverse, Ease24._6_ExpoOut,
+                    Tween24.tween(".lag-sort-ease-box", 1, Ease24._2_QuadOut).x(930)
+                ),
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop(".lag-sort-ease-box").x(0)// リセット
             )
         ).play();
     </script>
@@ -325,10 +359,10 @@
         Tween24.loop(0,
             Tween24.serial(
                 Tween24.parallel(
-                    // 毎秒1000pxの速度で400px移動する
-                    Tween24.tweenVelocity("#velocity-box1", 1000).x(430).rotation(90),
-                    // 毎秒1000pxの速度で860px移動する
-                    Tween24.tweenVelocity("#velocity-box2", 1000).x(860).rotation(180)
+                    // 毎秒500pxの速度で430px移動する
+                    Tween24.tweenVelocity("#velocity-box1", 500).x(430).rotation(90),
+                    // 毎秒500pxの速度で860px移動する
+                    Tween24.tweenVelocity("#velocity-box2", 500).x(860).rotation(180)
                 ),
                 // ループ対応処理
                 Tween24.wait(1), // 1秒待機
@@ -347,8 +381,10 @@
     <script>
         Tween24.loop(0,
             Tween24.serial(
-                Tween24.propText("#tween-text", 30).y(-100).opacity(0).scaleXY(0.5, 3),
+                // 字間を20px、100px上へ、透明度を0に、横幅を0.5倍、縦幅を3倍に
+                Tween24.propText("#tween-text").y(-100).opacity(0).scaleXY(0.5, 3).letterSpacing(20),
                 Tween24.lagSort(0.06, Sort24._Shuffle,
+                    // 1文字ずつ位置、透明度、大きさを1秒かけて元に戻す
                     Tween24.tweenText("#tween-text", 1, Ease24._6_ExpoOut).y(0).opacity(1).scale(1)
                 ),
                 // ループ対応処理

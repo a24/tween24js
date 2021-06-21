@@ -79,7 +79,6 @@ export class StyleUpdater implements Updater {
                 (this._param[key] as ParamUpdater).init(Number(val ? val : 0));
                 
             }
-            this._useWillChange = true;
             if (this._useWillChange) {
                 if (this._style) this._style.setProperty("will-change", key);
                 else HTMLUtil.setStyleProp(this._target, "will-change", key);

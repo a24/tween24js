@@ -39,6 +39,10 @@ export class Text24 {
         Text24._allTexts.set(target, this);
     }
 
+    updateSpacing() {
+        this.spacing = parseInt(this._spans[0].style.letterSpacing);
+    }
+
     reset() {
         this._target.innerHTML    = "";
         this._target.innerText    = this._text;
@@ -49,8 +53,10 @@ export class Text24 {
 
     set spacing(spacing:number) {
         this._spacing = spacing;
-        for (const span of this._spans)
+        for (const span of this._spans) {
+            span.style.width = "auto";
             span.style.width = span.clientWidth + this._spacing + "px";
+        }
     }
 
     set overflowHidden(flag:boolean) {

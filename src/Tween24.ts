@@ -10,9 +10,9 @@ import { MultiUpdater }     from "./core/updaters/MultiUpdater";
 import { ArrayUtil }        from "./utils/ArrayUtil";
 import { ClassUtil }        from "./utils/ClassUtil";
 import { HTMLUtil }         from "./utils/HTMLUtil";
+import { StringUtil }       from "./utils/StringUtil";
 import { Sort24 }           from "./index";
 import { Text24 }           from "./utils/Text24";
-import { StringUtil } from "./utils/StringUtil";
 
 export class Tween24 {
 
@@ -46,6 +46,7 @@ export class Tween24 {
     // Tween param
     private _singleTarget:any      |null = null;
     private _multiTarget :any[]    |null = null;
+    private _targetTexts :Text24[] |null = null;
     private _easing      :Function |null = null;
     private _type        :string         = "";
 
@@ -223,7 +224,6 @@ export class Tween24 {
         if (this._isDOM && this._targetQuery && HTMLUtil.isPseudoQuery(this._targetQuery))
             HTMLUtil.setTweenElementQuery(this._singleTarget || this._multiTarget, this._targetQuery);
 
-        
         // Updater init
         if (this._allUpdaters?.length) {
             for (const updater of this._allUpdaters) {
@@ -312,6 +312,12 @@ export class Tween24 {
                     tween._update(nowTime);
                 }
             }
+            // Text update
+            if (this._targetTexts) {
+                for (const text of this._targetTexts) {
+                    text.updateSpacing();
+                }
+            }
             this._functionExecute(Tween24Event.UPDATE);
             if (this._numChildren == this._numCompleteChildren) this._complete();
         }
@@ -325,6 +331,12 @@ export class Tween24 {
                 if (this._allUpdaters?.length) {
                     for (const updater of this._allUpdaters) {
                         updater.update(prog);
+                    }
+                }
+                // Text update
+                if (this._targetTexts) {
+                    for (const text of this._targetTexts) {
+                        text.updateSpacing();
                     }
                 }
                 this._functionExecute(Tween24Event.UPDATE);
@@ -638,6 +650,14 @@ export class Tween24 {
     borderRadius (value:number): Tween24 { return this._setStyle("border-radius", value); }
 
     /**
+     * CSS:letter-spacing（字間）を設定します。
+     * @param {number} value 字間（px）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    letterSpacing (value:number): Tween24 { return this._setStyle("letter-spacing", value + "px"); }
+
+    /**
      * トゥイーンの遅延時間を設定します。
      * @param {number} value 遅延時間（秒数）
      * @return {Tween24} Tween24インスタンス
@@ -744,12 +764,12 @@ export class Tween24 {
 
         let updater:Updater|null = null;
         if (this._isDOM) {
-            if (this._singleTarget) updater = this._transformUpdater      ||=  new TransformUpdater(this._singleTarget, this._targetQuery);
-            if (this._multiTarget ) updater = this._transformMultiUpdater ||=  new MultiUpdater    (this._multiTarget , this._targetQuery).setupByType(TransformUpdater.className);
+            if      (this._singleTarget) updater = this._transformUpdater      ||=  new TransformUpdater(this._singleTarget, this._targetQuery);
+            else if (this._multiTarget ) updater = this._transformMultiUpdater ||=  new MultiUpdater    (this._multiTarget , this._targetQuery).setupByType(TransformUpdater.className);
         }
         else {
-            if (this._singleTarget) updater = this._objectUpdater      ||=  new ObjectUpdater(this._singleTarget);
-            if (this._multiTarget ) updater = this._objectMultiUpdater ||=  new MultiUpdater (this._multiTarget, this._targetQuery).setupByType(ObjectUpdater.className);
+            if      (this._singleTarget) updater = this._objectUpdater      ||=  new ObjectUpdater(this._singleTarget);
+            else if (this._multiTarget ) updater = this._objectMultiUpdater ||=  new MultiUpdater (this._multiTarget, this._targetQuery).setupByType(ObjectUpdater.className);
         }
         if (updater) this._allUpdaters?.push(updater);
     }
@@ -890,14 +910,11 @@ export class Tween24 {
      * クエリで指定した要素直下のテキストを1文字ずつに分解し、それぞれにプロパティを設定します。
      * @static
      * @param {string} targetQuery 対象要素を指定するクエリ
-     * @param {number} spacing 文字間の調整（px）
-     * @param {boolean} [overflowHidden=false] overflow:hidden を設定するか
-     * @param {boolean} [double=false] テキストを下側に複製するか
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static propText(targetQuery:string, spacing:number = NaN): Tween24 {
-        return Tween24._tweenText(Tween24._TYPE_PROP_TEXT, targetQuery, 0, null, spacing);
+    static propText(targetQuery:string): Tween24 {
+        return Tween24._tweenText(Tween24._TYPE_PROP_TEXT, targetQuery, 0, null);
     }
 
     /**
@@ -906,14 +923,11 @@ export class Tween24 {
      * @param {string} targetQuery 対象要素を指定するクエリ
      * @param {number} time 時間（秒）
      * @param {(Function|null)} [easing=null] イージング関数（デフォルト値：Ease24._Linear）
-     * @param {number} spacing 文字間の調整（px）
-     * @param {boolean} [overflowHidden=false] overflow:hidden を設定するか
-     * @param {boolean} [double=false] テキストを下側に複製するか
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static tweenText(targetQuery:string, time:number, easing:Function|null = null, spacing:number = NaN): Tween24 {
-        return Tween24._tweenText(Tween24._TYPE_TWEEN_TEXT, targetQuery, time, easing, spacing);
+    static tweenText(targetQuery:string, time:number, easing:Function|null = null): Tween24 {
+        return Tween24._tweenText(Tween24._TYPE_TWEEN_TEXT, targetQuery, time, easing);
     }
     
     /**
@@ -937,33 +951,32 @@ export class Tween24 {
      * @param {string} targetQuery 対象要素を指定するクエリ
      * @param {number} velocity 1秒間の変化量（速度）
      * @param {(Function|null)} [easing=null] イージング関数（デフォルト値：Ease24._Linear）
-     * @param {number} spacing 文字間の調整（px）
-     * @param {boolean} [overflowHidden=false] overflow:hidden を設定するか
-     * @param {boolean} [double=false] テキストを下側に複製するか
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static tweenTextVelocity(targetQuery:string, velocity:number, easing:Function|null = null, spacing:number = NaN): Tween24 {
-        return Tween24._tweenText(Tween24._TYPE_TWEEN_VELOCITY, targetQuery, velocity, easing, spacing);
+    static tweenTextVelocity(targetQuery:string, velocity:number, easing:Function|null = null): Tween24 {
+        return Tween24._tweenText(Tween24._TYPE_TWEEN_VELOCITY, targetQuery, velocity, easing);
     }
 
-    private static _tweenText(type:string, targetQuery:string, timeOrVelocity:number, easing:Function|null = null, spacing:number):Tween24 {
+    private static _tweenText(type:string, targetQuery:string, timeOrVelocity:number, easing:Function|null = null):Tween24 {
         const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
         const textElements:any[] = [];
+        const texts:Text24[] = [];
         for (const target of targets) {
             const text:Text24|undefined = Text24.getInstance(target);
             if (text) {
-                if (!isNaN(spacing)) text.spacing = spacing;
                 textElements.push(...text.targets);
+                texts.push(text);
             }
             else {
                 const text:Text24 = new Text24(target, target.textContent?.trim() || "", false, false);
-                text.spacing = spacing || 0;
                 textElements.push(...text.targets);
+                texts.push(text);
             }
         }
         const tween:Tween24 = new Tween24()._createChildTween(type, textElements, timeOrVelocity, easing, null);
         tween._targetQuery = targetQuery + " span";
+        tween._targetTexts = texts;
         return tween;
     }
 
@@ -1047,11 +1060,16 @@ export class Tween24 {
     static lagSort(lagTime:number, sort:Function, ...childTween: Tween24[]): Tween24 {
         const tweens:Tween24[] = [];
         for (const tween of childTween) {
+            const child:Tween24[] = [];
             if (tween._multiTarget) {
                 const targets:any[] = sort == Sort24._Normal ? tween._multiTarget : sort(tween._multiTarget);
                 for (let i = 0; i < targets.length; i++) {
-                    tweens.push(tween.__clone(targets[i], tween._targetQuery).delay(lagTime * i));
+                    const t = targets[i];
+                    child.push(tween.__clone(t, tween._targetQuery).delay(lagTime * i));
                 }
+                const para = new Tween24()._createContainerTween(Tween24._TYPE_PARALLEL, child);
+                if (tween._targetTexts) para._targetTexts = tween._targetTexts.concat();
+                tweens.push(para);
             }
             else {
                 tweens.push(tween);
@@ -1115,13 +1133,17 @@ export class Tween24 {
     static lagTotalSortEase(totalLagTime:number, sort:Function, easing:Function, ...childTween: Tween24[]): Tween24 {
         const tweens:Tween24[] = [];
         for (const tween of childTween) {
+            const child:Tween24[] = [];
             if (tween._multiTarget) {
                 const targets:any[] = sort == Sort24._Normal ? tween._multiTarget : sort(tween._multiTarget);
                 const numTarget:number = targets.length;
                 for (let i = 0; i < numTarget; i++) {
                     const delay:number = easing((i + 1) / numTarget, 0, totalLagTime, 1);
-                    tweens.push(tween.__clone(targets[i], tween._targetQuery).delay(delay));
+                    child.push(tween.__clone(targets[i], tween._targetQuery).delay(delay));
                 }
+                const para = new Tween24()._createContainerTween(Tween24._TYPE_PARALLEL, child);
+                if (tween._targetTexts) para._targetTexts = tween._targetTexts.concat();
+                tweens.push(para);
             }
             else {
                 tweens.push(tween);

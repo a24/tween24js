@@ -1,6 +1,6 @@
 {
   "name": "tween24",
-  "version": "0.9.4",
+  "version": "0.9.3",
   "description": "Tween24.js is animation library that enables fast coding using method chains.",
   "main": "./dist/tween24.js",
   "types": "./dist/index.d.ts",
@@ -13,20 +13,15 @@
     "type": "git",
     "url": "git+https://a24@github.com/a24/tween24js.git"
   },
-  "keywords": [
-    "JavaScript",
-    "TypeScript",
-    "CSS",
-    "Tween",
-    "Animation"
-  ],
+  "keywords": ["JavaScript", "TypeScript", "CSS", "Tween", "Animation"],
   "author": "Atsushi Kaga",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/a24/tween24js/issues"
   },
   "homepage": "https://github.com/a24/tween24js#readme",
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
     "webpack": "^5.21.2",
     "webpack-cli": "^4.5.0",

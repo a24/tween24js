@@ -77,25 +77,26 @@
     </section>
 
     <script>
-        let tween = Tween24.serial(
-            Tween24.prop(".box").x(0),
-            Tween24.parallel(
-                Tween24.tween("#box1", 1.5, Ease24._1_SineInOut).x(230),
-                Tween24.tween("#box2", 1.5, Ease24._2_QuadInOut).x(230),
-                Tween24.tween("#box3", 1.5, Ease24._3_CubicInOut).x(230),
-                Tween24.tween("#box4", 1.5, Ease24._4_QuartInOut).x(230),
-                Tween24.tween("#box5", 1.5, Ease24._5_QuintInOut).x(230),
-                Tween24.tween("#box6", 1.5, Ease24._6_ExpoInOut).x(230),
-                Tween24.tween("#box7", 1.5, Ease24._7_CircInOut).x(230),
-                Tween24.tween("#box8", 1.5, Ease24._BounceOut).x(230),
-                Tween24.tween("#box9", 1.5, Ease24._BackOut).x(230),
-                Tween24.tween("#box10", 1.5, Ease24._BackOutWith(3)).x(230),
-                Tween24.tween("#box11", 1.5, Ease24._ElasticOut).x(230),
-                Tween24.tween("#box12", 1.5, Ease24._ElasticOutWith(1, 0.00015)).x(230),
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.prop(".box").x(0),
+                Tween24.parallel(
+                    Tween24.tween("#box1", 1.5, Ease24._1_SineInOut).x(230),
+                    Tween24.tween("#box2", 1.5, Ease24._2_QuadInOut).x(230),
+                    Tween24.tween("#box3", 1.5, Ease24._3_CubicInOut).x(230),
+                    Tween24.tween("#box4", 1.5, Ease24._4_QuartInOut).x(230),
+                    Tween24.tween("#box5", 1.5, Ease24._5_QuintInOut).x(230),
+                    Tween24.tween("#box6", 1.5, Ease24._6_ExpoInOut).x(230),
+                    Tween24.tween("#box7", 1.5, Ease24._7_CircInOut).x(230),
+                    Tween24.tween("#box8", 1.5, Ease24._BounceOut).x(230),
+                    Tween24.tween("#box9", 1.5, Ease24._BackOut).x(230),
+                    Tween24.tween("#box10", 1.5, Ease24._BackOutWith(3)).x(230),
+                    Tween24.tween("#box11", 1.5, Ease24._ElasticOut).x(230),
+                    Tween24.tween("#box12", 1.5, Ease24._ElasticOutWith(1, 0.00015)).x(230),
+                ),
+                Tween24.wait(1)
             )
-        ).delay(1);
-        tween.onComplete(tween, tween.play);
-        tween.play();
+        ).play();
     </script>
 </body>
 </html>

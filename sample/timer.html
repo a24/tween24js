@@ -65,8 +65,8 @@ timer.finish = function() {
 timer.tween = Tween24.serial(
     Tween24.prop(timer, { count: timer.count }), // タイムをリセット
     Tween24.tween(timer, timer.count, Ease24._Linear, { count: 0 }) // 変数countをトゥイーン
-        .onUpdate(timer, timer.update) // 更新時に実行する関数を設定
-        .onComplete(timer, timer.finish) // 完了時に実行する関数を設定
+        .onUpdate(timer.update) // 更新時に実行する関数を設定
+        .onComplete(timer.finish) // 完了時に実行する関数を設定
 );
 </script>
 

@@ -126,7 +126,7 @@ Tween24.serial(
 var time = 5;
 let timer = Tween24.serial(
   Tween24.prop(this, { time: this.time }),
-  Tween24.tween(this, this.time, Ease24._Linear, { time: 0 }).onUpdate(this, update).onComplete(finish)
+  Tween24.tween(this, this.time, Ease24._Linear, { time: 0 }).onUpdate(update).onComplete(finish)
 );
 function update() {
   document.getElementById("timer").textContent = "Time: " + this.time.toFixed(1);

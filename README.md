@@ -167,7 +167,7 @@ function finish() {
 - debug()
 - id(...)
 
-### Add v0.9.6
+### Add v0.9.3
 - willChange()
 - angle()
 - letterSpacing()
@@ -180,7 +180,7 @@ function finish() {
 - Tween24.wait(...)
 - Tween24.func(...)
 
-### Add v0.9.6
+### Add v0.9.3
 - Tween24.loop()
 - Tween24.lag()
 - Tween24.lagTotal()

@@ -129,10 +129,19 @@ export class Tween24 {
     //
     // ------------------------------------------
 
+    /**
+     * トゥイーンを再生します。
+     * @memberof Tween24
+     */
     play = () => {
         this._commonRootPlay();
     }
 
+    /**
+     * トゥイーンを手動アップデート式で再生します。
+     * 関数 manualUpdate() を実行すると更新されます。
+     * @memberof Tween24
+     */
     manualPlay = () => {
         Tween24._manualPlayingTweens ||= [];
         this._isManual = true;
@@ -203,6 +212,10 @@ export class Tween24 {
         Tween24._playingTweens.push(this);
     }
 
+    /**
+     * トゥイーンを一時停止します。
+     * @memberof Tween24
+     */
     pause = () => {
         if (this._isRoot) {
             this._played = false;
@@ -214,6 +227,10 @@ export class Tween24 {
         }
     }
 
+    /**
+     * トゥイーンを停止します。
+     * @memberof Tween24
+     */
     stop = () => {
         this._stop();
         this._functionExecute(Tween24Event.STOP);

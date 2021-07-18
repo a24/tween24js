@@ -36,6 +36,7 @@ export class Tween24 {
     static ease  :Ease24;
 
     private static _playingTweens:Tween24[];
+    private static _manualPlayingTweens:Tween24[];
     private static _playingTweensByTarget:Map<any, Tween24[]>;
 
     private static _defaultEasing  :Function = Ease24._Linear;
@@ -80,6 +81,7 @@ export class Tween24 {
     // Status
     private _isDOM   :boolean = false;
     private _isRoot  :boolean = false;
+    private _isManual:boolean = false;
     private _inited  :boolean = false;
     private _played  :boolean = false;
     private _paused  :boolean = false;
@@ -128,6 +130,16 @@ export class Tween24 {
     // ------------------------------------------
 
     play = () => {
+        this._commonRootPlay();
+    }
+
+    manualPlay = () => {
+        Tween24._manualPlayingTweens ||= [];
+        this._isManual = true;
+        this._commonRootPlay();
+    }
+
+    private _commonRootPlay() {
         if (!this._paused) {
             if (!this._played) {
                 this._root   = this;
@@ -135,14 +147,16 @@ export class Tween24 {
                 this._inited = false;
                 this._firstUpdated = false;
                 this._play();
-                Tween24.ticker.add(this);
+                if (!this._isManual) Tween24.ticker.add(this);
+                else Tween24._manualPlayingTweens.push(this);
                 this._functionExecute(Tween24Event.PLAY);
             }
         }
         else {
             this._resume();
             this._paused = false;
-            Tween24.ticker.add(this);
+            if (!this._isManual) Tween24.ticker.add(this);
+            else Tween24._manualPlayingTweens.push(this);
             this._functionExecute(Tween24Event.RESUME);
         }
     }
@@ -169,6 +183,7 @@ export class Tween24 {
             }
             this._time = Math.max(...deltas) / this._velocity;
         }
+        
         Tween24._playingTweens.push(this);
         this._debugLog("play");
     }
@@ -185,13 +200,16 @@ export class Tween24 {
                 else tween._startTime = nowTime - tween._time * 1000 * tween._progress;
             }
         }
+        Tween24._playingTweens.push(this);
     }
 
     pause = () => {
         if (this._isRoot) {
             this._played = false;
             this._paused = true;
-            Tween24.ticker.remove(this);
+            if (this._isManual) ArrayUtil.removeItemFromArray(Tween24._manualPlayingTweens, this);
+            else Tween24.ticker.remove(this);
+            ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
             this._functionExecute(Tween24Event.PAUSE);
         }
     }
@@ -267,7 +285,11 @@ export class Tween24 {
         }
     }
 
-    public _update(nowTime:number) {
+    manualUpdate = () => {
+        this.__update(Ticker24.getTime());
+    }
+
+    public __update(nowTime:number) {
         this._updateProgress(this._time, this._startTime, nowTime);
         
         // Delay
@@ -289,7 +311,7 @@ export class Tween24 {
                         if (this._firstTween) {
                             this._playingChildTween?.push(this._firstTween);
                             this._firstTween._play();
-                            this._firstTween._update(nowTime);
+                            this._firstTween.__update(nowTime);
                         }
                         break;
                     case Tween24._TYPE_PARALLEL:
@@ -299,7 +321,7 @@ export class Tween24 {
                             for (const tween of this._childTween) {
                                 this._playingChildTween?.push(tween);
                                 tween._play();
-                                tween._update(nowTime);
+                                tween.__update(nowTime);
                             }
                         }
                         break;
@@ -308,7 +330,7 @@ export class Tween24 {
             // Update
             if (this._playingChildTween) {
                 for (const tween of this._playingChildTween) {
-                    tween._update(nowTime);
+                    tween.__update(nowTime);
                 }
             }
             this._functionExecute(Tween24Event.UPDATE);
@@ -369,9 +391,11 @@ export class Tween24 {
         this._played = false;
         this._inited = false;
         this._firstUpdated = false;
-
+        
         ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this._singleTarget), this);
         ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
+
+        if (this._isManual) ArrayUtil.removeItemFromArray(Tween24._manualPlayingTweens, this);
     }
 
     private _completeChildTween(tween:Tween24) {
@@ -1296,6 +1320,13 @@ export class Tween24 {
      */
     static debugMode = (flag:boolean) => {
         Tween24._debugMode = flag;
+    }
+
+    static manualAllUpdate = () => {
+        const nowTime = Ticker24.getTime();
+        for (const tween of Tween24._manualPlayingTweens) {
+            tween.__update(nowTime);
+        }
     }
 
     __clone(base:any, baseQuery:string|null):Tween24 {

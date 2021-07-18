@@ -45,12 +45,12 @@ export class Ticker24 {
         for (const tween of this._allTweens) {
             if (tween.__fps) {
                 if (this._checkInterval(tween.__fps, tween.__beforeTime, nowTime)) {
-                    tween._update(nowTime);
+                    tween.__update(nowTime);
                     tween.__beforeTime = nowTime;
                 }
             }
             else if (tickerCheck) {
-                tween._update(nowTime);
+                tween.__update(nowTime);
             }
         }
         if (tickerCheck) {

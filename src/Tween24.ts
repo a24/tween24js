@@ -17,7 +17,7 @@ import { Text24 }           from "./utils/Text24";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.9.3";
+    static readonly VERSION:string = "0.9.5";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -31,6 +31,9 @@ export class Tween24 {
     private static readonly _TYPE_LAG                :string = "lag";
     private static readonly _TYPE_LOOP               :string = "loop";
     private static readonly _TYPE_FUNC               :string = "func";
+    private static readonly _TYPE_IF_CASE            :string = "if_case";
+    private static readonly _TYPE_IF_CASE_BY_PROP    :string = "if_case_by_prop";
+    private static readonly _TYPE_IF_CASE_BY_FUNC    :string = "if_case_by_func";
 
     static ticker:Ticker24;
     static ease  :Ease24;
@@ -110,6 +113,11 @@ export class Tween24 {
     // Loop
     private _numLoops:number = NaN;
     private _currentLoops:number = NaN;
+
+    // If Case
+    private _ifFunc    :Function|null = null;
+    private _trueTween :Tween24 |null = null;
+    private _falseTween:Tween24 |null = null;
     
     // Tween FPS
     __fps:number = 0;
@@ -302,6 +310,20 @@ export class Tween24 {
         }
     }
 
+    private _setIfCaseTween(flag:boolean) {
+        if (this._childTween) this._childTween.length = 0;
+        else this._childTween = [];
+
+        if (flag && this._trueTween)
+            this._childTween = [this._trueTween];
+        else if (this._falseTween)
+            this._childTween = [this._falseTween];
+        else
+            this._childTween = [];
+        
+        this._numChildren = this._childTween.length;
+    }
+
     manualUpdate = () => {
         this.__update(Ticker24.getTime());
     }
@@ -323,22 +345,28 @@ export class Tween24 {
         if (this._isContainerTween) {
             if (this._firstUpdated == false) {
                 this._firstUpdated = true;
+
+                // If case
+                if (this._type == Tween24._TYPE_IF_CASE_BY_FUNC) {
+                    this._setIfCaseTween(this._ifFunc ? Boolean(this._ifFunc()) : false);
+                }
+
                 switch (this._type) {
                     case Tween24._TYPE_SERIAL:
                         if (this._firstTween) {
                             this._playingChildTween?.push(this._firstTween);
                             this._firstTween._play();
-                            this._firstTween.__update(nowTime);
                         }
                         break;
                     case Tween24._TYPE_PARALLEL:
                     case Tween24._TYPE_LAG     :
                     case Tween24._TYPE_LOOP    :
+                    case Tween24._TYPE_IF_CASE :
+                    case Tween24._TYPE_IF_CASE_BY_FUNC :
                         if (this._childTween) {
                             for (const tween of this._childTween) {
                                 this._playingChildTween?.push(tween);
                                 tween._play();
-                                tween.__update(nowTime);
                             }
                         }
                         break;
@@ -1187,6 +1215,22 @@ export class Tween24 {
         loopTween._numLoops = numLoops;
         loopTween._currentLoops = 0;
         return loopTween;
+    }
+
+    static ifCase(flag:boolean, trueTween:Tween24, falseTween:Tween24|null = null):Tween24 {
+        const tween = new Tween24()._createContainerTween(Tween24._TYPE_IF_CASE, flag ? [trueTween]: falseTween ? [falseTween]: []);
+        tween._trueTween  = trueTween;
+        tween._falseTween = falseTween;
+        return tween;
+    }
+
+    static ifCaseByFunc(func:()=>boolean, trueTween:Tween24, falseTween:Tween24|null = null):Tween24 {
+        const childTween  = falseTween ? [trueTween, falseTween] : [trueTween]; 
+        const tween       = new Tween24()._createContainerTween(Tween24._TYPE_IF_CASE_BY_FUNC, childTween);
+        tween._ifFunc     = func;
+        tween._trueTween  = trueTween;
+        tween._falseTween = falseTween;
+        return tween;
     }
     
     private _createChildTween(type:string, target:any, timeOrVelocity:number, easing:Function|null, params:{[key:string]:number}|null): Tween24 {

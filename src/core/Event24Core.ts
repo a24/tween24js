@@ -4,18 +4,18 @@ export class Event24Core {
     private _target       :any;
     private _playEventType:string;
     private _stopEventType:string[]|null;
-    private _playHandler  :Function;
-    private _stopHandler  :Function|null;
-    private _tween        :Tween24;
+    private _tween        :Tween24|null;
+    private _callback     :Function|null;
 
-    constructor (target:any, query:string|null, playEventType:string, tween:Tween24) {
+    constructor (target:any, query:string|null, playEventType:string, tween:Tween24|null, callback:Function|null) {
         this._target        = target;
         this._playEventType = playEventType;
         this._stopEventType = null;
+        this._tween         = null;
+        this._callback      = callback;
 
-        this._tween = (target instanceof HTMLElement) ? tween.__clone(target, query) : tween;
-        this._playHandler = this._play.bind(this);
-        this._stopHandler = this._stop.bind(this);
+        if (tween)
+            this._tween = (target instanceof HTMLElement) ? tween.__clone(target, query) : tween;
     }
 
     setEventListener() {
@@ -46,15 +46,16 @@ export class Event24Core {
     }
 
     willChange(use:boolean) {
-        this._tween.willChange(use);
+        this._tween?.willChange(use);
         return this;
     }
 
-    private _play(event:Event):void {
-        this._tween.play();
+    private _playHandler = (event:Event) => {
+        if (this._callback) this._callback();
+        this._tween?.play();
     }
 
-    private _stop(event:Event):void {
-        this._tween.stop();
+    private _stopHandler = (event:Event) => {
+        this._tween?.stop();
     }
 }

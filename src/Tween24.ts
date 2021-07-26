@@ -13,11 +13,12 @@ import { HTMLUtil }         from "./utils/HTMLUtil";
 import { StringUtil }       from "./utils/StringUtil";
 import { Sort24 }           from "./index";
 import { Text24 }           from "./utils/Text24";
+import { Event24 }          from "./Event24";
 
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.9.5";
+    static readonly VERSION:string = "0.9.6";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -26,13 +27,14 @@ export class Tween24 {
     private static readonly _TYPE_PROP               :string = "prop";
     private static readonly _TYPE_PROP_TEXT          :string = "prop_text";
     private static readonly _TYPE_WAIT               :string = "wait";
+    private static readonly _TYPE_WAIT_EVENT         :string = "wait_event";
+    private static readonly _TYPE_WAIT_EVENT_AND_FUNC:string = "wait_event_and_func";
     private static readonly _TYPE_SERIAL             :string = "serial";
     private static readonly _TYPE_PARALLEL           :string = "parallel";
     private static readonly _TYPE_LAG                :string = "lag";
     private static readonly _TYPE_LOOP               :string = "loop";
     private static readonly _TYPE_FUNC               :string = "func";
     private static readonly _TYPE_IF_CASE            :string = "if_case";
-    private static readonly _TYPE_IF_CASE_BY_PROP    :string = "if_case_by_prop";
     private static readonly _TYPE_IF_CASE_BY_FUNC    :string = "if_case_by_func";
 
     static ticker:Ticker24;
@@ -88,6 +90,7 @@ export class Tween24 {
     private _inited  :boolean = false;
     private _played  :boolean = false;
     private _paused  :boolean = false;
+    private _eventWaiting       :boolean = false;
     private _firstUpdated       :boolean = false;
     private _isContainerTween   :boolean = false;
     private _createdBasicUpdater:boolean = false;
@@ -111,13 +114,17 @@ export class Tween24 {
     private _lagEasing   :Function|null = null;
 
     // Loop
-    private _numLoops:number = NaN;
+    private _numLoops    :number = NaN;
     private _currentLoops:number = NaN;
 
     // If Case
     private _ifFunc    :Function|null = null;
     private _trueTween :Tween24 |null = null;
     private _falseTween:Tween24 |null = null;
+
+    // Dispatch event
+    private _dispatchEventTarget:any;
+    private _dispatchEventType  :string|null = null;
     
     // Tween FPS
     __fps:number = 0;
@@ -401,13 +408,33 @@ export class Tween24 {
 
             // Complete
             if (this._progress >= 1) {
-                // Func
-                if (this._type == Tween24._TYPE_FUNC) {
-                    this._functionExecute(Tween24._TYPE_FUNC);
+                // Wait event
+                if ((this._type == Tween24._TYPE_WAIT_EVENT || this._type == Tween24._TYPE_WAIT_EVENT_AND_FUNC) && this._dispatchEventTarget && this._dispatchEventType) {
+                    if (this._eventWaiting == false) {
+                        this._eventWaiting = true;
+                        
+                        const waitHandler = () => {
+                            this._eventWaiting = false;
+                            if (this._dispatchEventType) Event24.remove(this._dispatchEventTarget, this._dispatchEventType);
+    
+                            // End
+                            this._complete();
+                        }
+                        Event24.__addCallback(this._dispatchEventTarget, this._dispatchEventType, waitHandler);
+                        
+                        if (this._type == Tween24._TYPE_WAIT_EVENT_AND_FUNC)
+                            this._functionExecute(Tween24._TYPE_WAIT_EVENT_AND_FUNC);
+                    }
                 }
-
-                // End
-                this._complete();
+                else {
+                    // Func
+                    if (this._type == Tween24._TYPE_FUNC) {
+                        this._functionExecute(Tween24._TYPE_FUNC);
+                    }
+    
+                    // End
+                    this._complete();
+                }
             }
         }
     }
@@ -899,7 +926,7 @@ export class Tween24 {
      */
     onComplete (func:Function, ...args:any[]): Tween24 { return this._setFunctionExecute(Tween24Event.COMPLATE, func, func, args); }
 
-    private _setFunctionExecute(key:string, scope:any, func:Function, args:any[]):Tween24 {
+    private _setFunctionExecute(key:string, scope:any, func:Function, args:any[]|null):Tween24 {
         this._functionExecuters ||= {};
         this._functionExecuters[key] = new FunctionExecuter(scope, func, args);
         return this;
@@ -1052,7 +1079,21 @@ export class Tween24 {
      * @memberof Tween24
      */
     static func(func: Function, ...args: any[]): Tween24 {
-        return new Tween24()._createActionTween(Tween24._TYPE_FUNC, func, func, args);
+        return new Tween24()._createActionTween(Tween24._TYPE_FUNC)._setFunctionExecute(Tween24._TYPE_FUNC, func, func, args);
+    }
+
+    static waitEvent(target:any, type:string): Tween24 {
+        return new Tween24()._createActionTween(Tween24._TYPE_WAIT_EVENT)._setWaitEvent(target, type);
+    }
+
+    static waitEventAndFunc(target:any, type:string, func:Function, ...args:any[]): Tween24 {
+        return new Tween24()._createActionTween(Tween24._TYPE_WAIT_EVENT_AND_FUNC)._setWaitEvent(target, type)._setFunctionExecute(Tween24._TYPE_WAIT_EVENT_AND_FUNC, func, func, args);
+    }
+
+    private _setWaitEvent(target:any, type:string):Tween24 {
+        this._dispatchEventTarget = target;
+        this._dispatchEventType   = type;
+        return this;
     }
     
     /**
@@ -1063,7 +1104,7 @@ export class Tween24 {
      * @memberof Tween24
      */
     static log(...message:any[]): Tween24 {
-        return new Tween24()._createActionTween(Tween24._TYPE_FUNC, window, window.console.log, message);
+        return new Tween24()._createActionTween(Tween24._TYPE_FUNC)._setFunctionExecute(Tween24._TYPE_FUNC, window, window.console.log, message);
     }
 
     /**
@@ -1325,18 +1366,13 @@ export class Tween24 {
         return this;
     }
 
-    private _createActionTween(type:string, scope:any, func:Function, args:any[]) {
+    private _createActionTween(type:string) {
         this._type      = type;
         this._time      = 0;
         this._delayTime = 0;
         this._startTime = 0;
         this._isContainerTween = false;
-
         this._commonProcess();
-
-        switch (this._type) {
-            case Tween24._TYPE_FUNC: this._setFunctionExecute(Tween24._TYPE_FUNC, scope, func, args);
-        }
         return this;
     }
 

@@ -212,7 +212,14 @@ export class Event24 {
      * @memberof Event24
      */
     public static add(target:any|any[], eventType:string|string[], tween:Tween24):Event24 {
-        
+        return Event24._add(target, eventType, tween, null);
+    }
+
+    public static __addCallback(target:any|any[], eventType:string|string[], callback:Function):Event24 {
+        return Event24._add(target, eventType, null, callback);
+    }
+
+    private static _add(target:any|any[], eventType:string|string[], tween:Tween24|null, callback:Function|null):Event24 {
         const event:Event24 = new Event24();
         const eventTypes = Array.isArray(eventType) ? eventType : [eventType];
 
@@ -225,32 +232,32 @@ export class Event24 {
                 if (ClassUtil.isString(target[0])) {
                     for (const query of target) {
                         for (const eventTarget of HTMLUtil.querySelectorAll(query)) {
-                            event._addEventCore(Event24._create(eventTarget, query, type, tween));
+                            event._addEventCore(Event24._create(eventTarget, query, type, tween, callback));
                         }
                     }
                 }
                 else {
                     for (const eventTarget of target) {
-                        event._addEventCore(Event24._create(eventTarget, null, type, tween));
+                        event._addEventCore(Event24._create(eventTarget, null, type, tween, callback));
                     }
                 }
             }
             else {
-                event._addEventCore(Event24._create(target, null, type, tween));
+                event._addEventCore(Event24._create(target, null, type, tween, callback));
             }
         }
 
         return event;
     }
 
-    private static _create(target:HTMLElement|any, query:string|null, eventType:string, tween:Tween24):Event24Core {
+    private static _create(target:HTMLElement|any, query:string|null, eventType:string, tween:Tween24|null, callback:Function|null):Event24Core {
 
         let events = Event24._allEvents.get(target);
         if (!events) {
             events = {};
             Event24._allEvents?.set(target, events);
         }
-        const core = new Event24Core(target, query, eventType, tween);
+        const core = new Event24Core(target, query, eventType, tween, callback);
         core.setEventListener();
 
         let cores = events[eventType];

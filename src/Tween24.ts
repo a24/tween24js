@@ -18,7 +18,7 @@ import { Event24 }          from "./Event24";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.9.7";
+    static readonly VERSION:string = "0.9.8";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -92,6 +92,7 @@ export class Tween24 {
     private _inited   :boolean = false;
     private _played   :boolean = false;
     private _paused   :boolean = false;
+    private _skiped   :boolean = false;
     private _eventWaiting       :boolean = false;
     private _firstUpdated       :boolean = false;
     private _isContainerTween   :boolean = false;
@@ -212,6 +213,10 @@ export class Tween24 {
         }
         
         Tween24._playingTweens.push(this);
+        
+        // Skip
+        if (this._root?._skiped || this._parent?._skiped) this._skip();
+        
         this._debugLog("play");
     }
 
@@ -243,6 +248,15 @@ export class Tween24 {
             ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
             this._functionExecute(Tween24Event.PAUSE);
         }
+    }
+
+    skip = () => {
+        this._skip();
+    }
+
+    private _skip() {
+        this._skiped = true;
+        this.__update(0);
     }
 
     /**
@@ -466,6 +480,7 @@ export class Tween24 {
         this._played = false;
         this._inited = false;
         this._jumped = false;
+        this._skiped = false;
         this._firstUpdated = false;
         
         ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this._singleTarget), this);
@@ -505,7 +520,8 @@ export class Tween24 {
     }
 
     private _updateProgress(time:number, startTime:number, nowTime:number): number {
-        if (nowTime < startTime) this._progress = -1;
+        if (this._skiped) this._progress = 1;
+        else if (nowTime < startTime) this._progress = -1;
         else if (time == 0) this._progress = 1;
         else {
             this._progress = (nowTime - startTime) / (time * 1000);

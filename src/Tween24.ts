@@ -18,7 +18,7 @@ import { Event24 }          from "./Event24";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.9.8";
+    static readonly VERSION:string = "0.9.10";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -41,14 +41,16 @@ export class Tween24 {
     static ticker:Ticker24;
     static ease  :Ease24;
 
-    private static _playingTweens:Tween24[];
-    private static _manualPlayingTweens:Tween24[];
+    private static _playingTweens        :Tween24[];
+    private static _manualPlayingTweens  :Tween24[];
     private static _playingTweensByTarget:Map<any, Tween24[]>;
+
+    private static _tweensById     :Map<string, Tween24>;
+    private static _tweensByGroupId:Map<string, Tween24[]>;
 
     private static _defaultEasing  :Function = Ease24._Linear;
     private static _debugMode      :boolean  = false;
     private static _numCreateTween :number   = 0;
-    private static _useWillChange  :boolean  = false;
 
     // Tween param
     private _singleTarget:any      |null = null;
@@ -66,6 +68,7 @@ export class Tween24 {
     private _numLayers    :number      = 0;
     private _serialNumber :number      = 0;
     private _tweenId      :string      = "";
+    private _tweenGroupId :string      = "";
     private _targetString :string      = "";
     private _targetQuery  :string|null = null;
     private _useWillChange:boolean     = false;
@@ -135,9 +138,10 @@ export class Tween24 {
     __beforeTime:number = 0;
 
     constructor() {
-        Tween24.ease ||= new Ease24();
+        Tween24.ease   ||= new Ease24();
         Tween24.ticker ||= new Ticker24();
-        Tween24._playingTweens ||= [];
+
+        Tween24._playingTweens         ||= [];
         Tween24._playingTweensByTarget ||= new Map<any, Tween24[]>();
     }
 
@@ -823,14 +827,6 @@ export class Tween24 {
      */
     debug (flag:boolean = true): Tween24 { this._debugMode = flag; return this; }
 
-    /**
-     * トゥイーンのIDを設定します。
-     * @param {string} id トゥイーンのID
-     * @return {Tween24} Tween24インスタンス
-     * @memberof Tween24
-     */
-    id (id:string): Tween24 { this._tweenId = id; return this; }
-
     private _setPropety(key:string, value:number):Tween24 {
         this.createBasicUpdater();
 
@@ -1418,6 +1414,142 @@ export class Tween24 {
 
     private _commonProcess() {
         this._serialNumber = ++ Tween24._numCreateTween;
+    }
+    
+
+
+    // ------------------------------------------
+    //
+    // Tween control by ID and Group
+    //
+    // ------------------------------------------
+
+    /**
+     * トゥイーンのIDを設定します。
+     * @param {string} id トゥイーンのID
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    id (id:string): Tween24 { return this._setTweenId(id); }
+
+    /**
+     * 指定したIDのトゥイーンの play() を実行します。
+     * @static
+     * @param {string} id トゥイーンのID
+     * @memberof Tween24
+     */
+    static playById = (id:string) => { Tween24._controlTweens(Tween24._getTweensById(id), Tween24Event.PLAY); }
+
+    /**
+     * 指定したIDのトゥイーンの manualPlay() を実行します。
+     * @static
+     * @param {string} id トゥイーンのID
+     * @memberof Tween24
+     */
+    static manualPlayById = (id:string) => { Tween24._controlTweens(Tween24._getTweensById(id), Tween24Event.MANUAL_PLAY); }
+    
+    /**
+     * 指定したIDのトゥイーンの pause() を実行します。
+     * @static
+     * @param {string} id トゥイーンのID
+     * @memberof Tween24
+     */
+    static pauseById = (id:string) => { Tween24._controlTweens(Tween24._getTweensById(id), Tween24Event.PAUSE); }
+    
+    /**
+     * 指定したIDのトゥイーンの skip() を実行します。
+     * @static
+     * @param {string} id トゥイーンのID
+     * @memberof Tween24
+     */
+    static skipById = (id:string) => { Tween24._controlTweens(Tween24._getTweensById(id), Tween24Event.SKIP); }
+    
+    /**
+     * 指定したIDのトゥイーンの stop() を実行します。
+     * @static
+     * @param {string} id トゥイーンのID
+     * @memberof Tween24
+     */
+    static stopById = (id:string) => { Tween24._controlTweens(Tween24._getTweensById(id), Tween24Event.STOP); }
+    
+    /**
+     * トゥイーンのグループIDを設定します。
+     * @param {string} groupId トゥイーンのグループID
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    groupId (groupId:string): Tween24 { return this._setTweenGroupId(groupId); }
+
+    /**
+     * 指定したグループIDのトゥイーンの play() を実行します。
+     * @static
+     * @param {string} groupId トゥイーンのID
+     * @memberof Tween24
+     */
+    static playByGroupId = (groupId:string) => { Tween24._controlTweens(Tween24._getTweensByGroupId(groupId), Tween24Event.PLAY); }
+
+    /**
+     * 指定したグループIDのトゥイーンの manualPlay() を実行します。
+     * @static
+     * @param {string} groupId トゥイーンのID
+     * @memberof Tween24
+     */
+    static manualPlayByGroupId = (groupId:string) => { Tween24._controlTweens(Tween24._getTweensByGroupId(groupId), Tween24Event.MANUAL_PLAY); }
+
+    /**
+     * 指定したグループIDのトゥイーンの pause() を実行します。
+     * @static
+     * @param {string} groupId トゥイーンのID
+     * @memberof Tween24
+     */
+    static pauseByGroupId = (groupId:string) => { Tween24._controlTweens(Tween24._getTweensByGroupId(groupId), Tween24Event.PAUSE); }
+
+    /**
+     * 指定したグループIDのトゥイーンの skip() を実行します。
+     * @static
+     * @param {string} groupId トゥイーンのID
+     * @memberof Tween24
+     */
+    static skipByGroupId = (groupId:string) => { Tween24._controlTweens(Tween24._getTweensByGroupId(groupId), Tween24Event.SKIP); }
+
+    /**
+     * 指定したグループIDのトゥイーンの stop() を実行します。
+     * @static
+     * @param {string} groupId トゥイーンのID
+     * @memberof Tween24
+     */
+    static stopByGroupId = (groupId:string) => { Tween24._controlTweens(Tween24._getTweensByGroupId(groupId), Tween24Event.STOP); }
+
+    private _setTweenId(id:string): Tween24 {
+        this._tweenId = id;
+        Tween24._tweensById ||= new Map<string, Tween24>();
+        Tween24._tweensById.set(id, this);
+        return this;
+    }
+
+    private _setTweenGroupId(groupId:string): Tween24 {
+        this._tweenGroupId = groupId;
+        Tween24._tweensByGroupId ||= new Map<string, Tween24[]>();
+        const groupTweens = Tween24._tweensByGroupId.get(groupId) || [];
+        groupTweens.push(this);
+        Tween24._tweensByGroupId.set(groupId, groupTweens);
+        return this;
+    }
+
+    private static _getTweensById(id:string): Tween24[]|undefined { const tween = Tween24._tweensById?.get(id); return tween ? [tween] : undefined; }
+
+    private static _getTweensByGroupId(groupId:string): Tween24[]|undefined { return Tween24._tweensByGroupId?.get(groupId); }
+
+    private static _controlTweens(tweens:Tween24[]|undefined, event:string) {
+        if (tweens) {
+            switch (event) {
+                case Tween24Event.PLAY        : tweens.forEach((tween) => { tween.play();       }); break;
+                case Tween24Event.MANUAL_PLAY : tweens.forEach((tween) => { tween.manualPlay(); }); break;
+                case Tween24Event.PAUSE       : tweens.forEach((tween) => { tween.pause();      }); break;
+                case Tween24Event.SKIP        : tweens.forEach((tween) => { tween.skip();       }); break;
+                case Tween24Event.STOP        : tweens.forEach((tween) => { tween.stop();       }); break;
+            }
+        }
     }
 
 

@@ -253,7 +253,10 @@ export class Tween24 {
             this._functionExecute(Tween24Event.PAUSE);
         }
     }
-
+    /**
+     * トゥイーンを終点までスキップします。
+     * @memberof Tween24
+     */
     skip = () => {
         this._skip();
     }
@@ -806,6 +809,12 @@ export class Tween24 {
      */
     willChange(use:boolean = true): Tween24 { this._useWillChange = use; return this; }
 
+    /**
+     * 子トゥイーンの完了トリガーに設定します。
+     * 設定したトゥイーンが完了したら、親トゥイーンが次のトゥイーンへ移行します。
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
     jump():Tween24  { this._isTrigger = true; return this; }
 
     /**
@@ -1118,10 +1127,28 @@ export class Tween24 {
         return new Tween24()._createActionTween(Tween24._TYPE_FUNC)._setFunctionExecute(Tween24._TYPE_FUNC, func, func, args);
     }
 
+    /**
+     * イベントを受け取るまで、待機します。
+     * @static
+     * @param {*} target イベントを受け取る対象
+     * @param {string} type 受け取るイベントタイプ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
     static waitEvent(target:any, type:string): Tween24 {
         return new Tween24()._createActionTween(Tween24._TYPE_WAIT_EVENT)._setWaitEvent(target, type);
     }
 
+    /**
+     * 指定した関数を実行し、イベントを受け取るまで待機します。
+     * @static
+     * @param {*} target イベントを受け取る対象
+     * @param {string} type 受け取るイベントタイプ
+     * @param {Function} func 実行する関数
+     * @param {...any[]} args 引数（省略可）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
     static waitEventAndFunc(target:any, type:string, func:Function, ...args:any[]): Tween24 {
         return new Tween24()._createActionTween(Tween24._TYPE_WAIT_EVENT_AND_FUNC)._setWaitEvent(target, type)._setFunctionExecute(Tween24._TYPE_WAIT_EVENT_AND_FUNC, func, func, args);
     }
@@ -1294,6 +1321,15 @@ export class Tween24 {
         return loopTween;
     }
 
+    /**
+     * フラグに応じて再生するトゥイーンを設定します。
+     * @static
+     * @param {boolean} flag 判定フラグ
+     * @param {Tween24} trueTween フラグが true の時に再生するトゥイーン
+     * @param {(Tween24|null)} [falseTween=null] フラグが false の時に再生するトゥイーン
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
     static ifCase(flag:boolean, trueTween:Tween24, falseTween:Tween24|null = null):Tween24 {
         const tween = new Tween24()._createContainerTween(Tween24._TYPE_IF_CASE, flag ? [trueTween]: falseTween ? [falseTween]: []);
         tween._trueTween  = trueTween;
@@ -1301,6 +1337,15 @@ export class Tween24 {
         return tween;
     }
 
+    /**
+     * トゥイーン実行時に boolean 値を返す関数を実行し、再生するトゥイーンを設定します。
+     * @static
+     * @param {()=>boolean} func boolean値を返す関数
+     * @param {Tween24} trueTween フラグが true の時に再生するトゥイーン
+     * @param {(Tween24|null)} [falseTween=null] フラグが false の時に再生するトゥイーン
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
     static ifCaseByFunc(func:()=>boolean, trueTween:Tween24, falseTween:Tween24|null = null):Tween24 {
         const childTween  = falseTween ? [trueTween, falseTween] : [trueTween]; 
         const tween       = new Tween24()._createContainerTween(Tween24._TYPE_IF_CASE_BY_FUNC, childTween);

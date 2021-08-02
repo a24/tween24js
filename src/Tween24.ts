@@ -18,7 +18,7 @@ import { Event24 }          from "./Event24";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.9.10";
+    static readonly VERSION:string = "0.9.11";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -36,7 +36,6 @@ export class Tween24 {
     private static readonly _TYPE_FUNC               :string = "func";
     private static readonly _TYPE_IF_CASE            :string = "if_case";
     private static readonly _TYPE_IF_CASE_BY_FUNC    :string = "if_case_by_func";
-    private static readonly _TYPE_JUMP               :string = "jump";
 
     static ticker:Ticker24;
     static ease  :Ease24;
@@ -112,7 +111,6 @@ export class Tween24 {
 
     private _numChildren        :number  = 0;
     private _numCompleteChildren:number  = 0;
-    private _jumped             :boolean = false;
 
     // Lag
     private _lagTime     :number = NaN;
@@ -132,6 +130,11 @@ export class Tween24 {
     // Dispatch event
     private _dispatchEventTarget:any;
     private _dispatchEventType  :string|null = null;
+
+    // Trigger & Jump
+    private _triggered :boolean = false;
+    private _jumped    :boolean = false;
+    private _jumpProg  :number = NaN;
     
     // Tween FPS
     __fps:number = 0;
@@ -430,6 +433,12 @@ export class Tween24 {
                 this._functionExecute(Tween24Event.UPDATE);
             }
 
+            // Jump
+            if (!Number.isNaN(this._jumpProg) && !this._jumped && this._progress >= this._jumpProg) {
+                this._jumped = true;
+                this._parent?._playNextTween(this);
+            }
+
             // Complete
             if (this._progress >= 1) {
                 // Wait event
@@ -488,6 +497,7 @@ export class Tween24 {
         this._inited = false;
         this._jumped = false;
         this._skiped = false;
+        this._triggered = false;
         this._firstUpdated = false;
         
         ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this._singleTarget), this);
@@ -500,10 +510,10 @@ export class Tween24 {
         // this._debugLog("completeChildTween");
         this._numCompleteChildren ++;
         
-        if (!this._jumped && tween._isTrigger) {
+        if (!this._triggered && tween._isTrigger) {
             if (this._parent) {
-                this._jumped = true;
-                this._parent._jumpToNextTween(this);
+                this._triggered = true;
+                this._parent._playNextTween(this);
             }
         }
 
@@ -512,14 +522,14 @@ export class Tween24 {
         }
         else if (this._playingChildTween) {
             ArrayUtil.removeItemFromArray(this._playingChildTween, tween);
-            if (!tween._jumped) {
-                this._jumpToNextTween(tween);
+            if (!tween._triggered && !tween._jumped) {
+                this._playNextTween(tween);
             }
         }
     }
 
-    private _jumpToNextTween(tween:Tween24) {
-        var next:Tween24|null = tween._next;
+    private _playNextTween(childTween:Tween24) {
+        var next:Tween24|null = childTween._next;
         if (this._playingChildTween && next) {
             this._playingChildTween.push(next);
             next._play();
@@ -815,7 +825,15 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    jump():Tween24  { this._isTrigger = true; return this; }
+    trigger():Tween24  { this._isTrigger = true; return this; }
+
+    /**
+     * トゥイーンの途中で、次のトゥイーンへ移行します。
+     * @param {number} progress 移行させる進捗率
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    jump(progress:number):Tween24  { this._jumpProg = progress; return this; }
 
     /**
      * トゥイーン毎のFPS（1秒間の更新回数）を設定します。
@@ -1109,10 +1127,6 @@ export class Tween24 {
      */
     static wait(time: number): Tween24 {
         return new Tween24()._createChildTween(Tween24._TYPE_WAIT, null, time, null, null);
-    }
-
-    static jump(time: number): Tween24 {
-        return new Tween24()._createChildTween(Tween24._TYPE_JUMP, null, time, null, null).jump();
     }
 
     /**
@@ -1688,7 +1702,6 @@ export class Tween24 {
                 }
                 break;
             case Tween24._TYPE_WAIT :
-            case Tween24._TYPE_JUMP :
                 copy._createChildTween(this._type, target, this._time, this._easing, null);
                 break;
             case Tween24._TYPE_SERIAL   :
@@ -1762,7 +1775,6 @@ export class Tween24 {
         switch (this._type) {
             case Tween24._TYPE_TWEEN :
             case Tween24._TYPE_WAIT :
-            case Tween24._TYPE_JUMP :
             case Tween24._TYPE_TWEEN_TEXT :
                 param += " time:" + this._time + " "; break;
             case Tween24._TYPE_TWEEN_VELOCITY :

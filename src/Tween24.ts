@@ -266,6 +266,11 @@ export class Tween24 {
 
     private _skip() {
         this._skiped = true;
+        if (this._playingChildTween) {
+            for (const tween of this._playingChildTween.concat()) {
+                tween._skip();
+            }
+        }
         this.__update(0);
     }
 

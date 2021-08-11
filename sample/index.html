@@ -41,6 +41,12 @@
         section p {
             font-size: 80px;
         }
+        .no-flex {
+            display: block;
+        }
+        .pointer {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -391,6 +397,228 @@
                 Tween24.wait(1) // 1秒待機
             )
         ).play();
+    </script>
+
+    <!----------- If Case Tween ----------->
+
+    <section id="ifCaseByFunc">
+        <div id="if-case-box1" class="if-case-box"></div>
+        <div id="if-case-box2" class="if-case-box"></div>
+    </section>
+    <p>- If Case Tween -</p>
+
+    <script>
+        // count変数を定義
+        const counter = {
+            count: 0
+        };
+
+        // boolean値を返す関数
+        counter.check = function() {
+            // 呼び出し毎に count を増やし、count が奇数の時が true、偶数の時は false を返す
+            counter.count ++;
+            return counter.count % 2 == 1;
+        };
+
+        // 繰り返しトゥイーン
+        Tween24.loop(0,
+            Tween24.serial(
+                // boolean値を返す関数を実行
+                Tween24.ifCaseByFunc(counter.check,
+                    // true の場合、上のboxをトゥイーンさせる
+                    Tween24.tween("#if-case-box1", 1, Ease24._6_ExpoInOut).x(860),
+                    // false の場合、下のboxをトゥイーンさせる
+                    Tween24.tween("#if-case-box2", 1, Ease24._6_ExpoInOut).x(860)
+                ),
+                // 両方のboxの座標をリセット
+                Tween24.prop(".if-case-box").x(0)
+            )
+        ).play();
+    </script>
+
+    <!----------- Wait Event Tween ----------->
+
+    <section id="waitEvent">
+        <div id="wait-event-box" class="pointer"></div>
+    </section>
+    <p>- Wait Event Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.prop("#wait-event-box").x(0).opacity(0),
+                Tween24.serial(
+                    // 画面中央にフェードイン
+                    Tween24.tween("#wait-event-box", 1, Ease24._6_ExpoInOut).x(430).opacity(1),
+                    // クリックされるまで待機
+                    Tween24.waitEvent("#wait-event-box", Event24.CLICK),
+                    // 画面右にフェードアウト
+                    Tween24.tween("#wait-event-box", 1, Ease24._6_ExpoInOut).x(860).opacity(0)
+                )
+            )
+        ).play();
+    </script>
+
+    <!----------- Not Jump Tween ----------->
+
+    <section id="not-jump" class="no-flex">
+        <div class="not-jump-box"></div>
+    </section>
+    <p>- Not Jump Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                // 初期座標の設定
+                Tween24.prop(".not-jump-box").xy(50, 50),
+                // 右、下、左、上へ順番にトゥイーンします
+                Tween24.tween(".not-jump-box", 1, Ease24._6_ExpoInOut).x(810),
+                Tween24.tween(".not-jump-box", 1, Ease24._6_ExpoInOut).y(330),
+                Tween24.tween(".not-jump-box", 1, Ease24._6_ExpoInOut).x(50),
+                Tween24.tween(".not-jump-box", 1, Ease24._6_ExpoInOut).y(50),
+                // ループ対応処理
+                Tween24.wait(1) // 1秒待機
+            )
+        ).play();
+    </script>
+
+    <!----------- Jump Tween ----------->
+
+    <section id="jump" class="no-flex">
+        <div class="jump-box"></div>
+    </section>
+    <p>- Jump Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                // 初期座標の設定
+                Tween24.prop(".jump-box").xy(50, 50),
+                // 進捗率0.5のタイミングで次へ
+                Tween24.tween(".jump-box", 1, Ease24._6_ExpoInOut).x(810).jump(0.5),
+                // 進捗率0.5のタイミングで次へ
+                Tween24.tween(".jump-box", 1, Ease24._6_ExpoInOut).y(330).jump(0.5),
+                // 進捗率0.5のタイミングで次へ
+                Tween24.tween(".jump-box", 1, Ease24._6_ExpoInOut).x(50).jump(0.5),
+                Tween24.tween(".jump-box", 1, Ease24._6_ExpoInOut).y(50),
+                // ループ対応処理
+                Tween24.wait(1) // 1秒待機
+            )
+        ).play();
+    </script>
+
+    <!----------- Trigger Tween ----------->
+
+    <section id="trigger">
+        <div id="trigger-box1" class="trigger-box"></div>
+        <div id="trigger-box2" class="trigger-box"></div>
+        <div id="trigger-box3" class="trigger-box"></div>
+    </section>
+    <p>- Trigger Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.prop(".trigger-box").x(0),
+                // 1つずつ順番に右端へトゥイーンします
+                Tween24.serial(
+                    Tween24.tween("#trigger-box1", 1, Ease24._6_ExpoInOut).x(860),
+                    // このトゥイーンが完了したら、親のserialトゥイーンを次に進めます
+                    Tween24.tween("#trigger-box2", 1, Ease24._6_ExpoInOut).x(860).trigger(),
+                    Tween24.tween("#trigger-box3", 1, Ease24._6_ExpoInOut).x(860)
+                ),
+                // 1つずつ順番に左端へトゥイーンします
+                Tween24.serial(
+                    Tween24.tween("#trigger-box1", 1, Ease24._6_ExpoInOut).x(0),
+                    Tween24.tween("#trigger-box2", 1, Ease24._6_ExpoInOut).x(0),
+                    Tween24.tween("#trigger-box3", 1, Ease24._6_ExpoInOut).x(0)
+                ),
+                // ループ対応処理
+                Tween24.wait(1) // 1秒待機
+            )
+        ).play();
+    </script>
+
+    <!----------- Tween Skip ----------->
+
+    <section id="skip" class="lag">
+        <div class="skip-box"></div>
+        <div class="skip-box"></div>
+        <div class="skip-box"></div>
+        <div class="skip-box"></div>
+        <div class="skip-box"></div>
+        <div class="skip-box"></div>
+        <div class="skip-box"></div>
+        <div class="skip-box"></div>
+        <div class="skip-box"></div>
+        <div class="skip-box"></div>
+    </section>
+    <p>- Tween Skip -</p>
+
+    <script>
+        const tween = Tween24.serial(
+            // ループ用。座標をリセット
+            Tween24.prop(".skip-box").x(0),
+            // 0.1秒の遅延をかけながら、X座標930にトゥイーンします
+            Tween24.lag(0.1,
+                Tween24.tween(".skip-box", 1, Ease24._6_ExpoInOut).x(930)
+            )
+        );
+        tween.play();
+
+        Tween24.loop(0,
+            Tween24.serial(
+                // 1秒後に、トゥイーンをスキップさせる
+                Tween24.wait(1),
+                Tween24.func(tween.skip),
+                // さらに1秒後に、トゥイーンを再度再生する
+                Tween24.wait(1),
+                Tween24.func(tween.play)
+            )
+        ).play();
+    </script>
+
+    <!----------- Manual Tween ----------->
+
+    <section id="manualPlay">
+        <div class="manual-box"></div>
+    </section>
+    <p>- Manual Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                // 1秒かけてX座標860にトゥイーンします
+                Tween24.tween(".manual-box", 1, Ease24._6_ExpoInOut).x(860),
+                // 1秒かけてX座標0にトゥイーンします
+                Tween24.tween(".manual-box", 1, Ease24._6_ExpoInOut).x(0)
+            )
+        ).manualPlay(); // マニュアルモードで再生します
+
+        // 0.1秒毎に手動アップデートを実行します
+        setInterval(Tween24.manualAllUpdate, 100);
+    </script>
+
+    <!----------- Tween Controlled by ID ----------->
+
+    <section id="id">
+        <div class="id-box"></div>
+    </section>
+    <p>- Tween Controlled by ID -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                // 1秒かけてX座標860にトゥイーンします
+                Tween24.tween(".id-box", 1, Ease24._6_ExpoInOut).x(860),
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop(".id-box").x(0)
+            )
+        ).id("tween-001"); // ID:tween-001 を設定します
+
+        // ID:tween-001 のトゥイーンを再生します
+        Tween24.playById("tween-001");
     </script>
 
 </body>

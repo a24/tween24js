@@ -3,14 +3,13 @@ export declare class Event24Core {
     private _target;
     private _playEventType;
     private _stopEventType;
-    private _playHandler;
-    private _stopHandler;
     private _tween;
-    constructor(target: any, query: string | null, playEventType: string, tween: Tween24);
+    private _callback;
+    constructor(target: any, query: string | null, playEventType: string, tween: Tween24 | null, callback: Function | null);
     setEventListener(): void;
     removeEventListener(): void;
     addStopEvent(stopEventType: string | string[]): void;
     willChange(use: boolean): this;
-    private _play;
-    private _stop;
+    private _playHandler;
+    private _stopHandler;
 }

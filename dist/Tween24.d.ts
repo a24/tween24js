@@ -9,19 +9,25 @@ export declare class Tween24 {
     private static readonly _TYPE_PROP;
     private static readonly _TYPE_PROP_TEXT;
     private static readonly _TYPE_WAIT;
+    private static readonly _TYPE_WAIT_EVENT;
+    private static readonly _TYPE_WAIT_EVENT_AND_FUNC;
     private static readonly _TYPE_SERIAL;
     private static readonly _TYPE_PARALLEL;
     private static readonly _TYPE_LAG;
     private static readonly _TYPE_LOOP;
     private static readonly _TYPE_FUNC;
+    private static readonly _TYPE_IF_CASE;
+    private static readonly _TYPE_IF_CASE_BY_FUNC;
     static ticker: Ticker24;
     static ease: Ease24;
     private static _playingTweens;
+    private static _manualPlayingTweens;
     private static _playingTweensByTarget;
+    private static _tweensById;
+    private static _tweensByGroupId;
     private static _defaultEasing;
     private static _debugMode;
     private static _numCreateTween;
-    private static _useWillChange;
     private _singleTarget;
     private _multiTarget;
     private _easing;
@@ -35,6 +41,7 @@ export declare class Tween24 {
     private _numLayers;
     private _serialNumber;
     private _tweenId;
+    private _tweenGroupId;
     private _targetString;
     private _targetQuery;
     private _useWillChange;
@@ -50,9 +57,13 @@ export declare class Tween24 {
     private _next;
     private _isDOM;
     private _isRoot;
+    private _isManual;
+    private _isTrigger;
     private _inited;
     private _played;
     private _paused;
+    private _skiped;
+    private _eventWaiting;
     private _firstUpdated;
     private _isContainerTween;
     private _createdBasicUpdater;
@@ -69,21 +80,57 @@ export declare class Tween24 {
     private _lagEasing;
     private _numLoops;
     private _currentLoops;
+    private _ifFunc;
+    private _trueTween;
+    private _falseTween;
+    private _dispatchEventTarget;
+    private _dispatchEventType;
+    private _triggered;
+    private _jumped;
+    private _jumpProg;
     __fps: number;
     __beforeTime: number;
     constructor();
+    /**
+     * トゥイーンを再生します。
+     * @memberof Tween24
+     */
     play: () => void;
+    /**
+     * トゥイーンを手動アップデート式で再生します。
+     * 関数 manualUpdate() を実行すると更新されます。
+     * @memberof Tween24
+     */
+    manualPlay: () => void;
+    private _commonRootPlay;
     private _play;
     private _resume;
+    /**
+     * トゥイーンを一時停止します。
+     * @memberof Tween24
+     */
     pause: () => void;
+    /**
+     * トゥイーンを終点までスキップします。
+     * @memberof Tween24
+     */
+    skip: () => void;
+    private _skip;
+    /**
+     * トゥイーンを停止します。
+     * @memberof Tween24
+     */
     stop: () => void;
     private _stop;
     private _initParam;
     private _overwrite;
-    _update(nowTime: number): void;
+    private _setIfCaseTween;
+    manualUpdate: () => void;
+    __update(nowTime: number): void;
     private _complete;
     private _tweenStop;
     private _completeChildTween;
+    private _playNextTween;
     private _updateProgress;
     /**
      * 目標とするX座標を設定します。
@@ -321,6 +368,20 @@ export declare class Tween24 {
      */
     willChange(use?: boolean): Tween24;
     /**
+     * 子トゥイーンの完了トリガーに設定します。
+     * 設定したトゥイーンが完了したら、親トゥイーンが次のトゥイーンへ移行します。
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    trigger(): Tween24;
+    /**
+     * トゥイーンの途中で、次のトゥイーンへ移行します。
+     * @param {number} progress 移行させる進捗率
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    jump(progress: number): Tween24;
+    /**
      * トゥイーン毎のFPS（1秒間の更新回数）を設定します。
      * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
      * （※ 子以下のトゥイーンには設定できません。）
@@ -337,13 +398,6 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     debug(flag?: boolean): Tween24;
-    /**
-     * トゥイーンのIDを設定します。
-     * @param {string} id トゥイーンのID
-     * @return {Tween24} Tween24インスタンス
-     * @memberof Tween24
-     */
-    id(id: string): Tween24;
     private _setPropety;
     private _setPropetyStr;
     private _setStyle;
@@ -506,6 +560,27 @@ export declare class Tween24 {
      */
     static func(func: Function, ...args: any[]): Tween24;
     /**
+     * イベントを受け取るまで、待機します。
+     * @static
+     * @param {*} target イベントを受け取る対象
+     * @param {string} type 受け取るイベントタイプ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static waitEvent(target: any, type: string): Tween24;
+    /**
+     * 指定した関数を実行し、イベントを受け取るまで待機します。
+     * @static
+     * @param {*} target イベントを受け取る対象
+     * @param {string} type 受け取るイベントタイプ
+     * @param {Function} func 実行する関数
+     * @param {...any[]} args 引数（省略可）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static waitEventAndFunc(target: any, type: string, func: Function, ...args: any[]): Tween24;
+    private _setWaitEvent;
+    /**
      * console.log() を実行します。
      * @static
      * @param {...any[]} message コンソールに出力する内容
@@ -598,10 +673,119 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     static loop(numLoops: number, tween: Tween24): Tween24;
+    /**
+     * フラグに応じて再生するトゥイーンを設定します。
+     * @static
+     * @param {boolean} flag 判定フラグ
+     * @param {Tween24} trueTween フラグが true の時に再生するトゥイーン
+     * @param {(Tween24|null)} [falseTween=null] フラグが false の時に再生するトゥイーン
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static ifCase(flag: boolean, trueTween: Tween24, falseTween?: Tween24 | null): Tween24;
+    /**
+     * トゥイーン実行時に boolean 値を返す関数を実行し、再生するトゥイーンを設定します。
+     * @static
+     * @param {()=>boolean} func boolean値を返す関数
+     * @param {Tween24} trueTween フラグが true の時に再生するトゥイーン
+     * @param {(Tween24|null)} [falseTween=null] フラグが false の時に再生するトゥイーン
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    static ifCaseByFunc(func: () => boolean, trueTween: Tween24, falseTween?: Tween24 | null): Tween24;
     private _createChildTween;
     private _createContainerTween;
     private _createActionTween;
     private _commonProcess;
+    /**
+     * トゥイーンのIDを設定します。
+     * @param {string} id トゥイーンのID
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    id(id: string): Tween24;
+    /**
+     * 指定したIDのトゥイーンの play() を実行します。
+     * @static
+     * @param {string} id トゥイーンのID
+     * @memberof Tween24
+     */
+    static playById: (id: string) => void;
+    /**
+     * 指定したIDのトゥイーンの manualPlay() を実行します。
+     * @static
+     * @param {string} id トゥイーンのID
+     * @memberof Tween24
+     */
+    static manualPlayById: (id: string) => void;
+    /**
+     * 指定したIDのトゥイーンの pause() を実行します。
+     * @static
+     * @param {string} id トゥイーンのID
+     * @memberof Tween24
+     */
+    static pauseById: (id: string) => void;
+    /**
+     * 指定したIDのトゥイーンの skip() を実行します。
+     * @static
+     * @param {string} id トゥイーンのID
+     * @memberof Tween24
+     */
+    static skipById: (id: string) => void;
+    /**
+     * 指定したIDのトゥイーンの stop() を実行します。
+     * @static
+     * @param {string} id トゥイーンのID
+     * @memberof Tween24
+     */
+    static stopById: (id: string) => void;
+    /**
+     * トゥイーンのグループIDを設定します。
+     * @param {string} groupId トゥイーンのグループID
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    groupId(groupId: string): Tween24;
+    /**
+     * 指定したグループIDのトゥイーンの play() を実行します。
+     * @static
+     * @param {string} groupId トゥイーンのID
+     * @memberof Tween24
+     */
+    static playByGroupId: (groupId: string) => void;
+    /**
+     * 指定したグループIDのトゥイーンの manualPlay() を実行します。
+     * @static
+     * @param {string} groupId トゥイーンのID
+     * @memberof Tween24
+     */
+    static manualPlayByGroupId: (groupId: string) => void;
+    /**
+     * 指定したグループIDのトゥイーンの pause() を実行します。
+     * @static
+     * @param {string} groupId トゥイーンのID
+     * @memberof Tween24
+     */
+    static pauseByGroupId: (groupId: string) => void;
+    /**
+     * 指定したグループIDのトゥイーンの skip() を実行します。
+     * @static
+     * @param {string} groupId トゥイーンのID
+     * @memberof Tween24
+     */
+    static skipByGroupId: (groupId: string) => void;
+    /**
+     * 指定したグループIDのトゥイーンの stop() を実行します。
+     * @static
+     * @param {string} groupId トゥイーンのID
+     * @memberof Tween24
+     */
+    static stopByGroupId: (groupId: string) => void;
+    private _setTweenId;
+    private _setTweenGroupId;
+    private static _getTweensById;
+    private static _getTweensByGroupId;
+    private static _controlTweens;
     /**
      * トゥイーン全体のFPS（1秒間の更新回数）を設定します。
      * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
@@ -625,6 +809,7 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     static debugMode: (flag: boolean) => void;
+    static manualAllUpdate: () => void;
     __clone(base: any, baseQuery: string | null): Tween24;
     toString(): string;
     private _debugLog;

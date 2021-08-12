@@ -125,6 +125,8 @@ export declare class Event24 {
      * @memberof Event24
      */
     static add(target: any | any[], eventType: string | string[], tween: Tween24): Event24;
+    static __addCallback(target: any | any[], eventType: string | string[], callback: Function): Event24;
+    private static _add;
     private static _create;
     /**
      * 対象に設定されたイベントを解除します。

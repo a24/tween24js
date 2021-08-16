@@ -34,6 +34,15 @@
             text-align: center;
             color: #247570;
         }
+        input {
+            margin: 10px;
+        }
+        label {
+            font-size: 20px;
+            color: #247570;
+            text-align: center;
+            cursor: pointer;
+        }
         section.lag div {
             width: 30px;
             height: 30px;
@@ -401,34 +410,22 @@
 
     <!----------- If Case Tween ----------->
 
-    <section id="ifCaseByFunc">
+    <section id="ifCase">
         <div id="if-case-box1" class="if-case-box"></div>
-        <div id="if-case-box2" class="if-case-box"></div>
+        <label><input type="checkbox" id="rotation">トゥイーンに回転を加える</label>
     </section>
     <p>- If Case Tween -</p>
 
     <script>
-        // count変数を定義
-        const counter = {
-            count: 0
-        };
-
-        // boolean値を返す関数
-        counter.check = function() {
-            // 呼び出し毎に count を増やし、count が奇数の時が true、偶数の時は false を返す
-            counter.count ++;
-            return counter.count % 2 == 1;
-        };
-
         // 繰り返しトゥイーン
         Tween24.loop(0,
             Tween24.serial(
                 // boolean値を返す関数を実行
-                Tween24.ifCaseByFunc(counter.check,
+                Tween24.ifCase(() => { return document.getElementById("rotation").checked; },
                     // true の場合、上のboxをトゥイーンさせる
-                    Tween24.tween("#if-case-box1", 1, Ease24._6_ExpoInOut).x(860),
+                    Tween24.tween("#if-case-box1", 1, Ease24._6_ExpoInOut).x(860).rotation(360),
                     // false の場合、下のboxをトゥイーンさせる
-                    Tween24.tween("#if-case-box2", 1, Ease24._6_ExpoInOut).x(860)
+                    Tween24.tween("#if-case-box1", 1, Ease24._6_ExpoInOut).x(860)
                 ),
                 // 両方のboxの座標をリセット
                 Tween24.prop(".if-case-box").x(0)
@@ -522,16 +519,16 @@
                 Tween24.prop(".trigger-box").x(0),
                 // 1つずつ順番に右端へトゥイーンします
                 Tween24.serial(
-                    Tween24.tween("#trigger-box1", 1, Ease24._6_ExpoInOut).x(860),
+                    Tween24.tween("#trigger-box1", 0.5, Ease24._6_ExpoInOut).x(860),
                     // このトゥイーンが完了したら、親のserialトゥイーンを次に進めます
-                    Tween24.tween("#trigger-box2", 1, Ease24._6_ExpoInOut).x(860).trigger(),
-                    Tween24.tween("#trigger-box3", 1, Ease24._6_ExpoInOut).x(860)
+                    Tween24.tween("#trigger-box2", 0.5, Ease24._6_ExpoInOut).x(860).trigger(),
+                    Tween24.tween("#trigger-box3", 0.5, Ease24._6_ExpoInOut).x(860)
                 ),
                 // 1つずつ順番に左端へトゥイーンします
                 Tween24.serial(
-                    Tween24.tween("#trigger-box1", 1, Ease24._6_ExpoInOut).x(0),
-                    Tween24.tween("#trigger-box2", 1, Ease24._6_ExpoInOut).x(0),
-                    Tween24.tween("#trigger-box3", 1, Ease24._6_ExpoInOut).x(0)
+                    Tween24.tween("#trigger-box1", 0.5, Ease24._6_ExpoInOut).x(0),
+                    Tween24.tween("#trigger-box2", 0.5, Ease24._6_ExpoInOut).x(0),
+                    Tween24.tween("#trigger-box3", 0.5, Ease24._6_ExpoInOut).x(0)
                 ),
                 // ループ対応処理
                 Tween24.wait(1) // 1秒待機
@@ -615,10 +612,10 @@
                 Tween24.wait(1), // 1秒待機
                 Tween24.prop(".id-box").x(0)
             )
-        ).id("tween-001"); // ID:tween-001 を設定します
+        ).id("tw01"); // ID:tw001 を設定します
 
-        // ID:tween-001 のトゥイーンを再生します
-        Tween24.playById("tween-001");
+        // ID:tw001 のトゥイーンを再生します
+        Tween24.playById("tw01");
     </script>
 
 </body>

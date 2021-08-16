@@ -675,14 +675,15 @@ export declare class Tween24 {
     static loop(numLoops: number, tween: Tween24): Tween24;
     /**
      * フラグに応じて再生するトゥイーンを設定します。
+     * フラグにboolean値を渡した場合はトゥイーン作成時に判定し、boolean値を返す関数を渡した場合はトゥイーン実行毎に判定します。
      * @static
-     * @param {boolean} flag 判定フラグ
+     * @param {boolean|(()=>boolean)} flag boolean値か、boolean値を返す関数
      * @param {Tween24} trueTween フラグが true の時に再生するトゥイーン
      * @param {(Tween24|null)} [falseTween=null] フラグが false の時に再生するトゥイーン
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static ifCase(flag: boolean, trueTween: Tween24, falseTween?: Tween24 | null): Tween24;
+    static ifCase(flag: boolean | (() => boolean), trueTween: Tween24, falseTween?: Tween24 | null): Tween24;
     /**
      * トゥイーン実行時に boolean 値を返す関数を実行し、再生するトゥイーンを設定します。
      * @static
@@ -692,7 +693,6 @@ export declare class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static ifCaseByFunc(func: () => boolean, trueTween: Tween24, falseTween?: Tween24 | null): Tween24;
     private _createChildTween;
     private _createContainerTween;
     private _createActionTween;

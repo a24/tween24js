@@ -1342,15 +1342,23 @@ export class Tween24 {
 
     /**
      * フラグに応じて再生するトゥイーンを設定します。
+     * フラグにboolean値を渡した場合はトゥイーン作成時に判定し、boolean値を返す関数を渡した場合はトゥイーン実行毎に判定します。
      * @static
-     * @param {boolean} flag 判定フラグ
+     * @param {boolean|(()=>boolean)} flag boolean値か、boolean値を返す関数
      * @param {Tween24} trueTween フラグが true の時に再生するトゥイーン
      * @param {(Tween24|null)} [falseTween=null] フラグが false の時に再生するトゥイーン
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static ifCase(flag:boolean, trueTween:Tween24, falseTween:Tween24|null = null):Tween24 {
-        const tween = new Tween24()._createContainerTween(Tween24._TYPE_IF_CASE, flag ? [trueTween]: falseTween ? [falseTween]: []);
+    static ifCase(flag:boolean|(()=>boolean), trueTween:Tween24, falseTween:Tween24|null = null):Tween24 {
+        let tween;
+        if (typeof(flag) == "function") {
+            tween = new Tween24()._createContainerTween(Tween24._TYPE_IF_CASE_BY_FUNC, falseTween ? [trueTween, falseTween] : [trueTween]);
+            tween._ifFunc = flag;
+        }
+        else {
+            tween = new Tween24()._createContainerTween(Tween24._TYPE_IF_CASE, flag ? [trueTween]: falseTween ? [falseTween]: []);
+        }
         tween._trueTween  = trueTween;
         tween._falseTween = falseTween;
         return tween;
@@ -1365,14 +1373,14 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    static ifCaseByFunc(func:()=>boolean, trueTween:Tween24, falseTween:Tween24|null = null):Tween24 {
-        const childTween  = falseTween ? [trueTween, falseTween] : [trueTween]; 
-        const tween       = new Tween24()._createContainerTween(Tween24._TYPE_IF_CASE_BY_FUNC, childTween);
-        tween._ifFunc     = func;
-        tween._trueTween  = trueTween;
-        tween._falseTween = falseTween;
-        return tween;
-    }
+    // static ifCaseByFunc(func:()=>boolean, trueTween:Tween24, falseTween:Tween24|null = null):Tween24 {
+    //     const childTween  = falseTween ? [trueTween, falseTween] : [trueTween]; 
+    //     const tween       = new Tween24()._createContainerTween(Tween24._TYPE_IF_CASE_BY_FUNC, childTween);
+    //     tween._ifFunc     = func;
+    //     tween._trueTween  = trueTween;
+    //     tween._falseTween = falseTween;
+    //     return tween;
+    // }
     
     private _createChildTween(type:string, target:any, timeOrVelocity:number, easing:Function|null, params:{[key:string]:number}|null): Tween24 {
         this._type        = type;

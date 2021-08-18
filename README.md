@@ -4,7 +4,9 @@ Tween24.js is animation library that enables fast coding using method chains.
 
 ![Example of Tween24](https://a24.github.io/tween24js/images/tween24-example.gif)
 
-# Release notes
+# Release notes & Demo
+- v0.9.11
+  - https://ics.media/entry/210818/
 - v0.9.3
   - https://ics.media/entry/210622/
 - v0.7.6
@@ -137,48 +139,53 @@ function finish() {
 ```
 
 # Property method
-- x(...)
-- y(...)
-- xy(...)
-- scaleX(...)
-- scaleY(...)
-- scaleXY(...)
-- scale(...)
-- skewX(...)
-- skewY(...)
-- skewXY(...)
-- skew(...)
-- rotation(...)
-- width(...)
-- height(...)
-- top(...)
-- right(...)
-- bottom(...)
-- left(...)
-- color(...)
-- backgroundColor(...)
-- borderWidth(...)
-- borderColor(...)
-- borderRadius(...)
-- opacity(...)
-- alpha(...)
-- delay(...)
-- fps(...)
+- x()
+- y()
+- xy()
+- scaleX()
+- scaleY()
+- scaleXY()
+- scale()
+- skewX()
+- skewY()
+- skewXY()
+- skew()
+- rotation()
+- width()
+- height()
+- top()
+- right()
+- bottom()
+- left()
+- color()
+- backgroundColor()
+- borderWidth()
+- borderColor()
+- borderRadius()
+- opacity()
+- alpha()
+- delay()
+- fps()
 - debug()
-- id(...)
+- id()
 
 ### Add v0.9.3
 - willChange()
 - angle()
 - letterSpacing()
 
+### Add v0.9.11
+- jump()
+- trigger()
+- groupId()
+
 # Tween & Action method
-- Tween24.tween(...)
-- Tween24.prop(...)
-- Tween24.serial(...)
-- Tween24.parallel(...)
-- Tween24.wait(...)
-- Tween24.func(...)
+- Tween24.tween()
+- Tween24.prop()
+- Tween24.serial()
+- Tween24.parallel()
+- Tween24.wait()
+- Tween24.func()
 
 ### Add v0.9.3
 - Tween24.loop()
@@ -192,19 +199,41 @@ function finish() {
 - Tween24.tweenText()
 - Tween24.tweenTextVelocity()
 
+### Add v0.9.11
+- Tween24.ifCase()
+- Tween24.waitEvent()
+- Tween24.waitEventAndFunc()
+
 # Control method
 - tween.play();
 - tween.pause();
 - tween.stop();
 
+### Add v0.9.11
+- tween.skip();
+- tween.manualPlay();
+- tween.manualUpdate();
+
+- Tween24.playById();
+- Tween24.pauseById();
+- Tween24.skipById();
+- Tween24.stopById();
+- Tween24.manualPlayById();
+
+- Tween24.playByGroupId();
+- Tween24.pauseByGroupId();
+- Tween24.skipByGroupId();
+- Tween24.stopByGroupId();
+- Tween24.manualPlayByGroupId();
+
 # Callback
-- tween.onPlay(...);
-- tween.onInit(...);
-- tween.onUpdate(...);
-- tween.onPause(...);
-- tween.onResume(...);
-- tween.onStop(...);
-- tween.onComplete(...);
+- tween.onPlay()
+- tween.onInit()
+- tween.onUpdate()
+- tween.onPause()
+- tween.onResume()
+- tween.onStop()
+- tween.onComplete()
 
 # Easing
 - Ease24._Linear
@@ -223,5 +252,5 @@ function finish() {
 - Ease24._Blend
 
 # Gobal setting
-- Tween24.setDefaultEasing(...);
-- Tween24.setFPS(...);
+- Tween24.setDefaultEasing();
+- Tween24.setFPS();

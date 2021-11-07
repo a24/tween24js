@@ -84,6 +84,20 @@ export class Matrix {
         return `matrix(${this.a}, ${this.b}, ${this.c}, ${this.d}, ${this.tx}, ${this.ty})`
     }
 
+    getProp(key:string):number {
+        let value:number = 0;
+        switch (key) {
+            case "x"       : value = this.x;        break;
+            case "y"       : value = this.y;        break;
+            case "scaleX"  : value = this.scaleX;   break;
+            case "scaleY"  : value = this.scaleY;   break;
+            case "skewX"   : value = this.skewX;    break;
+            case "skewY"   : value = this.skewY;    break;
+            case "rotation": value = this.rotation; break;
+        }
+        return value;
+    }
+
     set x(value:number) { this.tx = value; }
     get x(): number { return this.tx; }
 

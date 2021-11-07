@@ -8,7 +8,7 @@ export class StyleUpdater implements Updater {
     static className:string = "StyleUpdater";
 
     static readonly PARAM_REG:RegExp = new RegExp(/^[0-9.]*/);
-    static readonly UNIT_REG :RegExp = new RegExp(/[^0-9.].*/);
+    static readonly UNIT_REG :RegExp = new RegExp(/[^-0-9.].*/);
 
     private _target       :HTMLElement;
     private _query        :string|null;
@@ -37,7 +37,7 @@ export class StyleUpdater implements Updater {
         this._useWillChange = false;
     }
     
-    addPropStr(key:string, value:string) {
+    addPropStr(key:string, value:string, option:string|null = null) {
         const val :RegExpMatchArray|null = String(value).match(StyleUpdater.PARAM_REG);
         const unit:RegExpMatchArray|null = String(value).match(StyleUpdater.UNIT_REG);
         
@@ -52,7 +52,22 @@ export class StyleUpdater implements Updater {
             this._target.style.setProperty(key, original);
             const targetUnit = targetValue.match(StyleUpdater.UNIT_REG);
 
-            this._param[key] = new ParamUpdater(key, parseInt(targetValue));
+            let updater:ParamUpdater;
+            if (option) {
+                updater = new ParamUpdater(key, parseFloat(original));
+                switch (option) {
+                    case ParamUpdater.RELATIVE_AT_SETTING :
+                        updater.set$value(parseFloat(value));
+                        break;
+                    case ParamUpdater.RELATIVE_AT_RUNNING :
+                        updater.set$$value(parseFloat(value));
+                        break;
+                }
+            }
+            else {
+                updater = new ParamUpdater(key, parseFloat(targetValue));
+            }
+            this._param[key] = updater;
             this._unit [key] = targetUnit ? targetUnit[0] : "";
             this._key.push(key);
         }
@@ -83,7 +98,6 @@ export class StyleUpdater implements Updater {
                 
                 this._unit[key] ||= unit && val && val[0].length ? unit[0] : "";
                 (this._param[key] as ParamUpdater).init(Number(val ? val : 0));
-                
             }
         }
         if (this._useWillChange) {

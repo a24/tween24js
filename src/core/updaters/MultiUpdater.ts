@@ -41,15 +41,15 @@ export class MultiUpdater implements Updater {
         return updater;
     }
 
-    addProp(key:string, value:number) {
+    addProp(key:string, value:number, option:string|null = null) {
         for (const updater of this._updaters) {
-            updater.addProp(key, value);
+            updater.addProp(key, value, option);
         }
     }
     
-    addPropStr(key:string, value:string) {
+    addPropStr(key:string, value:string, option:string|null = null) {
         for (const updater of this._updaters) {
-            updater.addPropStr(key, value);
+            updater.addPropStr(key, value, option);
         }
     }
 

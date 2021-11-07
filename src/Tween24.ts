@@ -14,6 +14,7 @@ import { StringUtil }       from "./utils/StringUtil";
 import { Sort24 }           from "./index";
 import { Text24 }           from "./utils/Text24";
 import { Event24 }          from "./Event24";
+import { ParamUpdater } from "./core/updaters/ParamUpdater";
 
 export class Tween24 {
 
@@ -568,6 +569,24 @@ export class Tween24 {
      * @memberof Tween24
      */
     x (value:number|string): Tween24 { return ClassUtil.isNumber(value) ? this._setPropety("x", parseFloat(value as string)) : this._setPropetyStr("x", value as string); }
+
+    /**
+     * 目標とするX座標を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    x$ (value:number): Tween24 { return this._setPropety("x", value, ParamUpdater.RELATIVE_AT_SETTING); }
+
+    /**
+     * 目標とするX座標を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    x$$ (value:number): Tween24 { return this._setPropety("x", value, ParamUpdater.RELATIVE_AT_RUNNING); }
     
     /**
      * 目標とするY座標を設定します。
@@ -578,7 +597,25 @@ export class Tween24 {
      * @memberof Tween24
      */
     y (value:number|string): Tween24 { return ClassUtil.isNumber(value) ? this._setPropety("y", parseFloat(value as string)) : this._setPropetyStr("y", value as string); }
-    
+
+    /**
+     * 目標とするX座標を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    y$ (value:number): Tween24 { return this._set$Propety("y", value); }
+
+    /**
+     * 目標とするX座標を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    y$$ (value:number): Tween24 { return this._set$Propety("y", value); }
+
     /**
      * 目標とするXとY座標を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
@@ -589,7 +626,27 @@ export class Tween24 {
      * @memberof Tween24
      */
     xy (x:number|string, y:number|string): Tween24 { return this.x(x).y(y); }
-    
+
+    /**
+     * 目標とするXとY座標を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} x X座標
+     * @param {number} y Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    xy$ (x:number, y:number): Tween24 { return this.x$(x).y$(y); }
+
+    /**
+     * 目標とするXとY座標を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} x X座標
+     * @param {number} y Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    xy$$ (x:number, y:number): Tween24 { return this.x$$(x).y$$(y); }
+
     /**
      * 目標とする透明度を設定します。
      * 対象が HTMLElement の場合は、CSS:opacity が適用されます。
@@ -600,12 +657,47 @@ export class Tween24 {
     alpha (value:number): Tween24 { return this._isDOM ? this._setStyle("opacity", value) : this._setPropety("alpha", value); }
     
     /**
+     * 目標とする透明度を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:opacity が適用されます。
+     * @param {number} value 透明度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    alpha$ (value:number): Tween24 { return this._isDOM ? this._set$Style("opacity", value) : this._set$Propety("alpha", value); }
+    
+    /**
+     * 目標とする透明度を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:opacity が適用されます。
+     * @param {number} value 透明度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    alpha$$ (value:number): Tween24 { return this._isDOM ? this._set$$Style("opacity", value) : this._set$$Propety("alpha", value); }
+    
+    
+    /**
      * 目標とする透明度を設定します。
      * @param {number} value 透明度
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     opacity (value:number): Tween24 { return this._isDOM ? this._setStyle("opacity", value) : this._setPropety("opacity", value); }
+    
+    /**
+     * 目標とする透明度を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number} value 透明度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    opacity$ (value:number): Tween24 { return this._isDOM ? this._set$Style("opacity", value) : this._set$Propety("opacity", value); }
+    
+    /**
+     * 目標とする透明度を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number} value 透明度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    opacity$$ (value:number): Tween24 { return this._isDOM ? this._set$$Style("opacity", value) : this._set$$Propety("opacity", value); }
 
     /**
      * 目標とする水平スケールを設定します。
@@ -615,6 +707,24 @@ export class Tween24 {
      * @memberof Tween24
      */
     scaleX (value:number): Tween24 { return this._setPropety("scaleX", value); }
+
+    /**
+     * 目標とする水平スケール、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scaleX$ (value:number): Tween24 { return this._set$Propety("scaleX", value); }
+    
+    /**
+     * 目標とする水平スケール、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scaleX$$ (value:number): Tween24 { return this._set$$Propety("scaleX", value); }
     
     /**
      * 目標とする垂直スケールを設定します。
@@ -624,6 +734,24 @@ export class Tween24 {
      * @memberof Tween24
      */
     scaleY (value:number): Tween24 { return this._setPropety("scaleY", value); }
+
+    /**
+     * 目標とする垂直スケールを、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scaleY$ (value:number): Tween24 { return this._set$Propety("scaleY", value); }
+
+     /**
+      * 目標とする垂直スケールを、トゥイーンが実行される直前の値の相対値で設定します。
+      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+      * @param {number} value 垂直方向のスケール
+      * @return {Tween24} Tween24インスタンス
+      * @memberof Tween24
+      */
+    scaleY$$ (value:number): Tween24 { return this._set$$Propety("scaleY", value); }
     
     /**
      * 目標とするスケールを設定します。
@@ -633,6 +761,24 @@ export class Tween24 {
      * @memberof Tween24
      */
     scale (value:number): Tween24 { return this._setPropety("scaleX", value)._setPropety("scaleY", value); }
+    
+    /**
+     * 目標とするスケールを、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平＆垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scale$ (value:number): Tween24 { return this._set$Propety("scaleX", value)._set$Propety("scaleY", value); }
+    
+    /**
+     * 目標とするスケールを、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平＆垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scale$$ (value:number): Tween24 { return this._set$$Propety("scaleX", value)._set$$Propety("scaleY", value); }
     
     /**
      * 目標とする水平・垂直スケールを設定します。
@@ -645,6 +791,26 @@ export class Tween24 {
     scaleXY (scaleX:number, scaleY:number): Tween24 { return this._setPropety("scaleX", scaleX)._setPropety("scaleY", scaleY); }
     
     /**
+     * 目標とする水平・垂直スケールを、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} scaleX 水平方向のスケール
+     * @param {number} scaleY 垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scaleXY$ (scaleX:number, scaleY:number): Tween24 { return this._set$Propety("scaleX", scaleX)._set$Propety("scaleY", scaleY); }
+    
+    /**
+     * 目標とする水平・垂直スケールを、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} scaleX 水平方向のスケール
+     * @param {number} scaleY 垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scaleXY$$ (scaleX:number, scaleY:number): Tween24 { return this._set$$Propety("scaleX", scaleX)._set$$Propety("scaleY", scaleY); }
+    
+    /**
      * 目標とする水平傾斜を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平方向の傾斜
@@ -652,6 +818,24 @@ export class Tween24 {
      * @memberof Tween24
      */
     skewX (value:number): Tween24 { return this._setPropety("skewX", value); }
+    
+    /**
+     * 目標とする水平傾斜を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skewX$ (value:number): Tween24 { return this._set$Propety("skewX", value); }
+    
+    /**
+     * 目標とする水平傾斜を設定、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skewX$$ (value:number): Tween24 { return this._set$$Propety("skewX", value); }
     
     /**
      * 目標とする垂直傾斜を設定します。
@@ -663,6 +847,24 @@ export class Tween24 {
     skewY (value:number): Tween24 { return this._setPropety("skewY", value); }
     
     /**
+     * 目標とする垂直傾斜を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skewY$ (value:number): Tween24 { return this._set$Propety("skewY", value); }
+    
+    /**
+     * 目標とする垂直傾斜を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skewY$$ (value:number): Tween24 { return this._set$$Propety("skewY", value); }
+    
+    /**
      * 目標とする水平＆垂直傾斜を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平＆垂直方向の傾斜
@@ -670,6 +872,24 @@ export class Tween24 {
      * @memberof Tween24
      */
     skew (value:number): Tween24 { return this._setPropety("skewX", value)._setPropety("skewY", value); }
+    
+    /**
+     * 目標とする水平＆垂直傾斜を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平＆垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skew$ (value:number): Tween24 { return this._set$Propety("skewX", value)._set$Propety("skewY", value); }
+    
+    /**
+     * 目標とする水平＆垂直傾斜を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平＆垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skew$$ (value:number): Tween24 { return this._set$$Propety("skewX", value)._set$$Propety("skewY", value); }
     
     /**
      * 目標とする水平・垂直傾斜を設定します。
@@ -682,6 +902,26 @@ export class Tween24 {
     skewXY (skewX:number, skewY:number): Tween24 { return this._setPropety("skewX", skewX)._setPropety("skewY", skewY); }
     
     /**
+     * 目標とする水平・垂直傾斜を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} skewX 水平方向の傾斜
+     * @param {number} skewY 垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skewXY$ (skewX:number, skewY:number): Tween24 { return this._set$Propety("skewX", skewX)._set$Propety("skewY", skewY); }
+    
+    /**
+     * 目標とする水平・垂直傾斜を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} skewX 水平方向の傾斜
+     * @param {number} skewY 垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skewXY$$ (skewX:number, skewY:number): Tween24 { return this._set$$Propety("skewX", skewX)._set$$Propety("skewY", skewY); }
+    
+    /**
      * 目標とする回転角度を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 回転角度
@@ -689,6 +929,24 @@ export class Tween24 {
      * @memberof Tween24
      */
     rotation (value:number): Tween24 { return this._setPropety("rotation", value); }
+    
+    /**
+     * 目標とする回転角度を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 回転角度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    rotation$ (value:number): Tween24 { return this._set$Propety("rotation", value); }
+    
+    /**
+     * 目標とする回転角度を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 回転角度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    rotation$$ (value:number): Tween24 { return this._set$$Propety("rotation", value); }
     
     /**
      * 目標とする角度を設定します。
@@ -699,12 +957,44 @@ export class Tween24 {
     angle (value:number): Tween24 { return this._isDOM ? this._setStyle("rotation", value) : this._setPropety("angle", value); }
     
     /**
+     * 目標とする角度を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number} value 角度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    angle$ (value:number): Tween24 { return this._isDOM ? this._set$Style("rotation", value) : this._set$Propety("angle", value); }
+    
+    /**
+     * 目標とする角度を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number} value 角度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    angle$$ (value:number): Tween24 { return this._isDOM ? this._set$$Style("rotation", value) : this._set$$Propety("angle", value); }
+    
+    /**
      * CSS:top を設定します。
      * @param {number|string} 上からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     top (value:number|string): Tween24 { return this._setStyle("top", StringUtil.addUnit(value)); }
+    
+    /**
+     * CSS:top を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} 上からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    top$ (value:number|string): Tween24 { return this._set$Style("top", StringUtil.addUnit(value)); }
+    
+    /**
+     * CSS:top を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} 上からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    top$$ (value:number|string): Tween24 { return this._set$$Style("top", StringUtil.addUnit(value)); }
     
     /**
      * CSS:right を設定します。
@@ -715,12 +1005,44 @@ export class Tween24 {
     right (value:number|string): Tween24 { return this._setStyle("right", StringUtil.addUnit(value)); }
     
     /**
+     * CSS:right を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} 右からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    right$ (value:number|string): Tween24 { return this._set$Style("right", StringUtil.addUnit(value)); }
+    
+    /**
+     * CSS:right を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} 右からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    right$$ (value:number|string): Tween24 { return this._set$$Style("right", StringUtil.addUnit(value)); }
+    
+    /**
      * CSS:bottom を設定します。
      * @param {number|string} value 下からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     bottom (value:number|string): Tween24 { return this._setStyle("bottom", StringUtil.addUnit(value)); }
+    
+    /**
+     * CSS:bottom を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} value 下からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    bottom$ (value:number|string): Tween24 { return this._set$Style("bottom", StringUtil.addUnit(value)); }
+    
+    /**
+     * CSS:bottom を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} value 下からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    bottom$$ (value:number|string): Tween24 { return this._set$$Style("bottom", StringUtil.addUnit(value)); }
 
     /**
      * CSS:left を設定します。
@@ -731,13 +1053,47 @@ export class Tween24 {
     left (value:number|string): Tween24 { return this._setStyle("left", StringUtil.addUnit(value)); }
 
     /**
+     * CSS:left を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} value 左からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    left$ (value:number|string): Tween24 { return this._set$Style("left", StringUtil.addUnit(value)); }
+
+    /**
+     * CSS:left を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} value 左からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    left$$ (value:number|string): Tween24 { return this._set$$Style("left", StringUtil.addUnit(value)); }
+
+    /**
      * 目標とする幅を設定します。
      * 対象が HTMLElement の場合は、CSS:width が適用されます。
      * @param {number|string} value 要素の幅
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    width (value:number|string): Tween24 { return this._isDOM ? this._setStyle("width", StringUtil.addUnit(value)) : this._setPropety("width", parseInt(value as string)); }
+    width (value:number|string): Tween24 { return this._isDOM ? this._setStyle("width", StringUtil.addUnit(value)) : this._setPropety("width", parseFloat(value as string)); }
+
+    /**
+     * 目標とする幅を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:width が適用されます。
+     * @param {number|string} value 要素の幅
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    width$ (value:number|string): Tween24 { return this._isDOM ? this._set$Style("width", StringUtil.addUnit(value)) : this._set$Propety("width", parseFloat(value as string)); }
+
+    /**
+     * 目標とする幅を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:width が適用されます。
+     * @param {number|string} value 要素の幅
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    width$$ (value:number|string): Tween24 { return this._isDOM ? this._set$$Style("width", StringUtil.addUnit(value)) : this._set$$Propety("width", parseFloat(value as string)); }
 
     /**
      * 目標とする高さを設定します。
@@ -746,7 +1102,25 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    height (value:number|string): Tween24 { return this._isDOM ? this._setStyle("height", StringUtil.addUnit(value)) : this._setPropety("height", parseInt(value as string)); }
+    height (value:number|string): Tween24 { return this._isDOM ? this._setStyle("height", StringUtil.addUnit(value)) : this._setPropety("height", parseFloat(value as string)); }
+
+    /**
+     * 目標とする高さを、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:height が適用されます。
+     * @param {number|string} value 要素の高さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    height$ (value:number|string): Tween24 { return this._isDOM ? this._set$Style("height", StringUtil.addUnit(value)) : this._set$Propety("height", parseFloat(value as string)); }
+
+    /**
+     * 目標とする高さを、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:height が適用されます。
+     * @param {number|string} value 要素の高さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    height$$ (value:number|string): Tween24 { return this._isDOM ? this._set$$Style("height", StringUtil.addUnit(value)) : this._set$$Propety("height", parseFloat(value as string)); }
     
     /**
      * CSS:color を設定します。
@@ -773,6 +1147,22 @@ export class Tween24 {
     borderWidth (value:number|string): Tween24 { return this._setStyle("border-width", StringUtil.addUnit(value)); }
 
     /**
+     * CSS:border-width（枠の太さ）を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} value 枠の太さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    borderWidth$ (value:number|string): Tween24 { return this._set$Style("border-width", StringUtil.addUnit(value)); }
+
+    /**
+     * CSS:border-width（枠の太さ）を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} value 枠の太さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    borderWidth$$ (value:number|string): Tween24 { return this._set$$Style("border-width", StringUtil.addUnit(value)); }
+
+    /**
      * CSS:border-color（枠の色）を設定します。
      * @param {number} colorCode 「#」「rgb()」フォーマットのカラー値
      * @return {Tween24} Tween24インスタンス
@@ -789,12 +1179,44 @@ export class Tween24 {
     borderRadius (value:number|string): Tween24 { return this._setStyle("border-radius", StringUtil.addUnit(value)); }
 
     /**
+     * CSS:border-radius（角丸）を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} value 角丸の値
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    borderRadius$ (value:number|string): Tween24 { return this._set$Style("border-radius", StringUtil.addUnit(value)); }
+
+    /**
+     * CSS:border-radius（角丸）を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} value 角丸の値
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    borderRadius$$ (value:number|string): Tween24 { return this._set$$Style("border-radius", StringUtil.addUnit(value)); }
+
+    /**
      * CSS:letter-spacing（字間）を設定します。
      * @param {number|string} value 字間
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     letterSpacing (value:number|string): Tween24 { return this._setStyle("letter-spacing", StringUtil.addUnit(value)); }
+
+    /**
+     * CSS:letter-spacing（字間）を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} value 字間
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    letterSpacing$ (value:number|string): Tween24 { return this._set$Style("letter-spacing", StringUtil.addUnit(value)); }
+
+    /**
+     * CSS:letter-spacing（字間）を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} value 字間
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    letterSpacing$$ (value:number|string): Tween24 { return this._set$$Style("letter-spacing", StringUtil.addUnit(value)); }
 
     /**
      * トゥイーンの遅延時間を設定します。
@@ -813,6 +1235,26 @@ export class Tween24 {
      * @memberof Tween24
      */
     style (name:string, value: number|string): Tween24 { return this._setStyle(name, value); }
+
+    /**
+     * 目標とするスタイルシートの値を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合にのみ適用されます。
+     * @param {string} name プロパティ名
+     * @param {(number|string)} value 目標の値（数値指定の場合は、基本的にpx単位で計算されます）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    style$ (name:string, value: number|string): Tween24 { return this._set$Style(name, value); }
+
+    /**
+     * 目標とするスタイルシートの値を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合にのみ適用されます。
+     * @param {string} name プロパティ名
+     * @param {(number|string)} value 目標の値（数値指定の場合は、基本的にpx単位で計算されます）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    style$$ (name:string, value: number|string): Tween24 { return this._set$$Style(name, value); }
 
     /**
      * トゥイーン実行時に willChange を有効にするか設定します。
@@ -859,18 +1301,26 @@ export class Tween24 {
      */
     debug (flag:boolean = true): Tween24 { this._debugMode = flag; return this; }
 
-    private _setPropety(key:string, value:number):Tween24 {
+    private _setPropety(key:string, value:number, option:string|null = null):Tween24 {
         this.createBasicUpdater();
 
         if (this._singleTarget) {
-            if      (this._objectUpdater   ) this._objectUpdater   .addProp(key, value);
-            else if (this._transformUpdater) this._transformUpdater.addProp(key, value);
+            if      (this._objectUpdater   ) this._objectUpdater   .addProp(key, value, option);
+            else if (this._transformUpdater) this._transformUpdater.addProp(key, value, option);
         }
         else if (this._multiTarget) {
-            if      (this._objectMultiUpdater   ) this._objectMultiUpdater   .addProp(key, value);
-            else if (this._transformMultiUpdater) this._transformMultiUpdater.addProp(key, value);
+            if      (this._objectMultiUpdater   ) this._objectMultiUpdater   .addProp(key, value, option);
+            else if (this._transformMultiUpdater) this._transformMultiUpdater.addProp(key, value, option);
         }
         return this;
+    }
+
+    private _set$Propety(key:string, value:number):Tween24 {
+        return this._setPropety(key, value, ParamUpdater.RELATIVE_AT_SETTING);
+    }
+
+    private _set$$Propety(key:string, value:number):Tween24 {
+        return this._setPropety(key, value, ParamUpdater.RELATIVE_AT_RUNNING);
     }
 
     private _setPropetyStr(key:string, value:string):Tween24 {
@@ -885,7 +1335,7 @@ export class Tween24 {
         return this;
     }
 
-    private _setStyle(name: string, value: number|string):Tween24 {
+    private _setStyle(name: string, value: number|string, option:string|null = null):Tween24 {
         name = StringUtil.toKebab(name);
 
         if (this._singleTarget) {
@@ -893,16 +1343,25 @@ export class Tween24 {
                 this._styleUpdater = new StyleUpdater(this._singleTarget, this._targetQuery);
                 this._allUpdaters?.push(this._styleUpdater);
             }
-            this._styleUpdater.addPropStr(name, value as string);
+            this._styleUpdater.addPropStr(name, value as string, option);
         }
         else if (this._multiTarget) {
             if (!this._styleMultiUpdater) {
                 this._styleMultiUpdater = new MultiUpdater(this._multiTarget, this._targetQuery).setupByType(StyleUpdater.className);
                 this._allUpdaters?.push(this._styleMultiUpdater);
             }
-            this._styleMultiUpdater.addPropStr(name, value as string);
+            this._styleMultiUpdater.addPropStr(name, value as string, option);
+            console.log(option)
         }
         return this;
+    }
+
+    private _set$Style(name: string, value: number|string):Tween24 {
+        return this._setStyle(name, value, ParamUpdater.RELATIVE_AT_SETTING);
+    }
+
+    private _set$$Style(name: string, value: number|string):Tween24 {
+        return this._setStyle(name, value, ParamUpdater.RELATIVE_AT_RUNNING);
     }
     
     private createBasicUpdater() {
@@ -1436,7 +1895,13 @@ export class Tween24 {
 
         if (params) {
             for (const key in params) {
-                this._setPropety(key, params[key]);
+                // count $ length
+                const key2 = key.replace(/[$]{1,2}$/, "");
+                switch(key.length - key2.length) {
+                    case 0: this._setPropety  (key2, params[key]); break;
+                    case 1: this._set$Propety (key2, params[key]); break;
+                    case 2: this._set$$Propety(key2, params[key]); break;
+                }
             }
         }
 
@@ -1784,7 +2249,7 @@ export class Tween24 {
 
     private getTweenParamString():string {
         let param:string = "";
-        param += this._targetString ? `target:${this._targetString}` : (`id:${this._tweenId || this._serialNumber}`);
+        param += this._targetString ? `target:${this._targetString} ` : (`id:${this._tweenId || this._serialNumber} `);
         switch (this._type) {
             case Tween24._TYPE_TWEEN :
             case Tween24._TYPE_WAIT :

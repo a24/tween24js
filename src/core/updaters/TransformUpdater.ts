@@ -61,7 +61,7 @@ export class TransformUpdater implements Updater {
         this._percentX = null;
         this._percentY = null;
         
-        this._pseudo     = this._query  ? HTMLUtil.getPseudoQuery(this._query) : null;
+        this._pseudo     = this._query ? HTMLUtil.getPseudoQuery(this._query) : null;
         this._tweenQuery = null;
 
         this._useWillChange = true;
@@ -132,15 +132,31 @@ export class TransformUpdater implements Updater {
         this._rotation?.init(this._matrix.rotation);
     }
 
-    addProp(key: string, value: number) {
+    addProp(key:string, value:number, option:string|null = null) {
+        let updater;
+        if (option) {
+            this._matrix.setMatrixByCSSTransform(HTMLUtil.getTransformMatrix(this._target, this._pseudo));
+            updater = new ParamUpdater(key, this._matrix.getProp(key)); 
+            switch (option) {
+                case ParamUpdater.RELATIVE_AT_SETTING :
+                    updater.set$value(value);
+                    break;
+                case ParamUpdater.RELATIVE_AT_RUNNING :
+                    updater.set$$value(value);
+                    break;
+            }
+        }
+        else {
+            updater = new ParamUpdater(key, value); 
+        }
         switch (key) {
-            case "x"       : this._x        = new ParamUpdater(key, value); break;
-            case "y"       : this._y        = new ParamUpdater(key, value); break;
-            case "scaleX"  : this._scaleX   = new ParamUpdater(key, value); break;
-            case "scaleY"  : this._scaleY   = new ParamUpdater(key, value); break;
-            case "skewX"   : this._skewX    = new ParamUpdater(key, value); break;
-            case "skewY"   : this._skewY    = new ParamUpdater(key, value); break;
-            case "rotation": this._rotation = new ParamUpdater(key, value); break;
+            case "x"       : this._x        = updater; break;
+            case "y"       : this._y        = updater; break;
+            case "scaleX"  : this._scaleX   = updater; break;
+            case "scaleY"  : this._scaleY   = updater; break;
+            case "skewX"   : this._skewX    = updater; break;
+            case "skewY"   : this._skewY    = updater; break;
+            case "rotation": this._rotation = updater; break;
         }
     }
     

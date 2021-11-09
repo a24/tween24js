@@ -14,20 +14,19 @@ export class ParamUpdater {
     constructor(key:string, target:number) {
         this._key      = key;
         this._target   = target;
-        this._start    = 0;
-        this._delta    = 0;
-        this._value    = 0;
-        this._$value   = 0;
-        this._$$value  = 0;
+        this._start    = NaN;
+        this._delta    = NaN;
+        this._value    = NaN;
+        this._$value   = NaN;
+        this._$$value  = NaN;
     }
 
     init(start:number) {
-        if (this._$$value) {
+        if (!isNaN(this._$$value)) {
             this._target = start + this._$$value;
         }
-
         this._start  = start;
-        this._delta  = this._target - start + this._$value;
+        this._delta  = this._target - start + (this._$value||0);
         this._value  = this._start;
     }
 
@@ -53,9 +52,9 @@ export class ParamUpdater {
     }
     
     toString():string {
-        if (this._$value) 
+        if (!isNaN(this._$value)) 
             return `$${this._key}:${this._$value}`;
-        else if (this._$$value) 
+        else if (!isNaN(this._$$value)) 
             return `$$${this._key}:${this._$$value}`;
         else 
             return `${this._key}:${this._target}`;

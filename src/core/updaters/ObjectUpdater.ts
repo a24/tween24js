@@ -90,7 +90,7 @@ export class ObjectUpdater implements Updater {
     toString():string {
         let str:string = "";
         for (const key of this._keys)
-            str += key + ":" + this._paramUpdaters[key].target + " ";
+            str += this._paramUpdaters[key].toString() + " ";
         return str.trim();
     }
 

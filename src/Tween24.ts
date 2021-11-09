@@ -1139,6 +1139,81 @@ export class Tween24 {
     backgroundColor (colorCode:string): Tween24 { return this._setStyle("background-color", colorCode); }
 
     /**
+     * CSS:background-position-x（背景X座標）を設定します。
+     * @param {string} x 背景X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPositionX (x:number|string): Tween24 { return this._setStyle("background-position-x", StringUtil.addUnit(x)); }
+
+    /**
+     * CSS:background-position-x（背景X座標）を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {string} x 背景X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPositionX$ (x:number|string): Tween24 { return this._set$Style("background-position-x", StringUtil.addUnit(x)); }
+
+    /**
+     * CSS:background-position-x（背景X座標）を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {string} x 背景X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPositionX$$ (x:number|string): Tween24 { return this._set$$Style("background-position-x", StringUtil.addUnit(x)); }
+
+    /**
+     * CSS:background-position-y（背景Y座標）を設定します。
+     * @param {string} y 背景Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPositionY (y:number|string): Tween24 { return this._setStyle("background-position-y", StringUtil.addUnit(y)); }
+
+    /**
+     * CSS:background-position-y（背景Y座標）を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {string} y 背景Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPositionY$ (y:number|string): Tween24 { return this._set$Style("background-position-y", StringUtil.addUnit(y)); }
+
+    /**
+     * CSS:background-position-y（背景Y座標）を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {string} y 背景Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPositionY$$ (y:number|string): Tween24 { return this._set$$Style("background-position-y", StringUtil.addUnit(y)); }
+
+    /**
+     * CSS:background-position（背景座標）を設定します。
+     * @param {string} x 背景X座標
+     * @param {string} y 背景Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPosition (x:number|string, y:number|string): Tween24 { return this.backgroundPositionX(x).backgroundPositionY(y); }
+
+    /**
+     * CSS:background-position（背景座標）を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {string} x 背景X座標
+     * @param {string} y 背景Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPosition$ (x:number|string, y:number|string): Tween24 { return this.backgroundPositionX$(x).backgroundPositionY$(y); }
+
+    /**
+     * CSS:background-position（背景座標）を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {string} x 背景X座標
+     * @param {string} y 背景Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPosition$$ (x:number|string, y:number|string): Tween24 { return this.backgroundPositionX$$(x).backgroundPositionY$$(y); }
+
+    /**
      * CSS:border-width（枠の太さ）を設定します。
      * @param {number|string} value 枠の太さ
      * @return {Tween24} Tween24インスタンス
@@ -1351,7 +1426,6 @@ export class Tween24 {
                 this._allUpdaters?.push(this._styleMultiUpdater);
             }
             this._styleMultiUpdater.addPropStr(name, value as string, option);
-            console.log(option)
         }
         return this;
     }

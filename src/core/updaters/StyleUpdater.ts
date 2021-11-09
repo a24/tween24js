@@ -162,7 +162,7 @@ export class StyleUpdater implements Updater {
         let str:string = "";
         if (this._param && this._key)
             for (const key of this._key)
-                str += this._param[key].toString() + " ";
+                str += this._param[key].toString() + this._unit[key].toString() + " ";
         for (const key in this._onceParam)
             str += key + ":" + this._onceParam[key].toString() + " ";
         return str.trim();

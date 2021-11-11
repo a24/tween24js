@@ -674,7 +674,6 @@ export class Tween24 {
      */
     alpha$$ (value:number): Tween24 { return this._isDOM ? this._set$$Style("opacity", value) : this._set$$Propety("alpha", value); }
     
-    
     /**
      * 目標とする透明度を設定します。
      * @param {number} value 透明度
@@ -947,6 +946,15 @@ export class Tween24 {
      * @memberof Tween24
      */
     rotation$$ (value:number): Tween24 { return this._set$$Propety("rotation", value); }
+    
+    /**
+     * CSS:Transform の基準点を設定します。
+     * @param {number} x X方向の基準点
+     * @param {number} y Y方向の基準点
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    transformOrigin (x:number|string, y:number|string): Tween24 { return this._setStyle("transform-origin", StringUtil.addUnit(x) + " " + StringUtil.addUnit(y)); }
     
     /**
      * 目標とする角度を設定します。
@@ -1335,11 +1343,20 @@ export class Tween24 {
      * トゥイーン実行時に willChange を有効にするか設定します。
      * 有効にすると強力な最適化をブラウザーが行い、アニメーションが滑らかになります。
      * 対象が HTMLElement の場合にのみ適用されます。
-     * @param {boolean} [use=true]
+     * @param {boolean} [use=true] willChange を有効にするか
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    willChange(use:boolean = true): Tween24 { this._useWillChange = use; return this; }
+    willChange (use:boolean = true): Tween24 { this._useWillChange = use; return this; }
+
+    /**
+     * ポインターイベントの有効・無効を設定します。
+     * true の場合は"auto", false の場合は "none" が設定されます。
+     * @param {boolean} enable ポインターイベントを有効にするか
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    pointerEvents (enable:boolean): Tween24 { return this._setStyle("pointer-events", enable ? "auto" : "none"); }
 
     /**
      * 子トゥイーンの完了トリガーに設定します。

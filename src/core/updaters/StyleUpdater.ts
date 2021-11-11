@@ -45,7 +45,7 @@ export class StyleUpdater implements Updater {
             this._param[key] = new StyleColorUpdater(key, value);
             this._key.push(key);
         }
-        else if (val) {
+        else if (val && val[0]?.length) {
             const original = this._target.style.getPropertyValue(key);
             this._target.style.setProperty(key, value);
             const targetValue = HTMLUtil.getComputedStyle(this._target).getPropertyValue(key);
@@ -162,7 +162,7 @@ export class StyleUpdater implements Updater {
         let str:string = "";
         if (this._param && this._key)
             for (const key of this._key)
-                str += this._param[key].toString() + this._unit[key].toString() + " ";
+                str += this._param[key]?.toString() + (this._unit[key]?.toString() || "") + " ";
         for (const key in this._onceParam)
             str += key + ":" + this._onceParam[key].toString() + " ";
         return str.trim();

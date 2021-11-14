@@ -11,4 +11,5 @@ export interface Updater {
     addPropStr(key:string, value:string, optoin:string|null):void;
     overwrite (updater:Updater|MultiUpdater):void;
     getMaxAbsDelta():number;
+    setBezier(bezierX:number, bezierY:number):void;
 }

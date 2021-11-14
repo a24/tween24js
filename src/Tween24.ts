@@ -648,6 +648,21 @@ export class Tween24 {
     xy$$ (x:number, y:number): Tween24 { return this.x$$(x).y$$(y); }
 
     /**
+     * 座標のトゥイーンにベジェ曲線を適応し、アンカーポイントを追加します。
+     * @param {number} bezierX X座標のアンカーポイント
+     * @param {number} bezierY Y座標のアンカーポイント
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    bezier(bezierX:number, bezierY:number): Tween24 {
+        this._transformUpdater     ?.setBezier(bezierX, bezierY);
+        this._transformMultiUpdater?.setBezier(bezierX, bezierY);
+        this._objectUpdater        ?.setBezier(bezierX, bezierY);
+        this._objectMultiUpdater   ?.setBezier(bezierX, bezierY);
+        return this;
+    }
+
+    /**
      * 目標とする透明度を設定します。
      * 対象が HTMLElement の場合は、CSS:opacity が適用されます。
      * @param {number} value 透明度

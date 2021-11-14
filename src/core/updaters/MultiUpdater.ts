@@ -53,6 +53,12 @@ export class MultiUpdater implements Updater {
         }
     }
 
+    setBezier(bezierX:number, bezierY:number) {
+        for (const updater of this._updaters) {
+            updater.setBezier(bezierX, bezierY);
+        }
+    }
+
     init(useWillChange:boolean) {
         for (const updater of this._updaters) {
             updater.init(useWillChange);

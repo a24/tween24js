@@ -10,10 +10,10 @@ export class ObjectUpdater implements Updater {
     private _paramUpdaters:{[key:string]:ParamUpdater};
 
     constructor(target:any) {
-        this._target     = target;
-        this._keys        = [];
-        this._tweenKeys   = null;
-        this._paramUpdaters   = {};
+        this._target        = target;
+        this._keys          = [];
+        this._tweenKeys     = null;
+        this._paramUpdaters = {};
     }
 
     addProp(key:string, value:number, option:string|null = null) {
@@ -37,6 +37,21 @@ export class ObjectUpdater implements Updater {
     }
     
     addPropStr(key:string, value:string) {
+    }
+
+    setBezier(bezierX:number, bezierY:number) {
+        const keyX:string = "x";
+        const keyY:string = "y";
+        if (!this._paramUpdaters[keyX]) {
+            this._paramUpdaters[keyX] = new ParamUpdater(keyX, this._target[keyX]);
+            this._keys.push(keyX);
+        }
+        if (!this._paramUpdaters[keyY]) {
+            this._paramUpdaters[keyY] = new ParamUpdater(keyY, this._target[keyY]);
+            this._keys.push(keyY);
+        }
+        this._paramUpdaters[keyX].setBezier(bezierX);
+        this._paramUpdaters[keyY].setBezier(bezierY);
     }
 
     init(useWillChange:boolean) {
@@ -91,6 +106,16 @@ export class ObjectUpdater implements Updater {
         let str:string = "";
         for (const key of this._keys)
             str += this._paramUpdaters[key].toString() + " ";
+            
+        const bx = this._paramUpdaters["x"].bezier;
+        const by = this._paramUpdaters["y"].bezier;
+        if (bx && by) {
+            str += `bezier:`;
+            for (let i = 0; i < bx.length; i++) {
+                str += `(${bx[i]}, ${by[i]})`
+            }
+            str += ` `;
+        }
         return str.trim();
     }
 

@@ -171,6 +171,9 @@ export class StyleUpdater implements Updater {
     addProp(key:string, value:number) {
     }
 
+    setBezier(bezierX:number, bezierY:number) {
+    }
+
     complete() {
         if (this._useWillChange) {
             HTMLUtil.removeWillChange(this._style || this._target.style, this._key);

@@ -136,7 +136,7 @@ export class TransformUpdater implements Updater {
         let updater;
         if (option) {
             this._matrix.setMatrixByCSSTransform(HTMLUtil.getTransformMatrix(this._target, this._pseudo));
-            updater = new ParamUpdater(key, this._matrix.getProp(key)); 
+            updater = new ParamUpdater(key, this._matrix.getProp(key));
             switch (option) {
                 case ParamUpdater.RELATIVE_AT_SETTING :
                     updater.set$value(value);
@@ -169,6 +169,19 @@ export class TransformUpdater implements Updater {
                 if (value.slice(-1) == "%") this._percentY = value;
                 break;
         }
+    }
+
+    setBezier(bezierX:number, bezierY:number) {
+        if (!this._x) {
+            this._matrix.setMatrixByCSSTransform(HTMLUtil.getTransformMatrix(this._target, this._pseudo));
+            this._x = new ParamUpdater("x", this._matrix.getProp("x"));
+        }
+        if (!this._y) {
+            this._matrix.setMatrixByCSSTransform(HTMLUtil.getTransformMatrix(this._target, this._pseudo));
+            this._y = new ParamUpdater("y", this._matrix.getProp("y"));
+        }
+        this._x.setBezier(bezierX);
+        this._y.setBezier(bezierY);
     }
 
     update(progress: number) {
@@ -273,6 +286,17 @@ export class TransformUpdater implements Updater {
         let str:string = "";
         if (this._x       ) str += this._x       .toString() + " ";
         if (this._y       ) str += this._y       .toString() + " ";
+
+        const bx = this._x?.bezier;
+        const by = this._y?.bezier;
+        if (bx && by) {
+            str += `bezier:`;
+            for (let i = 0; i < bx.length; i++) {
+                str += `(${bx[i]}, ${by[i]})`
+            }
+            str += ` `;
+        }
+
         if (this._scaleX  ) str += this._scaleX  .toString() + " ";
         if (this._scaleY  ) str += this._scaleY  .toString() + " ";
         if (this._skewX   ) str += this._skewX   .toString() + " ";

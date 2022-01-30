@@ -54,7 +54,7 @@ export class StyleUpdater implements Updater {
 
             let updater:ParamUpdater;
             if (option) {
-                updater = new ParamUpdater(key, parseFloat(original));
+                updater = new ParamUpdater(key, parseFloat(original), value);
                 switch (option) {
                     case ParamUpdater.RELATIVE_AT_SETTING :
                         updater.set$value(parseFloat(value));
@@ -65,7 +65,7 @@ export class StyleUpdater implements Updater {
                 }
             }
             else {
-                updater = new ParamUpdater(key, parseFloat(targetValue));
+                updater = new ParamUpdater(key, parseFloat(targetValue), value);
             }
             this._param[key] = updater;
             this._unit [key] = targetUnit ? targetUnit[0] : "";
@@ -149,8 +149,18 @@ export class StyleUpdater implements Updater {
         const copy:StyleUpdater = new StyleUpdater(target, query);
         if (this._param) {
             copy._param = {};
-            for (const key in this._param) 
-                copy._param[key] = this._param[key].clone();
+            for (const key in this._param) {
+                const value = this._param[key].originalValue as string;
+                const unit = value.match(StyleUpdater.UNIT_REG);
+                let targetValue = NaN;
+                if (unit && unit[0] == "%") {
+                    const original = target.style.getPropertyValue(key);
+                    target.style.setProperty(key, value);
+                    targetValue = parseFloat(HTMLUtil.getComputedStyle(target).getPropertyValue(key));
+                    target.style.setProperty(key, original);
+                }
+                copy._param[key] = this._param[key].clone(targetValue);
+            }
         }
         if (this._key      ) copy._key        = [ ...this._key ];
         if (this._unit     ) copy._unit       = { ...this._unit };

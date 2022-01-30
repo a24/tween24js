@@ -13,8 +13,9 @@ export class ParamUpdater {
     private _$$value:number;
 
     private _bezier:number[]|null;
+    private _originalValue:number|string;
 
-    constructor(key:string, target:number) {
+    constructor(key:string, target:number, originalValue:number|string) {
         this._key      = key;
         this._target   = target;
         this._start    = NaN;
@@ -25,6 +26,7 @@ export class ParamUpdater {
         this._$$value = NaN;
 
         this._bezier = null;
+        this._originalValue = originalValue;
     }
 
     init(start:number) {
@@ -59,8 +61,8 @@ export class ParamUpdater {
         this._bezier.push(bezier);
     }
 
-    clone():ParamUpdater {
-        return new ParamUpdater(this._key, this._target);
+    clone(target:number = NaN):ParamUpdater {
+        return new ParamUpdater(this._key, target || this._target, this._originalValue);
     }
     
     toString():string {
@@ -111,5 +113,9 @@ export class ParamUpdater {
 
     get bezier():number[]|null {
         return this._bezier;
+    }
+
+    get originalValue():number|string {
+        return this._originalValue;
     }
 }

@@ -9,14 +9,18 @@ export class StyleColorUpdater {
     private _g    : ParamUpdater;
     private _b    : ParamUpdater;
 
+    private _originalValue:number|string;
+
     constructor(key:string, colorCode:string) {
         this._key   = key;
         this._color = colorCode;
 
         const rgb:number[] = ColorUtil.getRGBList(colorCode);
-        this._r = new ParamUpdater("r", rgb[0]);
-        this._g = new ParamUpdater("g", rgb[1]);
-        this._b = new ParamUpdater("b", rgb[2]);
+        this._r = new ParamUpdater("r", rgb[0], colorCode);
+        this._g = new ParamUpdater("g", rgb[1], colorCode);
+        this._b = new ParamUpdater("b", rgb[2], colorCode);
+        
+        this._originalValue = colorCode;
     }
 
     init(start:string) {
@@ -43,5 +47,9 @@ export class StyleColorUpdater {
     
     toString():string {
         return `${this._key}:${this._color}`
+    }
+
+    get originalValue():number|string {
+        return this._originalValue;
     }
 }

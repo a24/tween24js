@@ -102,16 +102,16 @@ export class TransformUpdater implements Updater {
                 const sty = HTMLUtil.getComputedStyle(this._target, this._pseudo);
                 if (this._percentX) {
                     if (this._style && !this._style.width) this._style.setProperty("width", "auto");
-                    this._x = new ParamUpdater("x", parseFloat(sty.width) * parseFloat(this._percentX) / 100);
+                    this._x = new ParamUpdater("x", parseFloat(sty.width) * parseFloat(this._percentX) / 100, this._percentX);
                 }
                 if (this._percentY) {
                     if (this._style && !this._style.height) this._style.setProperty("height", "auto");
-                    this._y = new ParamUpdater("y", parseFloat(sty.height) * parseFloat(this._percentY) / 100);
+                    this._y = new ParamUpdater("y", parseFloat(sty.height) * parseFloat(this._percentY) / 100, this._percentY);
                 }
             }
             else {
-                if (this._percentX) this._x = new ParamUpdater("x", this._target.offsetWidth  * parseFloat(this._percentX) / 100);
-                if (this._percentY) this._y = new ParamUpdater("y", this._target.offsetHeight * parseFloat(this._percentY) / 100);
+                if (this._percentX) this._x = new ParamUpdater("x", this._target.offsetWidth  * parseFloat(this._percentX) / 100, this._percentX);
+                if (this._percentY) this._y = new ParamUpdater("y", this._target.offsetHeight * parseFloat(this._percentY) / 100, this._percentY);
             }
         }
         
@@ -136,7 +136,7 @@ export class TransformUpdater implements Updater {
         let updater;
         if (option) {
             this._matrix.setMatrixByCSSTransform(HTMLUtil.getTransformMatrix(this._target, this._pseudo));
-            updater = new ParamUpdater(key, this._matrix.getProp(key));
+            updater = new ParamUpdater(key, this._matrix.getProp(key), value);
             switch (option) {
                 case ParamUpdater.RELATIVE_AT_SETTING :
                     updater.set$value(value);
@@ -147,7 +147,7 @@ export class TransformUpdater implements Updater {
             }
         }
         else {
-            updater = new ParamUpdater(key, value); 
+            updater = new ParamUpdater(key, value, value); 
         }
         switch (key) {
             case "x"       : this._x        = updater; break;
@@ -174,11 +174,11 @@ export class TransformUpdater implements Updater {
     setBezier(bezierX:number, bezierY:number) {
         if (!this._x) {
             this._matrix.setMatrixByCSSTransform(HTMLUtil.getTransformMatrix(this._target, this._pseudo));
-            this._x = new ParamUpdater("x", this._matrix.getProp("x"));
+            this._x = new ParamUpdater("x", this._matrix.getProp("x"), NaN);
         }
         if (!this._y) {
             this._matrix.setMatrixByCSSTransform(HTMLUtil.getTransformMatrix(this._target, this._pseudo));
-            this._y = new ParamUpdater("y", this._matrix.getProp("y"));
+            this._y = new ParamUpdater("y", this._matrix.getProp("y"), NaN);
         }
         this._x.setBezier(bezierX);
         this._y.setBezier(bezierY);

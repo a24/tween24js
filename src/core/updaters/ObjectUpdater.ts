@@ -19,7 +19,7 @@ export class ObjectUpdater implements Updater {
     addProp(key:string, value:number, option:string|null = null) {
         let updater;
         if (option) {
-            updater = new ParamUpdater(key, this._target[key]);
+            updater = new ParamUpdater(key, this._target[key], value);
             switch (option) {
                 case ParamUpdater.RELATIVE_AT_SETTING :
                     updater.set$value(value);
@@ -30,7 +30,7 @@ export class ObjectUpdater implements Updater {
             }
         }
         else {
-            updater = new ParamUpdater(key, value); 
+            updater = new ParamUpdater(key, value, value); 
         }
         this._paramUpdaters[key] = updater;
         this._keys.push(key);
@@ -43,11 +43,11 @@ export class ObjectUpdater implements Updater {
         const keyX:string = "x";
         const keyY:string = "y";
         if (!this._paramUpdaters[keyX]) {
-            this._paramUpdaters[keyX] = new ParamUpdater(keyX, this._target[keyX]);
+            this._paramUpdaters[keyX] = new ParamUpdater(keyX, this._target[keyX], NaN);
             this._keys.push(keyX);
         }
         if (!this._paramUpdaters[keyY]) {
-            this._paramUpdaters[keyY] = new ParamUpdater(keyY, this._target[keyY]);
+            this._paramUpdaters[keyY] = new ParamUpdater(keyY, this._target[keyY], NaN);
             this._keys.push(keyY);
         }
         this._paramUpdaters[keyX].setBezier(bezierX);

@@ -499,6 +499,7 @@ export class Tween24 {
         if (this._isRoot) Tween24.ticker.remove(this);
         if (this._playingChildTween) this._playingChildTween.length = 0;
         this._numCompleteChildren = 0;
+        this._currentLoops = 0;
         this._played = false;
         this._inited = false;
         this._jumped = false;

@@ -150,8 +150,8 @@ export class StyleUpdater implements Updater {
         if (this._param) {
             copy._param = {};
             for (const key in this._param) {
-                const value = this._param[key].originalValue as string;
-                const unit = value.match(StyleUpdater.UNIT_REG);
+                const value = this._param[key].originalValue;
+                const unit = String(value).match(StyleUpdater.UNIT_REG);
                 let targetValue = NaN;
                 if (unit && unit[0] == "%") {
                     const original = target.style.getPropertyValue(key);

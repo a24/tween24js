@@ -39,7 +39,9 @@ export class ParamUpdater {
     }
 
     update(progress:number):number {
-        if (this._bezier) this._value = this.getBezier(this._start, this._delta, progress, this._bezier);
+        if (this._bezier) {
+            this._value = this.getBezier(this._start, this._target, progress, this._bezier);
+        }
         else this._value = this._start + this._delta * progress;
         return this._value;
     }

@@ -9,8 +9,9 @@ export declare class MultiUpdater implements Updater {
     setupByType(updaterType: string): MultiUpdater;
     setupByUpdater(updater: Updater): MultiUpdater;
     private _getUpdaterInstance;
-    addProp(key: string, value: number): void;
-    addPropStr(key: string, value: string): void;
+    addProp(key: string, value: number, option?: string | null): void;
+    addPropStr(key: string, value: string, option?: string | null): void;
+    setBezier(bezierX: number, bezierY: number): void;
     init(useWillChange: boolean): void;
     update(progress: number): void;
     overwrite(updater: Updater): void;

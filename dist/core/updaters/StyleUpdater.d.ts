@@ -15,7 +15,7 @@ export declare class StyleUpdater implements Updater {
     private _style;
     private _useWillChange;
     constructor(target: HTMLElement, query: string | null);
-    addPropStr(key: string, value: string): void;
+    addPropStr(key: string, value: string, option?: string | null): void;
     init(useWillChange: boolean): void;
     update(progress: number): void;
     overwrite(updater: StyleUpdater): void;
@@ -23,5 +23,6 @@ export declare class StyleUpdater implements Updater {
     clone(target?: any, query?: string | null): StyleUpdater;
     toString(): string;
     addProp(key: string, value: number): void;
+    setBezier(bezierX: number, bezierY: number): void;
     complete(): void;
 }

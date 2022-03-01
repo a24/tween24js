@@ -28,8 +28,9 @@ export declare class TransformUpdater implements Updater {
     private _percentY;
     constructor(target: HTMLElement, query: string | null);
     init(useWillChange: boolean): void;
-    addProp(key: string, value: number): void;
+    addProp(key: string, value: number, option?: string | null): void;
     addPropStr(key: string, value: string): void;
+    setBezier(bezierX: number, bezierY: number): void;
     update(progress: number): void;
     private _getChache;
     private _setChache;

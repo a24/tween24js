@@ -142,6 +142,22 @@ export declare class Tween24 {
      */
     x(value: number | string): Tween24;
     /**
+     * 目標とするX座標を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    x$(value: number): Tween24;
+    /**
+     * 目標とするX座標を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    x$$(value: number): Tween24;
+    /**
      * 目標とするY座標を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * また、パーセント値で指定された場合は、囲みボックスの寸法に対する相対値が設定されます。
@@ -150,6 +166,22 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     y(value: number | string): Tween24;
+    /**
+     * 目標とするX座標を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    y$(value: number): Tween24;
+    /**
+     * 目標とするX座標を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    y$$(value: number): Tween24;
     /**
      * 目標とするXとY座標を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
@@ -161,6 +193,32 @@ export declare class Tween24 {
      */
     xy(x: number | string, y: number | string): Tween24;
     /**
+     * 目標とするXとY座標を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} x X座標
+     * @param {number} y Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    xy$(x: number, y: number): Tween24;
+    /**
+     * 目標とするXとY座標を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} x X座標
+     * @param {number} y Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    xy$$(x: number, y: number): Tween24;
+    /**
+     * 座標のトゥイーンにベジェ曲線を適応し、アンカーポイントを追加します。
+     * @param {number} bezierX X座標のアンカーポイント
+     * @param {number} bezierY Y座標のアンカーポイント
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    bezier(bezierX: number, bezierY: number): Tween24;
+    /**
      * 目標とする透明度を設定します。
      * 対象が HTMLElement の場合は、CSS:opacity が適用されます。
      * @param {number} value 透明度
@@ -169,12 +227,42 @@ export declare class Tween24 {
      */
     alpha(value: number): Tween24;
     /**
+     * 目標とする透明度を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:opacity が適用されます。
+     * @param {number} value 透明度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    alpha$(value: number): Tween24;
+    /**
+     * 目標とする透明度を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:opacity が適用されます。
+     * @param {number} value 透明度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    alpha$$(value: number): Tween24;
+    /**
      * 目標とする透明度を設定します。
      * @param {number} value 透明度
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     opacity(value: number): Tween24;
+    /**
+     * 目標とする透明度を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number} value 透明度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    opacity$(value: number): Tween24;
+    /**
+     * 目標とする透明度を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number} value 透明度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    opacity$$(value: number): Tween24;
     /**
      * 目標とする水平スケールを設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
@@ -184,6 +272,22 @@ export declare class Tween24 {
      */
     scaleX(value: number): Tween24;
     /**
+     * 目標とする水平スケール、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scaleX$(value: number): Tween24;
+    /**
+     * 目標とする水平スケール、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scaleX$$(value: number): Tween24;
+    /**
      * 目標とする垂直スケールを設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 垂直方向のスケール
@@ -192,6 +296,22 @@ export declare class Tween24 {
      */
     scaleY(value: number): Tween24;
     /**
+     * 目標とする垂直スケールを、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scaleY$(value: number): Tween24;
+    /**
+     * 目標とする垂直スケールを、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scaleY$$(value: number): Tween24;
+    /**
      * 目標とするスケールを設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平＆垂直方向のスケール
@@ -199,6 +319,22 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     scale(value: number): Tween24;
+    /**
+     * 目標とするスケールを、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平＆垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scale$(value: number): Tween24;
+    /**
+     * 目標とするスケールを、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平＆垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scale$$(value: number): Tween24;
     /**
      * 目標とする水平・垂直スケールを設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
@@ -209,6 +345,24 @@ export declare class Tween24 {
      */
     scaleXY(scaleX: number, scaleY: number): Tween24;
     /**
+     * 目標とする水平・垂直スケールを、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} scaleX 水平方向のスケール
+     * @param {number} scaleY 垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scaleXY$(scaleX: number, scaleY: number): Tween24;
+    /**
+     * 目標とする水平・垂直スケールを、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} scaleX 水平方向のスケール
+     * @param {number} scaleY 垂直方向のスケール
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    scaleXY$$(scaleX: number, scaleY: number): Tween24;
+    /**
      * 目標とする水平傾斜を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平方向の傾斜
@@ -216,6 +370,22 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     skewX(value: number): Tween24;
+    /**
+     * 目標とする水平傾斜を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skewX$(value: number): Tween24;
+    /**
+     * 目標とする水平傾斜を設定、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skewX$$(value: number): Tween24;
     /**
      * 目標とする垂直傾斜を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
@@ -225,6 +395,22 @@ export declare class Tween24 {
      */
     skewY(value: number): Tween24;
     /**
+     * 目標とする垂直傾斜を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skewY$(value: number): Tween24;
+    /**
+     * 目標とする垂直傾斜を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skewY$$(value: number): Tween24;
+    /**
      * 目標とする水平＆垂直傾斜を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 水平＆垂直方向の傾斜
@@ -232,6 +418,22 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     skew(value: number): Tween24;
+    /**
+     * 目標とする水平＆垂直傾斜を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平＆垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skew$(value: number): Tween24;
+    /**
+     * 目標とする水平＆垂直傾斜を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 水平＆垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skew$$(value: number): Tween24;
     /**
      * 目標とする水平・垂直傾斜を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
@@ -242,6 +444,24 @@ export declare class Tween24 {
      */
     skewXY(skewX: number, skewY: number): Tween24;
     /**
+     * 目標とする水平・垂直傾斜を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} skewX 水平方向の傾斜
+     * @param {number} skewY 垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skewXY$(skewX: number, skewY: number): Tween24;
+    /**
+     * 目標とする水平・垂直傾斜を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} skewX 水平方向の傾斜
+     * @param {number} skewY 垂直方向の傾斜
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    skewXY$$(skewX: number, skewY: number): Tween24;
+    /**
      * 目標とする回転角度を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
      * @param {number} value 回転角度
@@ -250,12 +470,50 @@ export declare class Tween24 {
      */
     rotation(value: number): Tween24;
     /**
+     * 目標とする回転角度を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 回転角度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    rotation$(value: number): Tween24;
+    /**
+     * 目標とする回転角度を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
+     * @param {number} value 回転角度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    rotation$$(value: number): Tween24;
+    /**
+     * CSS:Transform の基準点を設定します。
+     * @param {number} x X方向の基準点
+     * @param {number} y Y方向の基準点
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    transformOrigin(x: number | string, y: number | string): Tween24;
+    /**
      * 目標とする角度を設定します。
      * @param {number} value 角度
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     angle(value: number): Tween24;
+    /**
+     * 目標とする角度を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number} value 角度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    angle$(value: number): Tween24;
+    /**
+     * 目標とする角度を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number} value 角度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    angle$$(value: number): Tween24;
     /**
      * CSS:top を設定します。
      * @param {number|string} 上からの配置位置（距離）
@@ -264,12 +522,40 @@ export declare class Tween24 {
      */
     top(value: number | string): Tween24;
     /**
+     * CSS:top を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} 上からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    top$(value: number | string): Tween24;
+    /**
+     * CSS:top を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} 上からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    top$$(value: number | string): Tween24;
+    /**
      * CSS:right を設定します。
      * @param {number|string} 右からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     right(value: number | string): Tween24;
+    /**
+     * CSS:right を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} 右からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    right$(value: number | string): Tween24;
+    /**
+     * CSS:right を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} 右からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    right$$(value: number | string): Tween24;
     /**
      * CSS:bottom を設定します。
      * @param {number|string} value 下からの配置位置（距離）
@@ -278,12 +564,40 @@ export declare class Tween24 {
      */
     bottom(value: number | string): Tween24;
     /**
+     * CSS:bottom を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} value 下からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    bottom$(value: number | string): Tween24;
+    /**
+     * CSS:bottom を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} value 下からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    bottom$$(value: number | string): Tween24;
+    /**
      * CSS:left を設定します。
      * @param {number|string} value 左からの配置位置（距離）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     left(value: number | string): Tween24;
+    /**
+     * CSS:left を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} value 左からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    left$(value: number | string): Tween24;
+    /**
+     * CSS:left を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} value 左からの配置位置（距離）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    left$$(value: number | string): Tween24;
     /**
      * 目標とする幅を設定します。
      * 対象が HTMLElement の場合は、CSS:width が適用されます。
@@ -293,6 +607,22 @@ export declare class Tween24 {
      */
     width(value: number | string): Tween24;
     /**
+     * 目標とする幅を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:width が適用されます。
+     * @param {number|string} value 要素の幅
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    width$(value: number | string): Tween24;
+    /**
+     * 目標とする幅を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:width が適用されます。
+     * @param {number|string} value 要素の幅
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    width$$(value: number | string): Tween24;
+    /**
      * 目標とする高さを設定します。
      * 対象が HTMLElement の場合は、CSS:height が適用されます。
      * @param {number|string} value 要素の高さ
@@ -300,6 +630,22 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     height(value: number | string): Tween24;
+    /**
+     * 目標とする高さを、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:height が適用されます。
+     * @param {number|string} value 要素の高さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    height$(value: number | string): Tween24;
+    /**
+     * 目標とする高さを、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:height が適用されます。
+     * @param {number|string} value 要素の高さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    height$$(value: number | string): Tween24;
     /**
      * CSS:color を設定します。
      * @param {string} colorCode 「#」「rgb()」フォーマットのカラー値
@@ -315,12 +661,92 @@ export declare class Tween24 {
      */
     backgroundColor(colorCode: string): Tween24;
     /**
+     * CSS:background-position-x（背景X座標）を設定します。
+     * @param {string} x 背景X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPositionX(x: number | string): Tween24;
+    /**
+     * CSS:background-position-x（背景X座標）を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {string} x 背景X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPositionX$(x: number | string): Tween24;
+    /**
+     * CSS:background-position-x（背景X座標）を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {string} x 背景X座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPositionX$$(x: number | string): Tween24;
+    /**
+     * CSS:background-position-y（背景Y座標）を設定します。
+     * @param {string} y 背景Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPositionY(y: number | string): Tween24;
+    /**
+     * CSS:background-position-y（背景Y座標）を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {string} y 背景Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPositionY$(y: number | string): Tween24;
+    /**
+     * CSS:background-position-y（背景Y座標）を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {string} y 背景Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPositionY$$(y: number | string): Tween24;
+    /**
+     * CSS:background-position（背景座標）を設定します。
+     * @param {string} x 背景X座標
+     * @param {string} y 背景Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPosition(x: number | string, y: number | string): Tween24;
+    /**
+     * CSS:background-position（背景座標）を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {string} x 背景X座標
+     * @param {string} y 背景Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPosition$(x: number | string, y: number | string): Tween24;
+    /**
+     * CSS:background-position（背景座標）を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {string} x 背景X座標
+     * @param {string} y 背景Y座標
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    backgroundPosition$$(x: number | string, y: number | string): Tween24;
+    /**
      * CSS:border-width（枠の太さ）を設定します。
      * @param {number|string} value 枠の太さ
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     borderWidth(value: number | string): Tween24;
+    /**
+     * CSS:border-width（枠の太さ）を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} value 枠の太さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    borderWidth$(value: number | string): Tween24;
+    /**
+     * CSS:border-width（枠の太さ）を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} value 枠の太さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    borderWidth$$(value: number | string): Tween24;
     /**
      * CSS:border-color（枠の色）を設定します。
      * @param {number} colorCode 「#」「rgb()」フォーマットのカラー値
@@ -336,12 +762,40 @@ export declare class Tween24 {
      */
     borderRadius(value: number | string): Tween24;
     /**
+     * CSS:border-radius（角丸）を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} value 角丸の値
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    borderRadius$(value: number | string): Tween24;
+    /**
+     * CSS:border-radius（角丸）を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} value 角丸の値
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    borderRadius$$(value: number | string): Tween24;
+    /**
      * CSS:letter-spacing（字間）を設定します。
      * @param {number|string} value 字間
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     letterSpacing(value: number | string): Tween24;
+    /**
+     * CSS:letter-spacing（字間）を、トゥイーンを作成した時の値の相対値で設定します。
+     * @param {number|string} value 字間
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    letterSpacing$(value: number | string): Tween24;
+    /**
+     * CSS:letter-spacing（字間）を、トゥイーンが実行される直前の値の相対値で設定します。
+     * @param {number|string} value 字間
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    letterSpacing$$(value: number | string): Tween24;
     /**
      * トゥイーンの遅延時間を設定します。
      * @param {number} value 遅延時間（秒数）
@@ -359,14 +813,40 @@ export declare class Tween24 {
      */
     style(name: string, value: number | string): Tween24;
     /**
+     * 目標とするスタイルシートの値を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合にのみ適用されます。
+     * @param {string} name プロパティ名
+     * @param {(number|string)} value 目標の値（数値指定の場合は、基本的にpx単位で計算されます）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    style$(name: string, value: number | string): Tween24;
+    /**
+     * 目標とするスタイルシートの値を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合にのみ適用されます。
+     * @param {string} name プロパティ名
+     * @param {(number|string)} value 目標の値（数値指定の場合は、基本的にpx単位で計算されます）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    style$$(name: string, value: number | string): Tween24;
+    /**
      * トゥイーン実行時に willChange を有効にするか設定します。
      * 有効にすると強力な最適化をブラウザーが行い、アニメーションが滑らかになります。
      * 対象が HTMLElement の場合にのみ適用されます。
-     * @param {boolean} [use=true]
+     * @param {boolean} [use=true] willChange を有効にするか
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     willChange(use?: boolean): Tween24;
+    /**
+     * ポインターイベントの有効・無効を設定します。
+     * true の場合は"auto", false の場合は "none" が設定されます。
+     * @param {boolean} enable ポインターイベントを有効にするか
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    pointerEvents(enable: boolean): Tween24;
     /**
      * 子トゥイーンの完了トリガーに設定します。
      * 設定したトゥイーンが完了したら、親トゥイーンが次のトゥイーンへ移行します。
@@ -399,8 +879,12 @@ export declare class Tween24 {
      */
     debug(flag?: boolean): Tween24;
     private _setPropety;
+    private _set$Propety;
+    private _set$$Propety;
     private _setPropetyStr;
     private _setStyle;
+    private _set$Style;
+    private _set$$Style;
     private createBasicUpdater;
     /**
      * トゥイーン再生時に、実行する関数を設定します。

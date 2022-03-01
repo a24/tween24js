@@ -6,8 +6,9 @@ export interface Updater {
     toString(): string;
     clone(target: any, query: string | null): Updater;
     update(progress: number): void;
-    addProp(key: string, value: number): void;
-    addPropStr(key: string, value: string): void;
+    addProp(key: string, value: number, optoin: string | null): void;
+    addPropStr(key: string, value: string, optoin: string | null): void;
     overwrite(updater: Updater | MultiUpdater): void;
     getMaxAbsDelta(): number;
+    setBezier(bezierX: number, bezierY: number): void;
 }

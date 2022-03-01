@@ -17,6 +17,7 @@ export declare class Matrix {
     setMatrixByCSSTransform(matrix: string): void;
     updateMatrix(): void;
     toString(): string;
+    getProp(key: string): number;
     set x(value: number);
     get x(): number;
     set y(value: number);

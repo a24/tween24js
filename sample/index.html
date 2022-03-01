@@ -30,6 +30,8 @@
             background-color: #3CC2B9;
         }
         p {
+            margin: 0;
+            padding: 20px;
             font-size: 20px;
             text-align: center;
             color: #247570;
@@ -55,6 +57,20 @@
         }
         .pointer {
             cursor: pointer;
+        }
+        div.code {
+            border-radius: 10px;
+            width: 800px;
+            margin: auto;
+            background-color: #fff;
+        }
+        div.code p {
+            margin: 0;
+            padding: 20px;
+            font-size: 14px;
+            line-height: 1.4;
+            text-align: left;
+            color: #247570;
         }
     </style>
 </head>
@@ -616,6 +632,132 @@
 
         // ID:tw001 のトゥイーンを再生します
         Tween24.playById("tw01");
+    </script>
+
+
+    <!----------- Relative Tween from The Time of Setting ----------->
+
+    <section id="relative-setting">
+        <div class="relative-setting-box"></div>
+    </section>
+    <p>- Relative Tween from The Time of Setting -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                // 設定時のX座標から+860にトゥイーンします
+                Tween24.tween(".relative-setting-box", 1, Ease24._6_ExpoInOut).x$(860),
+                // 元の座標にトゥイーンします
+                Tween24.tween(".relative-setting-box", 1, Ease24._6_ExpoInOut).x$(0)
+            )
+        ).play();
+    </script>
+    </script>
+
+
+    <!----------- Relative Tween from The Current Value ----------->
+
+    <section id="relative-current">
+        <div class="relative-current-box"></div>
+    </section>
+    <p>- Relative Tween from The Current Value -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                // トゥイーン実行時のX座標から+215にトゥイーンします
+                Tween24.tween(".relative-current-box", 0.6, Ease24._6_ExpoOut).x$$(215),
+                // トゥイーン実行時のX座標から+215にトゥイーンします
+                Tween24.tween(".relative-current-box", 0.6, Ease24._6_ExpoOut).x$$(215),
+                // トゥイーン実行時のX座標から+215にトゥイーンします
+                Tween24.tween(".relative-current-box", 0.6, Ease24._6_ExpoOut).x$$(215),
+                // トゥイーン実行時のX座標から+215にトゥイーンします
+                Tween24.tween(".relative-current-box", 0.6, Ease24._6_ExpoOut).x$$(215),
+                // ループ対応処理
+                Tween24.prop(".relative-current-box").x(0)
+            )
+        ).play();
+    </script>
+
+    <!----------- Change TransformOrigin Tween ----------->
+
+    <section id="transformOrigin">
+        <div class="origin-box"></div>
+    </section>
+    <p>- Change TransformOrigin Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                // 2回繰り返す
+                Tween24.loop(2,
+                    Tween24.serial(
+                        // 基準点を右下に変更する
+                        Tween24.prop(".origin-box").transformOrigin("bottom", "right"),
+                        // 90度回転させる
+                        Tween24.tween(".origin-box", 0.4).rotation$$(90),
+                        // 基準点を右上に変更し、ズレた座標を調整する
+                        Tween24.prop(".origin-box").transformOrigin("top", "right").xy$$(100, 100),
+                        // 90度回転させる
+                        Tween24.tween(".origin-box", 0.4).rotation$$(90),
+                        // 基準点を左上に変更し、ズレた座標を調整する
+                        Tween24.prop(".origin-box").transformOrigin("top", "left").xy$$(200, 100),
+                        // 90度回転させる
+                        Tween24.tween(".origin-box", 0.4).rotation$$(90),
+                        // 基準点を左下に変更し、ズレた座標を調整する
+                        Tween24.prop(".origin-box").transformOrigin("bottom", "left").xy$$(100, 0),
+                        // 90度回転させる
+                        Tween24.tween(".origin-box", 0.4).rotation$$(90)
+                    )
+                ),
+                // ループ対応処理
+                Tween24.prop(".origin-box").xy(0, 0)
+            )
+        ).play();
+    </script>
+
+    <!------------ Bezier Tween ----------->
+
+    <section id="bezier">
+        <div class="bezier-box"></div>
+    </section>
+    <p>- Bezier Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                // ベジェ曲線のアンカーポイントに (430, -300) を設定
+                Tween24.tween(".bezier-box", 1).x(860).bezier(430, -300),
+                // ベジェ曲線のアンカーポイントに (645, -400) (215, 400) を設定
+                Tween24.tween(".bezier-box", 1.5).x(0).bezier(645, 400).bezier(215, -400)
+            )
+        ).play();
+    </script>
+
+    <!------------ BackgroundPosition Tween ----------->
+
+    <style>
+        #backgroundPosition {
+            background: linear-gradient(140deg, rgba(19, 178, 102, 0.72), rgba(50, 107, 185, 0.72), rgba(206, 61, 104, 0.72), rgba(19, 178, 102, 0.72), rgba(50, 107, 185, 0.72), rgba(206, 61, 104, 0.72)) fixed;
+            background-size: 300%;
+        }
+    </style>
+
+    <section id="backgroundPosition">
+    </section>
+    <p>- BackgroundPosition Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                // 背景のX座標を100%までトゥイーンします
+                Tween24.tween("#backgroundPosition", 3).backgroundPosition("100%", "0%"),
+                Tween24.wait(1),
+                // 背景のX座標を0%までトゥイーンします
+                Tween24.tween("#backgroundPosition", 3).backgroundPosition("0%", "0%"),
+                Tween24.wait(1)
+            )
+        ).play();
     </script>
 
 </body>

@@ -5,6 +5,8 @@ Tween24.js is animation library that enables fast coding using method chains.
 ![Example of Tween24](https://a24.github.io/tween24js/images/tween24-example.gif)
 
 # Release notes & Demo
+- v1.0.0
+  - https://ics.media/entry/220304/
 - v0.9.11
   - https://ics.media/entry/210818/
 - v0.9.3
@@ -124,6 +126,78 @@ Tween24.serial(
 ).willChange().play();
 ```
 ```js
+// If Tween
+Tween24.ifCase(() => { return document.getElementById("checkbox").checked; },
+    // true
+    Tween24.tween("#box", 1, Ease24._6_ExpoInOut).x(860).rotation(360),
+    // false
+    Tween24.tween("#box", 1, Ease24._6_ExpoInOut).x(860)
+).play();
+```
+```js
+// Wait event
+Tween24.serial(
+    Tween24.tween("#box", 1, Ease24._6_ExpoInOut).x(430).opacity(1),
+    Tween24.waitEvent("#box", Event24.CLICK),
+    Tween24.tween("#box", 1, Ease24._6_ExpoInOut).x(860).opacity(0)
+).play();
+```
+```js
+// Next depending on progress
+Tween24.serial(
+    Tween24.tween("#box", 1, Ease24._6_ExpoInOut).x(810).jump(0.5),
+    Tween24.tween("#box", 1, Ease24._6_ExpoInOut).y(330).jump(0.5),
+    Tween24.tween("#box", 1, Ease24._6_ExpoInOut).x(50).jump(0.5),
+    Tween24.tween("#box", 1, Ease24._6_ExpoInOut).y(50)
+).play();
+```
+```js
+// Set the trigger to proceed to the next
+Tween24.serial(
+    Tween24.serial(
+        Tween24.tween("#box1", 1, Ease24._6_ExpoInOut).x(860),
+        // Trigger tween
+        Tween24.tween("#box2", 1, Ease24._6_ExpoInOut).x(860).trigger(),
+        Tween24.tween("#box3", 1, Ease24._6_ExpoInOut).x(860)
+    ),
+    Tween24.serial(
+      ...
+    )
+).play();
+```
+```js
+// Manual play and update
+Tween24.serial(
+    Tween24.tween("#box", 1, Ease24._6_ExpoInOut).x(860),
+    Tween24.tween("#box", 1, Ease24._6_ExpoInOut).x(0)
+).manualPlay();
+
+// Run the update every 0.1s
+setInterval(Tween24.manualAllUpdate, 100);
+```
+```js
+// Control by ID
+Tween24.tween("#box", 1).x(860).id("tw01");
+
+Tween24.playById("tw01");
+```
+```js
+// Control by Group ID
+Tween24.tween("#box1", 1).x(860).groupId("group01");
+Tween24.tween("#box2", 1).rotation(360).groupId("group01");
+Tween24.tween("#box3", 1).opacity(0).groupId("group01");
+Tween24.tween("#box4", 1).xy(400, 400).groupId("group01");
+
+Tween24.playByGroupId("group01");
+```
+```js
+// Bezier curve tween
+Tween24.serial(
+    Tween24.tween("#box", 1).x(860).bezier(430, -300),
+    Tween24.tween("#box", 1.5).x(0).bezier(645, 400).bezier(215, -400)
+).play();
+```
+```js
 // Timer sample
 var time = 5;
 let timer = Tween24.serial(
@@ -178,6 +252,14 @@ function finish() {
 - jump()
 - trigger()
 - groupId()
+
+### Add v1.0.0
+- bezier()
+- x$(), y$(), rotation$() etc...
+- x\$$(), y\$$(), rotation\$$() etc...
+- transformOrigin()
+- backgroundPosition()
+- pointerEvents()
 
 # Tween & Action method
 - Tween24.tween()

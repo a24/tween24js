@@ -19,7 +19,7 @@ import { ParamUpdater } from "./core/updaters/ParamUpdater";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "0.9.11";
+    static readonly VERSION:string = "1.0.1";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -51,6 +51,7 @@ export class Tween24 {
     private static _defaultEasing  :Function = Ease24._Linear;
     private static _debugMode      :boolean  = false;
     private static _numCreateTween :number   = 0;
+    private static _globalTimeScale:number   = 1;
 
     // Tween param
     private _singleTarget:any      |null = null;
@@ -63,6 +64,8 @@ export class Tween24 {
     private _delayTime:number  = NaN;
     private _startTime:number  = NaN;
     private _progress :number  = 0;
+    private _timeScale:number  = 1;
+    private _totalTimeScale:number  = 1;
 
     private _debugMode    :boolean     = false;
     private _numLayers    :number      = 0;
@@ -206,7 +209,12 @@ export class Tween24 {
             this._numLayers = this._parent ? this._parent._numLayers + 1 : 1;
         }
         this._played = true;
-        this._startTime = Ticker24.getTime() + this._delayTime * 1000;
+
+        // Time scale
+        this._totalTimeScale = this._parent ? this._timeScale * this._parent._totalTimeScale: this._timeScale * Tween24._globalTimeScale;
+
+        // Start time
+        this._startTime = Ticker24.getTime() + this._delayTime * 1000 * this._totalTimeScale;
 
         // Velocity
         if (this._type == Tween24._TYPE_TWEEN_VELOCITY || this._type == Tween24._TYPE_TWEEN_TEXT_VELOCITY) {
@@ -232,12 +240,17 @@ export class Tween24 {
         this._played = true;
 
         const nowTime:number = Ticker24.getTime();
-        this._startTime = nowTime - this._time * 1000 * this._progress;
+        
+        if (this._progress > 0) this._startTime = nowTime - this._time      * 1000 * this._progress * this._totalTimeScale;
+        else                    this._startTime = nowTime - this._delayTime * 1000 * this._progress * this._totalTimeScale;
         
         if (this._playingChildTween) {
             for (const tween of this._playingChildTween) {
                 if (tween._playingChildTween) tween._resume();
-                else tween._startTime = nowTime - tween._time * 1000 * tween._progress;
+                else {
+                    if (tween._progress > 0) tween._startTime = nowTime - tween._time      * 1000 * tween._progress * tween._totalTimeScale;
+                    else                     tween._startTime = nowTime - tween._delayTime * 1000 * tween._progress * tween._totalTimeScale;
+                }
             }
         }
         Tween24._playingTweens.push(this);
@@ -369,7 +382,7 @@ export class Tween24 {
     }
 
     public __update(nowTime:number) {
-        this._updateProgress(this._time, this._startTime, nowTime);
+        this._updateProgress(this._time * this._totalTimeScale, this._startTime, nowTime);
         
         // Delay
         if (this._progress < 0) return;
@@ -545,7 +558,8 @@ export class Tween24 {
 
     private _updateProgress(time:number, startTime:number, nowTime:number): number {
         if (this._skiped) this._progress = 1;
-        else if (nowTime < startTime) this._progress = -1;
+        // else if (nowTime < startTime) this._progress = -1;
+        else if (nowTime < startTime) this._progress = (nowTime - startTime) / (this._delayTime * 1000);
         else if (time == 0) this._progress = 1;
         else {
             this._progress = (nowTime - startTime) / (time * 1000);
@@ -1324,6 +1338,15 @@ export class Tween24 {
      * @memberof Tween24
      */
     delay (value:number): Tween24 { this._delayTime += value; return this; }
+
+
+    /**
+     * トゥイーンの時間の尺度（割合）を設定します。
+     * @param {number} value 時間の尺度
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    timeScale (value:number): Tween24 { this._timeScale = value; return this; }
 
     /**
      * 目標とするスタイルシートの値を設定します。
@@ -2235,6 +2258,21 @@ export class Tween24 {
         Tween24._debugMode = flag;
     }
 
+    /**
+     * トゥイーン全体の時間の尺度（割合）を設定します。
+     * @static
+     * @param {number} timeScale 時間の尺度
+     * @memberof Tween24
+     */
+    static setGlobalTimeScale = (timeScale:number) => {
+        Tween24._globalTimeScale = timeScale;
+    }
+
+    /**
+     * manualPlay() されているトゥイーンを、すべてアップデートします。
+     * @static
+     * @memberof Tween24
+     */
     static manualAllUpdate = () => {
         const nowTime = Ticker24.getTime();
         for (const tween of Tween24._manualPlayingTweens) {
@@ -2328,7 +2366,7 @@ export class Tween24 {
             }
         }
         copy.willChange(this._useWillChange);
-        copy.delay(this._delayTime).fps(this.__fps).debug(this._debugMode);
+        copy.delay(this._delayTime).fps(this.__fps).debug(this._debugMode).timeScale(this._timeScale);
         return copy;
     }
 
@@ -2375,5 +2413,9 @@ export class Tween24 {
             }
         }
         return `{${param.replace(/\s+/g," ").trim()}}`;
+    }
+
+    get isPaused():boolean {
+        return this._paused;
     }
 }

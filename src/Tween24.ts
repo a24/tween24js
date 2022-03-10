@@ -64,8 +64,11 @@ export class Tween24 {
     private _delayTime:number  = NaN;
     private _startTime:number  = NaN;
     private _progress :number  = 0;
-    private _timeScale:number  = 1;
-    private _totalTimeScale:number  = 1;
+
+    private _timeScale          :number  = 1;
+    private _delayTimeScale     :number  = 1;
+    private _totalTimeScale     :number  = 1;
+    private _totalDelayTimeScale:number  = 1;
 
     private _debugMode    :boolean     = false;
     private _numLayers    :number      = 0;
@@ -211,10 +214,17 @@ export class Tween24 {
         this._played = true;
 
         // Time scale
-        this._totalTimeScale = this._parent ? this._timeScale * this._parent._totalTimeScale: this._timeScale * Tween24._globalTimeScale;
+        if (this._parent) {
+            this._totalTimeScale      = this._timeScale      * this._parent._totalTimeScale;
+            this._totalDelayTimeScale = this._delayTimeScale * this._parent._totalDelayTimeScale;
+        }
+        else {
+            this._totalTimeScale      = this._timeScale * Tween24._globalTimeScale;
+            this._totalDelayTimeScale = this._delayTimeScale;
+        }
 
         // Start time
-        this._startTime = Ticker24.getTime() + this._delayTime * 1000 * this._totalTimeScale;
+        this._startTime = Ticker24.getTime() + this._delayTime * this._totalDelayTimeScale * this._totalTimeScale * 1000;
 
         // Velocity
         if (this._type == Tween24._TYPE_TWEEN_VELOCITY || this._type == Tween24._TYPE_TWEEN_TEXT_VELOCITY) {
@@ -241,15 +251,15 @@ export class Tween24 {
 
         const nowTime:number = Ticker24.getTime();
         
-        if (this._progress > 0) this._startTime = nowTime - this._time      * 1000 * this._progress * this._totalTimeScale;
-        else                    this._startTime = nowTime - this._delayTime * 1000 * this._progress * this._totalTimeScale;
+        if (this._progress > 0) this._startTime = nowTime - this._time      * this._progress * this._totalTimeScale * 1000;
+        else                    this._startTime = nowTime - this._delayTime * this._progress * this._totalTimeScale * this._totalDelayTimeScale * 1000;
         
         if (this._playingChildTween) {
             for (const tween of this._playingChildTween) {
                 if (tween._playingChildTween) tween._resume();
                 else {
-                    if (tween._progress > 0) tween._startTime = nowTime - tween._time      * 1000 * tween._progress * tween._totalTimeScale;
-                    else                     tween._startTime = nowTime - tween._delayTime * 1000 * tween._progress * tween._totalTimeScale;
+                    if (tween._progress > 0) tween._startTime = nowTime - tween._time      * tween._progress * tween._totalTimeScale * 1000;
+                    else                     tween._startTime = nowTime - tween._delayTime * tween._progress * tween._totalTimeScale * tween._totalDelayTimeScale * 1000;
                 }
             }
         }
@@ -1341,12 +1351,21 @@ export class Tween24 {
 
 
     /**
-     * トゥイーンの時間の尺度（割合）を設定します。
-     * @param {number} value 時間の尺度
+     * トゥイーンの時間（delayの遅延時間を含む）の尺度を設定します。
+     * @param {number} value 時間の尺度（割合）
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
     timeScale (value:number): Tween24 { this._timeScale = value; return this; }
+
+
+    /**
+     * トゥイーンの遅延時間の尺度を設定します。
+     * @param {number} value 遅延時間の尺度（割合）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    delayScale (value:number): Tween24 { this._delayTimeScale = value; return this; }
 
     /**
      * 目標とするスタイルシートの値を設定します。
@@ -2259,7 +2278,7 @@ export class Tween24 {
     }
 
     /**
-     * トゥイーン全体の時間の尺度（割合）を設定します。
+     * すべてのトゥイーンの、時間（delayの遅延時間を含む）の尺度（割合）を設定します。
      * @static
      * @param {number} timeScale 時間の尺度
      * @memberof Tween24
@@ -2366,7 +2385,7 @@ export class Tween24 {
             }
         }
         copy.willChange(this._useWillChange);
-        copy.delay(this._delayTime).fps(this.__fps).debug(this._debugMode).timeScale(this._timeScale);
+        copy.delay(this._delayTime).fps(this.__fps).debug(this._debugMode).timeScale(this._timeScale).delayScale(this._delayTimeScale);
         return copy;
     }
 
@@ -2406,6 +2425,12 @@ export class Tween24 {
         }
         if (this._delayTime) {
             param += " delay:" + this._delayTime + " ";
+        }
+        if (this._delayTimeScale != 1) {
+            param += " delayScale:" + this._delayTimeScale + " ";
+        }
+        if (this._timeScale != 1) {
+            param += " timeScale:" + this._timeScale + " ";
         }
         if (this._allUpdaters) {
             for (const updater of this._allUpdaters) {

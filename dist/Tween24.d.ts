@@ -28,6 +28,7 @@ export declare class Tween24 {
     private static _defaultEasing;
     private static _debugMode;
     private static _numCreateTween;
+    private static _globalTimeScale;
     private _singleTarget;
     private _multiTarget;
     private _easing;
@@ -37,6 +38,10 @@ export declare class Tween24 {
     private _delayTime;
     private _startTime;
     private _progress;
+    private _timeScale;
+    private _delayTimeScale;
+    private _totalTimeScale;
+    private _totalDelayTimeScale;
     private _debugMode;
     private _numLayers;
     private _serialNumber;
@@ -804,6 +809,20 @@ export declare class Tween24 {
      */
     delay(value: number): Tween24;
     /**
+     * トゥイーンの時間（delayの遅延時間を含む）の尺度を設定します。
+     * @param {number} value 時間の尺度（割合）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    timeScale(value: number): Tween24;
+    /**
+     * トゥイーンの遅延時間の尺度を設定します。
+     * @param {number} value 遅延時間の尺度（割合）
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    delayScale(value: number): Tween24;
+    /**
      * 目標とするスタイルシートの値を設定します。
      * 対象が HTMLElement の場合にのみ適用されます。
      * @param {string} name プロパティ名
@@ -1293,6 +1312,18 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     static debugMode: (flag: boolean) => void;
+    /**
+     * すべてのトゥイーンの、時間（delayの遅延時間を含む）の尺度（割合）を設定します。
+     * @static
+     * @param {number} timeScale 時間の尺度
+     * @memberof Tween24
+     */
+    static setGlobalTimeScale: (timeScale: number) => void;
+    /**
+     * manualPlay() されているトゥイーンを、すべてアップデートします。
+     * @static
+     * @memberof Tween24
+     */
     static manualAllUpdate: () => void;
     __clone(base: any, baseQuery: string | null): Tween24;
     toString(): string;
@@ -1300,4 +1331,6 @@ export declare class Tween24 {
     private _warningLog;
     private getTweenTypeString;
     private getTweenParamString;
+    get isPlaying(): boolean;
+    get isPausing(): boolean;
 }

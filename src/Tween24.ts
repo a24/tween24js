@@ -14,7 +14,7 @@ import { StringUtil }       from "./utils/StringUtil";
 import { Sort24 }           from "./index";
 import { Text24 }           from "./utils/Text24";
 import { Event24 }          from "./Event24";
-import { ParamUpdater } from "./core/updaters/ParamUpdater";
+import { ParamUpdater }     from "./core/updaters/ParamUpdater";
 
 export class Tween24 {
 
@@ -161,7 +161,7 @@ export class Tween24 {
                 console.log.apply(console.log, args);
             }
             else if (console) {
-                console.log("Tween24.js - ver." + Tween24.VERSION + " << https://github.com/a24/tween24js >>");
+                console.log("\n Tween24.js - ver." + Tween24.VERSION + " << https://github.com/a24/tween24js >> \n ");
             }
             Tween24.ease   = new Ease24();
             Tween24.ticker = new Ticker24();

@@ -19,7 +19,7 @@ import { ParamUpdater } from "./core/updaters/ParamUpdater";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "1.0.1";
+    static readonly VERSION:string = "1.1.0";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -148,11 +148,27 @@ export class Tween24 {
     __beforeTime:number = 0;
 
     constructor() {
-        Tween24.ease   ||= new Ease24();
-        Tween24.ticker ||= new Ticker24();
-
-        Tween24._playingTweens         ||= [];
-        Tween24._playingTweensByTarget ||= new Map<any, Tween24[]>();
+        // Initialize
+        if (!Tween24.ease) {
+            if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
+                var args = [
+                    "\n %c  %c %c Tween24.js - ver." + Tween24.VERSION + " %c << https://github.com/a24/tween24js >> \n",
+                    "background: #247570; padding:5px 0;",
+                    "background: #3CC2B9; padding:5px 0;",
+                    "color: #247570; background: #fff2cd; padding:5px 0;",
+                    "color: #ffffff; background: #247570; padding:5px 0;"
+                ];
+                console.log.apply(console.log, args);
+            }
+            else if (console) {
+                console.log("Tween24.js - ver." + Tween24.VERSION + " << https://github.com/a24/tween24js >>");
+            }
+            Tween24.ease   = new Ease24();
+            Tween24.ticker = new Ticker24();
+    
+            Tween24._playingTweens         = [];
+            Tween24._playingTweensByTarget = new Map<any, Tween24[]>();
+        }
     }
 
 
@@ -524,6 +540,7 @@ export class Tween24 {
         this._numCompleteChildren = 0;
         this._currentLoops = 0;
         this._played = false;
+        this._paused = false;
         this._inited = false;
         this._jumped = false;
         this._skiped = false;
@@ -2440,7 +2457,11 @@ export class Tween24 {
         return `{${param.replace(/\s+/g," ").trim()}}`;
     }
 
-    get isPaused():boolean {
+    get isPlaying():boolean {
+        return this._played;
+    }
+
+    get isPausing():boolean {
         return this._paused;
     }
 }

@@ -261,6 +261,10 @@ function finish() {
 - backgroundPosition()
 - pointerEvents()
 
+### Add v1.1.0
+- timeScale()
+- delayScale()
+
 # Tween & Action method
 - Tween24.tween()
 - Tween24.prop()
@@ -308,6 +312,12 @@ function finish() {
 - Tween24.stopByGroupId();
 - Tween24.manualPlayByGroupId();
 
+# State properties
+
+### Add v1.1.0
+- tween.isPlaying
+- tween.isPausing
+
 # Callback
 - tween.onPlay()
 - tween.onInit()
@@ -336,3 +346,6 @@ function finish() {
 # Gobal setting
 - Tween24.setDefaultEasing();
 - Tween24.setFPS();
+
+### Add v1.1.0
+- Tween24.setGlobalTimeScale();

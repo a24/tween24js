@@ -1,6 +1,6 @@
 {
   "name": "tween24",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Tween24.js is animation library that enables fast coding using method chains.",
   "main": "./dist/tween24.js",
   "types": "./dist/index.d.ts",

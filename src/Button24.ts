@@ -25,8 +25,6 @@ export class Button24 {
     private _stopInEvent   :Event24|null;
     private _stopOutEvent  :Event24|null;
 
-    private _onResizeBinded:any;
-
     constructor(targetQuery:string, inEventType:string, outEventType:string, templates:ButtonTween24[]) {
         
         this._targetQuery   = targetQuery;
@@ -43,8 +41,6 @@ export class Button24 {
         this._outEvent      = null;
         this._stopInEvent   = null;
         this._stopOutEvent  = null;
-        
-        this._onResizeBinded = this._onResize.bind(this);
 
         let needResizse:boolean = false;
         for (const template of templates) {
@@ -59,7 +55,7 @@ export class Button24 {
         this._addEvent();
     }
 
-    private _addEvent() {
+    private _addEvent = () => {
         if (this._inTweens .length) this._inEvent  = Event24.add(this._targetQuery, this._inEventType , Tween24.parallel(...this._inTweens));
         if (this._outTweens.length) this._outEvent = Event24.add(this._targetQuery, this._outEventType, Tween24.parallel(...this._outTweens));
 
@@ -67,36 +63,54 @@ export class Button24 {
         if (this._stopOutTweens.length) this._stopOutEvent = Event24.add(this._targetQuery, this._outEventType, Tween24.parallel(...this._stopOutTweens)).addStopEvent(this._inEventType);
     }
 
-    private _onResize(event:Event) {
+    private _onResize = (event:Event) => {
         this.reset();
     }
 
-    private _onResizeTemplate() {
+    private _onResizeTemplate = () => {
         for (const template of this._templates) {
             template.onResize();
         }
     }
 
-    reset() {
+    /**
+     * アニメーションを設定し直します。
+     * @memberof Button24
+     */
+    reset = () => {
         Tween24.serial(
             Tween24.func(Event24.removeAllByTarget, this._targetQuery),
-            Tween24.func(this._onResizeTemplate.bind(this)),
+            Tween24.func(this._onResizeTemplate),
             Tween24.wait(0.01),
-            Tween24.func(this._addEvent.bind(this))
+            Tween24.func(this._addEvent)
         ).play();
     }
 
-    resizeAndReset():Button24 {
-        window.addEventListener("resize", this._onResizeBinded, false);
+    /**
+     * ウィンドウのりサイズ時に、アニメーションを設定し直します。
+     * @memberof Button24
+     */
+    resizeAndReset = ():Button24 =>  {
+        window.addEventListener("resize", this._onResize, false);
         return this;
     }
 
-    removeResize():Button24 {
-        window.removeEventListener("resize", this._onResizeBinded, false);
+    /**
+     * ウィンドウのりサイズ時に、アニメーションを設定し直す設定を解除します。
+     * @memberof Button24
+     */
+    removeResize = ():Button24 => {
+        window.removeEventListener("resize", this._onResize, false);
         return this;
     }
 
-    willChange(use:boolean = true):Button24 {
+    /**
+     * アニメーションの willChange を有効にするか設定します。
+     * 有効にすると強力な最適化をブラウザーが行い、アニメーションが滑らかになります。
+     * @param {boolean} [use=true] willChange を有効にするか
+     * @memberof Button24
+     */
+    willChange = (use:boolean = true):Button24 => {
         this._inEvent     ?.willChange(use);
         this._outEvent    ?.willChange(use);
         this._stopInEvent ?.willChange(use);
@@ -112,39 +126,63 @@ export class Button24 {
     //
     // ------------------------------------------
 
+    /**
+     * テンプレートを指定して、ボタンアニメーションを設定します。
+     * @static
+     * @param {string} targetQuery
+     * @param {...ButtonTween24[]} templates
+     * @return {Button24}  {Button24}
+     * @memberof Button24
+     */
     static set(targetQuery:string, ...templates:ButtonTween24[]):Button24 {
         const btn:Button24 = new Button24(targetQuery, Button24._DEFAULT_IN_EVENT, Button24._DEFAULT_OUT_EVENT, templates);
         return btn;
     }
 
-    static _ColorChange(targetQuery:string, color:string):ButtonTween24 {
+    /**
+     * ボタンのテキストに、色を変えるアニメーションを設定します。
+     * @static
+     * @param {string} targetQuery アニメーションの対象を指定するクエリ
+     * @param {string} colorCode 変更後の色のカラーコード
+     * @return {ButtonTween24}  {ButtonTween24}
+     * @memberof Button24
+     */
+    static _ColorChange(targetQuery:string, colorCode:string):ButtonTween24 {
         const template:ButtonTween24 = new ButtonTween24();
         const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
-        template.setStopInTween (Tween24.tween(targetQuery, 0.3, Ease24._4_QuartOut).color(color));
+        template.setStopInTween (Tween24.tween(targetQuery, 0.3, Ease24._4_QuartOut).color(colorCode));
         template.setStopOutTween(
             Tween24.serial(
-                Tween24.prop(targetQuery).color(color),
+                Tween24.prop(targetQuery).color(colorCode),
                 Tween24.tween(targetQuery, 0.6, Ease24._4_QuartOut).color(window.getComputedStyle(targets[0]).color)
             )
         );
         return template;
     }
 
-    static _TextRollUp(targetQuery:string, velocity:number = 40, sort:Function = Sort24._Normal, textSpacing:number = 0):ButtonTween24 {
+    /**
+     * ボタンのテキストに、1文字ずつロールアップするアニメーションを設定します。
+     * @static
+     * @param {string} targetQuery アニメーションの対象を指定するクエリ
+     * @param {number} [lagTotalTime=0.2] 遅延再生のトータル遅延時間
+     * @param {Function} [sort=Sort24._Normal] 再生順を指定するソート関数
+     * @return {ButtonTween24}  {ButtonTween24}
+     * @memberof Button24
+     */
+    static _TextRollUp(targetQuery:string, lagTotalTime:number = 0.2, sort:Function = Sort24._Normal):ButtonTween24 {
         const template:ButtonTween24 = new ButtonTween24();
         const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
         const createText:Function = function() {
             for (const target of targets) {
                 const text:Text24 = Text24.getInstance(target) || new Text24(target, target.textContent?.trim() || "", true, true);
-                text.spacing = textSpacing;
             }
         }
         createText();
         template.setInTween(
             Tween24.serial(
                 Tween24.propText(targetQuery).y("100%"),
-                Tween24.lagTotalSort(0.2, sort,
-                    Tween24.tweenTextVelocity(targetQuery, velocity, Ease24._6_ExpoOut).y(0)
+                Tween24.lagTotalSort(lagTotalTime, sort,
+                    Tween24.tweenTextVelocity(targetQuery, 40, Ease24._6_ExpoOut).y(0)
                 )
             )
         );
@@ -156,20 +194,28 @@ export class Button24 {
         return template;
     }
 
-    static _TextRollUpDown(targetQuery:string, sort:Function = Sort24._Normal, textSpacing:number = 0):ButtonTween24 {
+    /**
+     * ボタンのテキストに、1文字ずつロールアップして戻るアニメーションを設定します。
+     * @static
+     * @param {string} targetQuery アニメーションの対象を指定するクエリ
+     * @param {number} [lagTotalTime=0.2] 遅延再生のトータル遅延時間
+     * @param {Function} [sort=Sort24._Normal] 再生順を指定するソート関数
+     * @return {ButtonTween24}  {ButtonTween24}
+     * @memberof Button24
+     */
+    static _TextRollUpDown(targetQuery:string, lagTotalTime:number = 0.2, sort:Function = Sort24._Normal):ButtonTween24 {
         const template:ButtonTween24 = new ButtonTween24();
         const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
-        const createText:Function = function() {
+        const createText:Function = () => {
             for (const target of targets) {
                 const text:Text24 = Text24.getInstance(target) || new Text24(target, target.textContent?.trim() || "", true, true);
-                text.spacing = textSpacing;
             }
         }
         createText();
         template.setStopInTween(
             Tween24.serial(
                 Tween24.propText(targetQuery).y("100%"),
-                Tween24.lagTotalSort(0.2, sort,
+                Tween24.lagTotalSort(lagTotalTime, sort,
                     Tween24.tweenTextVelocity(targetQuery, 40, Ease24._6_ExpoOut).y(0)
                 )
             )
@@ -177,13 +223,13 @@ export class Button24 {
         template.setStopOutTween(
             Tween24.serial(
                 Tween24.propText(targetQuery).y(0),
-                Tween24.lagTotalSort(0.2, sort,
+                Tween24.lagTotalSort(lagTotalTime, sort,
                     Tween24.tweenTextVelocity(targetQuery, 40, Ease24._6_ExpoOut).y("100%")
                 ),
                 Tween24.propText(targetQuery).y(0)
             )
         );
-        template.setResizeFunc(function():void {
+        template.setResizeFunc(() => {
             Text24.removeByTarget(targetQuery);
             createText();
         });
@@ -191,7 +237,15 @@ export class Button24 {
         return template;
     }
 
-    static _FadeInOutArrow(targetQuery:string, startX:number|string = "-80%"):ButtonTween24 {
+    /**
+     * ボタンの矢印に、フェードしながらスライドインして戻るアニメーションを設定します。
+     * @static
+     * @param {string} targetQuery アニメーションの対象を指定するクエリ
+     * @param {(number|string)} [startX="-80%"] 矢印のアニメーションの開始X座標
+     * @return {ButtonTween24}  {ButtonTween24}
+     * @memberof Button24
+     */
+    static _FadeBackArrow(targetQuery:string, startX:number|string = "-80%"):ButtonTween24 {
         const template:ButtonTween24 = new ButtonTween24();
         template.setStopInTween(
             Tween24.serial(
@@ -208,54 +262,5 @@ export class Button24 {
         Tween24.prop(targetQuery).x(startX).opacity(0).play();
         template.needResize = true;
         return template;
-    }
-
-    /**
-     * ボタンのテキストを、1文字ずつロールアップさせるアニメーションを設定します。
-     * @static
-     * @param {string} buttonQuery ボタンの対象になるクエリ
-     * @param {string} textQuery アニメーションさせるテキストを持っている対象のクエリ
-     * @param {number} velocity ロールアップの速度（1秒間の移動ピクセル）
-     * @param {number} overTotalLagTime マウスオーバー時のトータル時差（秒）
-     * @param {number} outTotalLagTime マウスアウト時のトータル時差（秒）
-     * @param {Function} easing ロールアップのイージング
-     * @param {Function} sort テキストの再生順をソートする関数
-     * @param {number} textSpacing 文字間の調整（px）
-     * @param {boolean} [resizeAndReset=false] ウィンドウのリサイズ時に、
-     * @memberof Button24
-     */
-    static setRollUpTextCharacterAnimation(buttonQuery:string, textQuery:string, velocity:number, overTotalLagTime:number, outTotalLagTime:number, easing:Function|null, sort:Function, textSpacing:number, resizeAndReset:boolean = false) {
-        const createButton:Function = function() {
-            const targets:HTMLElement[] = HTMLUtil.querySelectorAll(textQuery);
-            let text:Text24;
-            for (const target of targets) {
-                text = new Text24(target, target.textContent?.trim() || "", true, true);
-                text.spacing = textSpacing;
-            }
-            const setEvent:Function = function() {
-                Event24.add(buttonQuery, Event24.MOUSE_ENTER, 
-                    Tween24.lagTotalSort(overTotalLagTime, sort,
-                        Tween24.tweenTextVelocity(textQuery, velocity, easing).y("-100%")
-                    )
-                ).addStopEvent(Event24.MOUSE_LEAVE);
-                Event24.add(buttonQuery, Event24.MOUSE_LEAVE, 
-                    Tween24.lagTotalSort(outTotalLagTime, sort,
-                        Tween24.tweenTextVelocity(textQuery, velocity, easing).y(0)
-                    )
-                ).addStopEvent(Event24.MOUSE_ENTER);
-            }
-            setEvent();
-        }
-        if (resizeAndReset) {
-            Event24.add(window, "resize", 
-                Tween24.serial(
-                    Tween24.func(Event24.removeAllByTarget, buttonQuery),
-                    Tween24.func(Text24.removeByTarget, textQuery),
-                    Tween24.wait(0.01),
-                    Tween24.func(createButton)
-                )
-            );
-        }
-        createButton();
     }
 }

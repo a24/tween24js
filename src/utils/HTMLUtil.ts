@@ -1,5 +1,4 @@
 import { ArrayUtil } from "./ArrayUtil";
-import { ClassUtil } from "./ClassUtil";
 
 export class HTMLUtil {
     private static readonly _ATTR:string = "data-tween24";
@@ -101,7 +100,7 @@ export class HTMLUtil {
             if (!HTMLUtil.getAddedStyleByElement(t, pseudo)) {
                 const elementQuery = HTMLUtil.getTweenElementQuery(attr || HTMLUtil._numTweenElement, pseudo);
                 const styleSheet:CSSStyleSheet = document.styleSheets[0];
-                const index:number = styleSheet.insertRule(elementQuery + "{}", styleSheet.rules.length);
+                const index:number = styleSheet.insertRule(elementQuery + "{}", styleSheet.cssRules.length);
                 HTMLUtil._tweenStyle.set(elementQuery, (styleSheet.cssRules[index] as CSSStyleRule).style);
             }
         }

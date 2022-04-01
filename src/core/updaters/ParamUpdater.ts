@@ -14,22 +14,36 @@ export class ParamUpdater {
 
     private _bezier:number[]|null;
     private _originalValue:number|string;
+    private _unit:string;
+    private _isActive:boolean;
 
     constructor(key:string, target:number, originalValue:number|string) {
-        this._key      = key;
-        this._target   = target;
-        this._start    = NaN;
-        this._delta    = NaN;
-        this._value    = NaN;
+        this._key     = key;
+        this._target  = target;
+        this._start   = NaN;
+        this._delta   = NaN;
+        this._value   = NaN;
+        this._unit    = "";
 
         this._$value  = NaN;
         this._$$value = NaN;
 
-        this._bezier = null;
+        this._bezier  = null;
         this._originalValue = originalValue;
+        this._isActive = false;
+    }
+
+    setUnit = (unit:string) => {
+        this._unit = unit;
+    }
+
+    unActive = () => {
+        this._isActive = false;
     }
 
     init(start:number) {
+        this._isActive = true;
+
         if (!isNaN(this._$$value)) {
             this._target = start + this._$$value;
         }
@@ -64,16 +78,18 @@ export class ParamUpdater {
     }
 
     clone(target:number = NaN):ParamUpdater {
-        return new ParamUpdater(this._key, target || this._target, this._originalValue);
+        const updater = new ParamUpdater(this._key, target || this._target, this._originalValue);
+        updater.setUnit(this.unit);
+        return updater;
     }
     
     toString():string {
         if (!isNaN(this._$value)) 
-            return `$${this._key}:${this._$value}`;
+            return `$${this._key}:${this._$value}${this._unit}`;
         else if (!isNaN(this._$$value)) 
-            return `$$${this._key}:${this._$$value}`;
+            return `$$${this._key}:${this._$$value}${this._unit}`;
         else 
-            return `${this._key}:${this._target}`;
+            return `${this._key}:${this._target}${this._unit}`;
     }
 
     /**
@@ -113,11 +129,27 @@ export class ParamUpdater {
         return this._target;
     }
 
+    get unit():string {
+        return this._unit;
+    }
+
     get bezier():number[]|null {
         return this._bezier;
     }
 
     get originalValue():number|string {
         return this._originalValue;
+    }
+
+    get isActive():boolean {
+        return this._isActive;
+    }
+
+    get param():string {
+        return this._value + this.unit;
+    }
+
+    get targetParam():string {
+        return this._target + this.unit;
     }
 }

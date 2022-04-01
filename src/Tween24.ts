@@ -52,6 +52,7 @@ export class Tween24 {
     private static _debugMode      :boolean  = false;
     private static _numCreateTween :number   = 0;
     private static _globalTimeScale:number   = 1;
+    private static _isSkipHello    :boolean  = false;
 
     // Tween param
     private _singleTarget:any      |null = null;
@@ -150,18 +151,20 @@ export class Tween24 {
     constructor() {
         // Initialize
         if (!Tween24.ease) {
-            if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
-                var args = [
-                    "\n %c  %c %c Tween24.js - ver." + Tween24.VERSION + " %c << https://github.com/a24/tween24js >> \n",
-                    "background: #247570; padding:5px 0;",
-                    "background: #3CC2B9; padding:5px 0;",
-                    "color: #247570; background: #fff2cd; padding:5px 0;",
-                    "color: #ffffff; background: #247570; padding:5px 0;"
-                ];
-                console.log.apply(console.log, args);
-            }
-            else if (console) {
-                console.log("\n Tween24.js - ver." + Tween24.VERSION + " << https://github.com/a24/tween24js >> \n ");
+            if (!Tween24._isSkipHello) {
+                if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
+                    var args = [
+                        "\n %c  %c %c Tween24.js - ver." + Tween24.VERSION + " %c << https://github.com/a24/tween24js >> \n",
+                        "background: #247570; padding:5px 0;",
+                        "background: #3CC2B9; padding:5px 0;",
+                        "color: #247570; background: #fff2cd; padding:5px 0;",
+                        "color: #ffffff; background: #247570; padding:5px 0;"
+                    ];
+                    console.log.apply(console.log, args);
+                }
+                else if (console) {
+                    console.log("\n Tween24.js - ver." + Tween24.VERSION + " << https://github.com/a24/tween24js >> \n ");
+                }
             }
             Tween24.ease   = new Ease24();
             Tween24.ticker = new Ticker24();
@@ -2460,6 +2463,15 @@ export class Tween24 {
      */
     static setGlobalTimeScale = (timeScale:number) => {
         Tween24._globalTimeScale = timeScale;
+    }
+
+    /**
+     * コンソールのバージョン表示をスキップします。
+     * @static
+     * @memberof Tween24
+     */
+    static skipHello = () => {
+        Tween24._isSkipHello = true;
     }
 
     /**

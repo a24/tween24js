@@ -114,7 +114,6 @@ export class MultiParamUpdater {
             else this._chache.delete(this._type + this._separator);
         }
         result += ")";
-        // console.log(result);
         return result;
     }
 
@@ -172,8 +171,6 @@ class StyleParam4 {
         p0 = params[0] || "0";
         this.value0 = parseFloat(p0);
         this.unit0 = StringUtil.getUnit(p0);
-        
-        console.log("init", param, numParams)
         
         if (numParams > 1) {
             p1 = params[1] || p0;

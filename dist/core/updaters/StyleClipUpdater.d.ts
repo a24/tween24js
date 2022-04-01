@@ -1,0 +1,36 @@
+export declare class StyleClipUpdater {
+    private static _TYPE_INSET;
+    private static _TYPE_CIRCLE;
+    private static _TYPE_ELLIPSE;
+    private static _chacheClip;
+    private static _chacheRound;
+    private static _chacheCircle;
+    private static _chacheEllipse;
+    private static _chachePosition;
+    private _target;
+    private _key;
+    private _type;
+    private _clipParams;
+    private _clipUpdater;
+    private _roundParams;
+    private _roundUpdater;
+    private _circleParams;
+    private _circleUpdater;
+    private _ellipseParams;
+    private _ellipseUpdater;
+    private _positionParams;
+    private _positionUpdater;
+    constructor(target: HTMLElement);
+    init: () => void;
+    private setInsetPrams;
+    private setCirclePrams;
+    private setEllipsePrams;
+    addPropStr: (key: string, value: string) => void;
+    update: (progress: number) => string;
+    private _updateChache;
+    overwrite: (updater: StyleClipUpdater) => void;
+    getDelta: () => number;
+    clone: (target: HTMLElement) => StyleClipUpdater;
+    toString: () => string;
+    get key(): string;
+}

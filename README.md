@@ -265,6 +265,30 @@ function finish() {
 - timeScale()
 - delayScale()
 
+### Add v1.2.0
+- clipTop()
+- clipRight()
+- clipBottom()
+- clipLeft()
+- clipVertical()
+- clipHorizontal()
+- clip()
+- clipRound1()
+- clipRound2()
+- clipRound3()
+- clipRound4()
+- clipRound()
+- clipCircle()
+- clipCircleX()
+- clipCircleY()
+- clipCircleXY()
+- clipEllipse()
+- clipEllipseWidth()
+- clipEllipseHeight()
+- clipEllipseX()
+- clipEllipseY()
+- clipEllipseXY()
+
 # Tween & Action method
 - Tween24.tween()
 - Tween24.prop()
@@ -349,3 +373,6 @@ function finish() {
 
 ### Add v1.1.0
 - Tween24.setGlobalTimeScale();
+
+### Add v1.2.0
+- Tween24.skipHello();

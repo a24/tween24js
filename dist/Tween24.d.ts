@@ -29,6 +29,7 @@ export declare class Tween24 {
     private static _debugMode;
     private static _numCreateTween;
     private static _globalTimeScale;
+    private static _isSkipHello;
     private _singleTarget;
     private _multiTarget;
     private _easing;
@@ -802,6 +803,144 @@ export declare class Tween24 {
      */
     letterSpacing$$(value: number | string): Tween24;
     /**
+     * CSS:clip-path(inset)で、ボックス形の上辺のクリッピング幅を設定します。
+     * @param {string} value クリッピング幅
+     * @memberof Tween24
+     */
+    clipTop: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(inset)で、ボックス形の右辺のクリッピング幅を設定します。
+     * @param {string} value クリッピング幅
+     * @memberof Tween24
+     */
+    clipRight: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(inset)で、ボックス形の下辺のクリッピング幅を設定します。
+     * @param {string} value クリッピング幅
+     * @memberof Tween24
+     */
+    clipBottom: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(inset)で、ボックス形の左辺のクリッピング幅を設定します。
+     * @param {string} value クリッピング幅
+     * @memberof Tween24
+     */
+    clipLeft: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(inset)で、ボックス形の上下2辺のクリッピング幅をまとめて設定します。
+     * 「100%」を指定すると、上下50%ずつクリッピングされます。
+     * @param {string} value クリッピング幅
+     * @memberof Tween24
+     */
+    clipVertical: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(inset)で、ボックス形の左右2辺のクリッピング幅をまとめて設定します。
+     * 「100%」を指定すると、左右50%ずつクリッピングされます。
+     * @param {string} value クリッピング幅
+     * @memberof Tween24
+     */
+    clipHorizontal: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(inset)で、ボックス形の4辺のクリッピング幅をまとめて設定します。
+     * 「100%」を指定すると、上下左右50%ずつクリッピングされます。
+     * @param {string} value クリッピング幅
+     * @memberof Tween24
+     */
+    clip: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(inset)で、ボックス形クリッピングの左上コーナーの角丸を設定します。
+     * @param {string} value 角丸の値
+     * @memberof Tween24
+     */
+    clipRound1: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(inset)で、ボックス形クリッピングの右上コーナーの角丸を設定します。
+     * @param {string} value 角丸の値
+     * @memberof Tween24
+     */
+    clipRound2: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(inset)で、ボックス形クリッピングの右下コーナーの角丸を設定します。
+     * @param {string} value 角丸の値
+     * @memberof Tween24
+     */
+    clipRound3: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(inset)で、ボックス形クリッピングの左下コーナーの角丸を設定します。
+     * @param {string} value 角丸の値
+     * @memberof Tween24
+     */
+    clipRound4: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(inset)で、ボックス形クリッピングのすべてのコーナーの角丸をまとめて設定します。
+     * @param {string} value 角丸の値
+     * @memberof Tween24
+     */
+    clipRound: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(circle)で、円形クリッピングのサイズを設定します。
+     * @param {string} value クリップのサイズ
+     * @memberof Tween24
+     */
+    clipCircle: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(circle)で、円形クリッピングのX座標を設定します。
+     * @param {string} value X座標
+     * @memberof Tween24
+     */
+    clipCircleX: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(circle)で、円形クリッピングのY座標を設定します。
+     * @param {string} value Y座標
+     * @memberof Tween24
+     */
+    clipCircleY: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(circle)で、円形クリッピングのX、Y座標を設定します。
+     * @param {string} x X座標
+     * @param {string} y Y座標
+     * @memberof Tween24
+     */
+    clipCircleXY: (x: string, y: string) => Tween24;
+    /**
+     * CSS:clip-path(ellipse)で、楕円形クリッピングのサイズを設定します。
+     * @param {string} width クリップの横幅
+     * @param {string} height クリップの縦幅
+     * @memberof Tween24
+     */
+    clipEllipse: (width: string, height: string) => Tween24;
+    /**
+     * CSS:clip-path(ellipse)で、楕円形クリッピングの横幅を設定します。
+     * @param {string} value クリップの横幅
+     * @memberof Tween24
+     */
+    clipEllipseWidth: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(ellipse)で、楕円形クリッピングの縦幅を設定します。
+     * @param {string} value クリップの横幅
+     * @memberof Tween24
+     */
+    clipEllipseHeight: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(ellipse)で、楕円形クリッピングのX座標を設定します。
+     * @param {string} value X座標
+     * @memberof Tween24
+     */
+    clipEllipseX: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(ellipse)で、楕円形クリッピングのY座標を設定します。
+     * @param {string} value Y座標
+     * @memberof Tween24
+     */
+    clipEllipseY: (value: string) => Tween24;
+    /**
+     * CSS:clip-path(ellipse)で、楕円形クリッピングのX、Y座標を設定します。
+     * @param {string} x Y座標
+     * @param {string} y Y座標
+     * @memberof Tween24
+     */
+    clipEllipseXY: (x: string, y: string) => Tween24;
+    /**
      * トゥイーンの遅延時間を設定します。
      * @param {number} value 遅延時間（秒数）
      * @return {Tween24} Tween24インスタンス
@@ -1319,6 +1458,12 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     static setGlobalTimeScale: (timeScale: number) => void;
+    /**
+     * コンソールのバージョン表示をスキップします。
+     * @static
+     * @memberof Tween24
+     */
+    static skipHello: () => void;
     /**
      * manualPlay() されているトゥイーンを、すべてアップデートします。
      * @static

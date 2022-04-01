@@ -245,7 +245,7 @@ export class Button24 {
      * @return {ButtonTween24}  {ButtonTween24}
      * @memberof Button24
      */
-    static _FadeBackArrow(targetQuery:string, startX:number|string = "-80%"):ButtonTween24 {
+    static _FadeAndBackArrow(targetQuery:string, startX:number|string = "-80%"):ButtonTween24 {
         const template:ButtonTween24 = new ButtonTween24();
         template.setStopInTween(
             Tween24.serial(
@@ -260,6 +260,77 @@ export class Button24 {
             )
         );
         Tween24.prop(targetQuery).x(startX).opacity(0).play();
+        template.needResize = true;
+        return template;
+    }
+
+
+    static _UnderlinedAndBack(targetQuery:string, borderWidth:number = 1, borderStyle:string = "solid", borderColor:string = "none"):ButtonTween24 {
+        const className = "tw-underlined";
+        const targets:HTMLElement[] = HTMLUtil.querySelectorAll(targetQuery);
+        let containerList = new Map<HTMLElement, HTMLSpanElement>();
+        for (const target of targets) {
+            const displayStyle = target.style.display;
+            const container = document.createElement("span");
+            container.style.display = "block";
+            container.style.position = "absolute";
+            // container.style.overflow = "hidden";
+            container.className = className;
+            
+            // 幅を取得して親Spanに設定
+            target.style.display = "inline-block";
+            container.style.width = target.clientWidth + "px";
+            target.style.display = displayStyle;
+            
+            // 子Span作成
+            const span = document.createElement("span");
+            const color = borderColor == "none" ? HTMLUtil.getComputedStyle(target).color: borderColor;
+            span.style.position = "absolute";
+            span.style.left = "0";
+            span.style.bottom = "0";
+            span.style.width = "100%";
+            span.style.borderBottom = `${borderStyle} ${borderWidth}px ${color}`;
+            // span.style.setProperty("clip-path", "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)");
+            // span.style.setProperty("mask-size", "50%");
+            span.style.setProperty("clip-path", "inset(0% 50% 0% 0%)");
+            // span.style.setProperty("mask-position", "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)");
+
+            container.appendChild(span);
+            target.appendChild(container);
+            containerList.set(target, container);
+        }
+        
+        const template:ButtonTween24 = new ButtonTween24();
+        const tweenQuery = targetQuery + ` span.${className} span`;
+        // const tweenQuery = targetQuery + ` span.${className}`;
+        template.setStopInTween(
+            Tween24.serial(
+                // Tween24.prop(tweenQuery).width(0),
+                // Tween24.tween(tweenQuery, 0.4, Ease24._5_QuintOut).width("100%")
+                Tween24.prop(tweenQuery).style("mask-size", "0"),
+                Tween24.tween(tweenQuery, 0.4, Ease24._5_QuintOut).style("mask-size", "100%")
+            )
+        );
+        template.setStopOutTween(
+            Tween24.serial(
+                // Tween24.prop(tweenQuery).width("100%"),
+                // Tween24.tween(tweenQuery, 0.4, Ease24._4_QuartOut).width(0)
+                Tween24.prop(tweenQuery).style("mask-size", "100%"),
+                Tween24.tween(tweenQuery, 0.4, Ease24._5_QuintOut).style("mask-size", "0%")
+            )
+        );
+        template.setResizeFunc(() => {
+            for (const target of targets) {
+                // 幅を取得して親Spanに再設定
+                const container = containerList.get(target);
+                if (container) {
+                    const displayStyle = target.style.display;
+                    target.style.display = "inline-block";
+                    container.style.width = target.clientWidth + "px";
+                    target.style.display = displayStyle;
+                }
+            }
+        });
         template.needResize = true;
         return template;
     }

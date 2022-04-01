@@ -10,7 +10,11 @@ export declare class ParamUpdater {
     private _$$value;
     private _bezier;
     private _originalValue;
+    private _unit;
+    private _isActive;
     constructor(key: string, target: number, originalValue: number | string);
+    setUnit: (unit: string) => void;
+    unActive: () => void;
     init(start: number): void;
     update(progress: number): number;
     getDelta(): number;
@@ -29,6 +33,10 @@ export declare class ParamUpdater {
      */
     getBezier(b: number, e: number, t: number, p: number[]): number;
     get target(): number;
+    get unit(): string;
     get bezier(): number[] | null;
     get originalValue(): number | string;
+    get isActive(): boolean;
+    get param(): string;
+    get targetParam(): string;
 }

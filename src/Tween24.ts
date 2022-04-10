@@ -601,7 +601,7 @@ export class Tween24 {
 
     // ------------------------------------------
     //
-    // Tween Propety
+    // Tween Transform
     //
     // ------------------------------------------
 
@@ -1039,7 +1039,68 @@ export class Tween24 {
      * @memberof Tween24
      */
     angle$$ (value:number): Tween24 { return this._isDOM ? this._set$$Style("rotation", value) : this._set$$Propety("angle", value); }
-    
+
+    /**
+     * 目標とする幅を設定します。
+     * 対象が HTMLElement の場合は、CSS:width が適用されます。
+     * @param {number|string} value 要素の幅
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    width (value:number|string): Tween24 { return this._isDOM ? this._setStyle("width", StringUtil.addUnit(value)) : this._setPropety("width", parseFloat(value as string)); }
+
+    /**
+     * 目標とする幅を、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:width が適用されます。
+     * @param {number|string} value 要素の幅
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    width$ (value:number|string): Tween24 { return this._isDOM ? this._set$Style("width", StringUtil.addUnit(value)) : this._set$Propety("width", parseFloat(value as string)); }
+
+    /**
+     * 目標とする幅を、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:width が適用されます。
+     * @param {number|string} value 要素の幅
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    width$$ (value:number|string): Tween24 { return this._isDOM ? this._set$$Style("width", StringUtil.addUnit(value)) : this._set$$Propety("width", parseFloat(value as string)); }
+
+    /**
+     * 目標とする高さを設定します。
+     * 対象が HTMLElement の場合は、CSS:height が適用されます。
+     * @param {number|string} value 要素の高さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    height (value:number|string): Tween24 { return this._isDOM ? this._setStyle("height", StringUtil.addUnit(value)) : this._setPropety("height", parseFloat(value as string)); }
+
+    /**
+     * 目標とする高さを、トゥイーンを作成した時の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:height が適用されます。
+     * @param {number|string} value 要素の高さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    height$ (value:number|string): Tween24 { return this._isDOM ? this._set$Style("height", StringUtil.addUnit(value)) : this._set$Propety("height", parseFloat(value as string)); }
+
+    /**
+     * 目標とする高さを、トゥイーンが実行される直前の値の相対値で設定します。
+     * 対象が HTMLElement の場合は、CSS:height が適用されます。
+     * @param {number|string} value 要素の高さ
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    height$$ (value:number|string): Tween24 { return this._isDOM ? this._set$$Style("height", StringUtil.addUnit(value)) : this._set$$Propety("height", parseFloat(value as string)); }
+
+
+    // ------------------------------------------
+    //
+    // CSS Propety
+    //
+    // ------------------------------------------
+
     /**
      * CSS:top を設定します。
      * @param {number|string} 上からの配置位置（距離）
@@ -1135,64 +1196,10 @@ export class Tween24 {
      * @memberof Tween24
      */
     left$$ (value:number|string): Tween24 { return this._set$$Style("left", StringUtil.addUnit(value)); }
-
-    /**
-     * 目標とする幅を設定します。
-     * 対象が HTMLElement の場合は、CSS:width が適用されます。
-     * @param {number|string} value 要素の幅
-     * @return {Tween24} Tween24インスタンス
-     * @memberof Tween24
-     */
-    width (value:number|string): Tween24 { return this._isDOM ? this._setStyle("width", StringUtil.addUnit(value)) : this._setPropety("width", parseFloat(value as string)); }
-
-    /**
-     * 目標とする幅を、トゥイーンを作成した時の値の相対値で設定します。
-     * 対象が HTMLElement の場合は、CSS:width が適用されます。
-     * @param {number|string} value 要素の幅
-     * @return {Tween24} Tween24インスタンス
-     * @memberof Tween24
-     */
-    width$ (value:number|string): Tween24 { return this._isDOM ? this._set$Style("width", StringUtil.addUnit(value)) : this._set$Propety("width", parseFloat(value as string)); }
-
-    /**
-     * 目標とする幅を、トゥイーンが実行される直前の値の相対値で設定します。
-     * 対象が HTMLElement の場合は、CSS:width が適用されます。
-     * @param {number|string} value 要素の幅
-     * @return {Tween24} Tween24インスタンス
-     * @memberof Tween24
-     */
-    width$$ (value:number|string): Tween24 { return this._isDOM ? this._set$$Style("width", StringUtil.addUnit(value)) : this._set$$Propety("width", parseFloat(value as string)); }
-
-    /**
-     * 目標とする高さを設定します。
-     * 対象が HTMLElement の場合は、CSS:height が適用されます。
-     * @param {number|string} value 要素の高さ
-     * @return {Tween24} Tween24インスタンス
-     * @memberof Tween24
-     */
-    height (value:number|string): Tween24 { return this._isDOM ? this._setStyle("height", StringUtil.addUnit(value)) : this._setPropety("height", parseFloat(value as string)); }
-
-    /**
-     * 目標とする高さを、トゥイーンを作成した時の値の相対値で設定します。
-     * 対象が HTMLElement の場合は、CSS:height が適用されます。
-     * @param {number|string} value 要素の高さ
-     * @return {Tween24} Tween24インスタンス
-     * @memberof Tween24
-     */
-    height$ (value:number|string): Tween24 { return this._isDOM ? this._set$Style("height", StringUtil.addUnit(value)) : this._set$Propety("height", parseFloat(value as string)); }
-
-    /**
-     * 目標とする高さを、トゥイーンが実行される直前の値の相対値で設定します。
-     * 対象が HTMLElement の場合は、CSS:height が適用されます。
-     * @param {number|string} value 要素の高さ
-     * @return {Tween24} Tween24インスタンス
-     * @memberof Tween24
-     */
-    height$$ (value:number|string): Tween24 { return this._isDOM ? this._set$$Style("height", StringUtil.addUnit(value)) : this._set$$Propety("height", parseFloat(value as string)); }
     
     /**
      * CSS:color を設定します。
-     * @param {string} colorCode 「#」「rgb()」フォーマットのカラー値
+     * @param {string} colorCode 「#」「rgb()」フォーマットのカラーコード
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
@@ -1200,7 +1207,7 @@ export class Tween24 {
     
     /**
      * CSS:background-color（背景色）を設定します。
-     * @param {string} colorCode 「#」「rgb()」フォーマットのカラー値
+     * @param {string} colorCode 「#」「rgb()」フォーマットのカラーコード
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
@@ -1307,7 +1314,7 @@ export class Tween24 {
 
     /**
      * CSS:border-color（枠の色）を設定します。
-     * @param {number} colorCode 「#」「rgb()」フォーマットのカラー値
+     * @param {number} colorCode 「#」「rgb()」フォーマットのカラーコード
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
@@ -1360,6 +1367,14 @@ export class Tween24 {
      * @memberof Tween24
      */
     letterSpacing$$ (value:number|string): Tween24 { return this._set$$Style("letter-spacing", StringUtil.addUnit(value)); }
+
+
+
+    // ------------------------------------------
+    //
+    // Clip
+    //
+    // ------------------------------------------
 
     /**
      * CSS:clip-path(inset)で、ボックス形の上辺のクリッピング幅を設定します。
@@ -1521,6 +1536,123 @@ export class Tween24 {
      */
     clipEllipseXY = (x:string, y:string):Tween24 => { return this.clipEllipseX(x).clipEllipseY(y); }
 
+
+
+    // ------------------------------------------
+    //
+    // Filters
+    //
+    // ------------------------------------------
+
+    /**
+     * CSS:filter(blur)で、ぼかしを設定します。
+     * @param {number} value ぼかしのガウス値（px）
+     * @memberof Tween24
+     */
+    blur = (value:number):Tween24 => { return this._setStyle("filter::blur", value + "px"); }
+    
+    /**
+     * CSS:filter(brightness)で、明るさを設定します。
+     * @param {number} value 明るさ（0[暗い] 〜 1[標準] 〜 1以上[明るい]）
+     * @memberof Tween24
+     */
+    brightness = (value:number):Tween24 => { return this._setStyle("filter::brightness", value); }
+    
+    /**
+     * CSS:filter(contrast)で、コントラストを設定します。
+     * @param {number} value コントラスト値（0[低い] 〜 1[標準] 〜 1以上[高い]）
+     * @memberof Tween24
+     */
+    contrast = (value:number):Tween24 => { return this._setStyle("filter::contrast", value); }
+    
+    /**
+     * CSS:filter(grayscale)で、グレースケールを設定します。
+     * @param {number} value グレースケール値（0[標準] 〜 1[グレー]）
+     * @memberof Tween24
+     */
+    grayscale = (value:number):Tween24 => { return this._setStyle("filter::grayscale", value); }
+
+    /**
+     * CSS:filter(hue-rotate)で、色相を設定します。
+     * @param {number} value 色相の回転度（0 〜 360）
+     * @memberof Tween24
+     */
+    hue = (value:number):Tween24 => { return this._setStyle("filter::hue-rotate", value + "deg"); }
+    
+    /**
+     * CSS:filter(invert)で、色反転を設定します。
+     * @param {number} value 色の反転具合（0[標準] 〜 1[反転]）
+     * @memberof Tween24
+     */
+    invert = (value:number):Tween24 => { return this._setStyle("filter::invert", value); }
+    
+    /**
+     * CSS:filter(opacity)で、透明度を設定します。
+     * @param {number} value 透明度（0[透明] 〜 1[標準]）
+     * @memberof Tween24
+     */
+    opacityFilter = (value:number):Tween24 => { return this._setStyle("filter::opacity", value); }
+    
+    /**
+     * CSS:filter(saturate)で、彩度を設定します。
+     * @param {number} value 彩度（0[低い] 〜 1[標準] 〜 1以上[高い]）
+     * @memberof Tween24
+     */
+    saturate = (value:number):Tween24 => { return this._setStyle("filter::saturate", value); }
+    
+    /**
+     * CSS:filter(sepia)で、セピア調の度合を設定します。
+     * @param {number} value セピア調の度合（0[標準] 〜 1[セピア]）
+     * @memberof Tween24
+     */
+    sepia = (value:number):Tween24 => { return this._setStyle("filter::sepia", value); }
+
+    /**
+     * CSS:filter(drop-shadow)で、ドロップシャドウのX軸のオフセットを設定します。
+     * @param {number} value X軸のオフセット値（px）
+     * @memberof Tween24
+     */
+    shadowX = (value:number):Tween24 => { return this._setStyle("filter::drop-shadow-x", value + "px"); }
+    
+    /**
+     * CSS:filter(drop-shadow)で、ドロップシャドウのY軸のオフセットを設定します。
+     * @param {number} value Y軸のオフセット値（px）
+     * @memberof Tween24
+     */
+    shadowY = (value:number):Tween24 => { return this._setStyle("filter::drop-shadow-y", value + "px"); }
+    
+    /**
+     * CSS:filter(drop-shadow)で、ドロップシャドウのぼかしを設定します。
+     * @param {number} value ぼかしのガウス値（px）
+     * @memberof Tween24
+     */
+    shadowBlur = (value:number):Tween24 => { return this._setStyle("filter::drop-shadow-blur", value + "px"); }
+    
+    /**
+     * CSS:filter(drop-shadow)で、ドロップシャドウの色を設定します。
+     * @param {string} value 「#」「rgb()」フォーマットのカラーコード
+     * @memberof Tween24
+     */
+    shadowColor = (value:string):Tween24 => { return this._setStyle("filter::drop-shadow-color", value); }
+    
+    /**
+     * CSS:filter(drop-shadow)で、ドロップシャドウを設定します。
+     * @param {number} offsetX X軸のオフセット値（px）
+     * @param {number} offsetY Y軸のオフセット値（px）
+     * @param {number} blur ぼかしのガウス値（px）
+     * @param {string} color 「#」「rgb()」フォーマットのカラーコード
+     * @memberof Tween24
+     */
+    shadow = (offsetX:number, offsetY:number, blur:number, color:string):Tween24 => { return this.shadowX(offsetX).shadowY(offsetY).shadowBlur(blur).shadowColor(color); }
+
+
+
+    // ------------------------------------------
+    //
+    // etc.
+    //
+    // ------------------------------------------
+
     /**
      * トゥイーンの遅延時間を設定します。
      * @param {number} value 遅延時間（秒数）
@@ -1671,14 +1803,14 @@ export class Tween24 {
                 this._styleUpdater = new StyleUpdater(this._singleTarget, this._targetQuery);
                 this._allUpdaters?.push(this._styleUpdater);
             }
-            this._styleUpdater.addPropStr(name, value as string, option);
+            this._styleUpdater.addPropStr(name, value + "", option);
         }
         else if (this._multiTarget) {
             if (!this._styleMultiUpdater) {
                 this._styleMultiUpdater = new MultiUpdater(this._multiTarget, this._targetQuery).setupByType(StyleUpdater.className);
                 this._allUpdaters?.push(this._styleMultiUpdater);
             }
-            this._styleMultiUpdater.addPropStr(name, value as string, option);
+            this._styleMultiUpdater.addPropStr(name, value + "", option);
         }
         return this;
     }

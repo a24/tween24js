@@ -1,9 +1,10 @@
-import { Updater }           from "./Updater";
-import { ParamUpdater }      from "./ParamUpdater";
-import { HTMLUtil }          from "../../utils/HTMLUtil";
-import { StyleColorUpdater } from "./StyleColorUpdater";
-import { ColorUtil }         from "../../utils/ColorUtil";
-import { MultiParamUpdater } from "./MultiParamUpdater";
+import { Updater            } from "./Updater";
+import { ParamUpdater       } from "./ParamUpdater";
+import { HTMLUtil           } from "../../utils/HTMLUtil";
+import { StyleColorUpdater  } from "./StyleColorUpdater";
+import { ColorUtil          } from "../../utils/ColorUtil";
+import { MultiParamUpdater  } from "./MultiParamUpdater";
+import { StyleFilterUpdater } from "./StyleFilterUpdater";
 
 export class StyleUpdater implements Updater {
     static className:string = "StyleUpdater";
@@ -19,6 +20,7 @@ export class StyleUpdater implements Updater {
     private _tweenKey     :string[]|null;
 
     private _clipUpdater  :MultiParamUpdater|null;
+    private _filterUpdater:StyleFilterUpdater|null;
 
     private _onceParam    :{[key:string]:string}|null;
     private _isUpdatedOnce:boolean;
@@ -35,6 +37,7 @@ export class StyleUpdater implements Updater {
         this._unit        ||= {};
         this._tweenKey      = null;
         this._clipUpdater   = null;
+        this._filterUpdater = null;
         this._onceParam     = null;
         this._isUpdatedOnce = false;
         this._pseudo        = this._query ? HTMLUtil.getPseudoQuery(this._query) : null;
@@ -43,14 +46,17 @@ export class StyleUpdater implements Updater {
     
     addPropStr(key:string, value:string, option:string|null = null) {
         if (key.indexOf("clip::") > -1) {
-            const clip = HTMLUtil.getComputedStyle(this._target).clipPath;
-            if      (key.indexOf("inset"  ) > -1) this._clipUpdater ||= new MultiParamUpdater(this._target, "clip-path", "inset"  , 4, "round", 4);
-            else if (key.indexOf("circle" ) > -1) this._clipUpdater ||= new MultiParamUpdater(this._target, "clip-path", "circle" , 1, "at"   , 2);
-            else if (key.indexOf("ellipse") > -1) this._clipUpdater ||= new MultiParamUpdater(this._target, "clip-path", "ellipse", 2, "at"   , 2);
+            if      (key.indexOf("inset"  ) > -1) this._clipUpdater ||= new MultiParamUpdater(this._target, "clip-path", "inset"  , 4, false, "round", 4);
+            else if (key.indexOf("circle" ) > -1) this._clipUpdater ||= new MultiParamUpdater(this._target, "clip-path", "circle" , 1, false, "at"   , 2);
+            else if (key.indexOf("ellipse") > -1) this._clipUpdater ||= new MultiParamUpdater(this._target, "clip-path", "ellipse", 2, false, "at"   , 2);
             
             const index = parseFloat(key.slice(-1));
             if (key.indexOf("round") > -1 || key.indexOf("at") > -1) this._clipUpdater?.addPropStr2(index, value);
             else this._clipUpdater?.addPropStr(index, value);
+        }
+        if (key.indexOf("filter::") > -1) {
+            this._filterUpdater ||= new StyleFilterUpdater(this._target);
+            this._filterUpdater.addPropStr(key.split("::")[1], value);
         }
         else {
             const val :RegExpMatchArray|null = String(value).match(StyleUpdater.PARAM_REG);
@@ -126,9 +132,15 @@ export class StyleUpdater implements Updater {
 
         if (this._clipUpdater) {
             this._clipUpdater.init(this._target.style.clipPath);
-            
             if (this._useWillChange) {
                 HTMLUtil.addWillChange(this._style || this._target.style, [this._clipUpdater.key]);
+            }
+        }
+
+        if (this._filterUpdater) {
+            this._filterUpdater.init(getComputedStyle(this._target).filter);
+            if (this._useWillChange) {
+                HTMLUtil.addWillChange(this._style || this._target.style, [this._filterUpdater.key]);
             }
         }
     }
@@ -154,6 +166,11 @@ export class StyleUpdater implements Updater {
             if (this._style) this._style.setProperty(this._clipUpdater.key, value);
             else HTMLUtil.setStyleProp(this._target, this._clipUpdater.key, value);
         }
+        if (this._filterUpdater) {
+            const value:string = this._filterUpdater.update(progress);
+            if (this._style) this._style.setProperty(this._filterUpdater.key, value);
+            else HTMLUtil.setStyleProp(this._target, this._filterUpdater.key, value);
+        }
         if (progress == 1) this.complete();
     }
 
@@ -169,6 +186,9 @@ export class StyleUpdater implements Updater {
             if (this._clipUpdater && updater._clipUpdater) {
                 this._clipUpdater.overwrite(updater._clipUpdater);
             }
+            if (this._filterUpdater && updater._filterUpdater) {
+                this._filterUpdater.overwrite(updater._filterUpdater);
+            }
         }
     }
 
@@ -180,6 +200,8 @@ export class StyleUpdater implements Updater {
         }
         if (this._clipUpdater)
             deltas.push(this._clipUpdater.getDelta());
+        if (this._filterUpdater)
+            deltas.push(this._filterUpdater.getDelta());
         return Math.max(...deltas);
     }
 
@@ -203,7 +225,9 @@ export class StyleUpdater implements Updater {
         if (this._key        ) copy._key         = [ ...this._key ];
         if (this._unit       ) copy._unit        = { ...this._unit };
         if (this._onceParam  ) copy._onceParam   = { ...this._onceParam };
-        if (this._clipUpdater) copy._clipUpdater = this._clipUpdater.clone(target);
+
+        if (this._clipUpdater  ) copy._clipUpdater   = this._clipUpdater  .clone(target);
+        if (this._filterUpdater) copy._filterUpdater = this._filterUpdater.clone(target);
         return copy;
     }
 
@@ -214,6 +238,8 @@ export class StyleUpdater implements Updater {
                 str += this._param[key]?.toString() + (this._unit[key]?.toString() || "") + " ";
         if (this._clipUpdater) 
             str += this._clipUpdater.key + ":" + this._clipUpdater.toString() + " ";
+        if (this._filterUpdater) 
+            str += this._filterUpdater.key + ":" + this._filterUpdater.toString() + " ";
         for (const key in this._onceParam)
             str += key + ":" + this._onceParam[key].toString() + " ";
         return str.trim();
@@ -231,6 +257,9 @@ export class StyleUpdater implements Updater {
             
             if (this._clipUpdater) {
                 HTMLUtil.removeWillChange(this._style || this._target.style, [this._clipUpdater.key]);
+            }
+            if (this._filterUpdater) {
+                HTMLUtil.removeWillChange(this._style || this._target.style, [this._filterUpdater.key]);
             }
         }
     }

@@ -1,4 +1,5 @@
-import { StringUtil } from "../../utils/StringUtil";
+import { ColorUtil    } from "../../utils/ColorUtil";
+import { StringUtil   } from "../../utils/StringUtil";
 import { ParamUpdater } from "./ParamUpdater";
 
 export class MultiParamUpdater {
@@ -17,11 +18,18 @@ export class MultiParamUpdater {
     private _params2   :StyleParam4|null;
     private _updater2  :ParamUpdater4|null;
 
-    constructor(target:HTMLElement, key:string, type:string, numParam:number, separator:string|null = null, numParam2:number = NaN) {
+    private _useColor    :boolean;
+    private _colorParams :StyleParam4|null;
+    private _colorUpdater:ParamUpdater4|null;
+
+    private _isUpdate    :boolean;
+
+    constructor(target:HTMLElement, key:string, type:string, numParam:number, useColor:boolean = false, separator:string|null = null, numParam2:number = NaN) {
         this._key        = key;
         this._target     = target
         this._type       = type;
         this._numParams  = numParam;
+        this._useColor   = useColor;
         this._params     = new StyleParam4();
         this._updater    = null;
 
@@ -29,6 +37,11 @@ export class MultiParamUpdater {
         this._numParams2 = numParam2;
         this._params2    = null;
         this._updater2   = null;
+
+        this._colorParams  = null;
+        this._colorUpdater = null;
+
+        this._isUpdate = false;
 
         MultiParamUpdater._chache ||= new Map<HTMLElement, Map<string, StyleParam4>>();
         const chache = MultiParamUpdater._chache.get(this._target);
@@ -43,14 +56,28 @@ export class MultiParamUpdater {
         this._setParams(start);
         this._updater?.init(this._params);
         if (this._params2) this._updater2?.init(this._params2);
+        if (this._colorParams) this._colorUpdater?.init(this._colorParams);
     }
 
     private _setParams = (paramValue:string) => {
+        if (this._useColor) {
+            const colorMatch = paramValue.match(String.raw`(rgb\().*?(\))`);
+            if (colorMatch) {
+                const color = colorMatch[0];
+                const rgb = color.match(String.raw`(?<=rgb\().*?(?=\))`);
+                this._colorParams ||= new StyleParam4();
+                this._colorParams.init(rgb ? rgb[0] : "0,0,0", 3, ",");
+                paramValue = paramValue.replace(color, "");
+            }
+        }
+        
         let p1 = "";
         let p2 = undefined;
         const match = paramValue.match(String.raw`(?<=${this._type}\().*?(?=\))`);
         if (match) {
-            const matchValue = match[0];
+    
+            let matchValue = match[0];
+            
             if (this._separator && matchValue.indexOf(this._separator) > -1) {
                 const matchList = matchValue.split(this._separator);
                 p1 = matchList[0];
@@ -72,17 +99,29 @@ export class MultiParamUpdater {
     addPropStr = (index:number, value:string) => {
         this._updater ||= new ParamUpdater4(this._numParams);
         this._updater.setUpdater(index, value);
+        this._isUpdate = true;
     }
 
     addPropStr2 = (index:number, value:string) => {
         this._updater2 ||= new ParamUpdater4(this._numParams2);
         this._updater2.setUpdater(index, value);
+        this._isUpdate = true;
+    }
+
+    addPropColor = (colorCode:string) => {
+        this._colorUpdater = new ParamUpdater4(3);
+        const color = ColorUtil.getRGBList(colorCode);
+        this._colorUpdater.setUpdater(0, color[0] + "");
+        this._colorUpdater.setUpdater(1, color[1] + "");
+        this._colorUpdater.setUpdater(2, color[2] + "");
+        this._isUpdate = true;
     }
 
     update = (progress:number):string => {
         const chache1 = this._chache.get(this._type);
         const chache2 = this._chache.get(this._type + this._separator);
-        if (!chache1 || (this._updater2 && !chache2)) {
+        const chache3 = this._chache.get(this._type + "rgb");
+        if (!chache1 || (this._updater2 && !chache2) || (this._colorUpdater && !chache3)) {
             this._setParams(getComputedStyle(this._target).getPropertyValue(this._key));
         }
         else {
@@ -90,6 +129,10 @@ export class MultiParamUpdater {
             if (chache2) {
                 if (this._params2) this._params2.copy(chache2);
                 else this._params2 = chache2.clone();
+            }
+            if (chache3) {
+                if (this._colorParams) this._colorParams.copy(chache3);
+                else this._colorParams = chache3.clone();
             }
         }
 
@@ -113,6 +156,18 @@ export class MultiParamUpdater {
             if (progress != 1) this._chache.set(this._type + this._separator, this._params2);
             else this._chache.delete(this._type + this._separator);
         }
+
+        // Color
+        if (this._colorParams) {
+            if (this._colorUpdater) {
+                this._colorUpdater.update(this._colorParams, progress);
+            }
+            result += ` rgb(${this._colorParams.param})`;
+            
+            // Chache
+            if (progress != 1) this._chache.set(this._type + "rgb", this._colorParams);
+            else this._chache.delete(this._type + "rgb");
+        }
         result += ")";
         return result;
     }
@@ -120,8 +175,9 @@ export class MultiParamUpdater {
     overwrite = (updater:MultiParamUpdater) => {
         if (updater._target == this._target) {
             if (updater._type == this._type) {
-                if (updater._updater ) this._updater ?.overwrite(updater._updater );
-                if (updater._updater2) this._updater2?.overwrite(updater._updater2);
+                if (updater._updater     ) this._updater     ?.overwrite(updater._updater     );
+                if (updater._updater2    ) this._updater2    ?.overwrite(updater._updater2    );
+                if (updater._colorUpdater) this._colorUpdater?.overwrite(updater._colorUpdater);
             }
         }
     }
@@ -129,25 +185,31 @@ export class MultiParamUpdater {
     getDelta = ():number => {
         const d0:number = this._updater ?.getDelta() || 1;
         const d1:number = this._updater2?.getDelta() || 1;
-        return Math.max(Math.sqrt(d0 * d0 + d1 * d1));
+        return Math.max(d0, d1);
     }
 
     clone = (target:HTMLElement):MultiParamUpdater => {
-        const mpu = new MultiParamUpdater(target, this._key, this._type, this._numParams, this._separator, this._numParams2);
-        if (this._updater ) mpu._updater  = this._updater .clone();
-        if (this._updater2) mpu._updater2 = this._updater2.clone();
+        const mpu = new MultiParamUpdater(target, this._key, this._type, this._numParams, this._useColor, this._separator, this._numParams2);
+        if (this._updater     ) mpu._updater      = this._updater     .clone();
+        if (this._updater2    ) mpu._updater2     = this._updater2    .clone();
+        if (this._colorUpdater) mpu._colorUpdater = this._colorUpdater.clone();
         return mpu;
     }
     
     toString = ():string => {
         let result = `${this._type}(${this._updater?.toString() || "none"}`;
         if (this._updater2) result += ` ${this._separator} ${this._updater2.toString()}`;
+        if (this._colorUpdater) result += ` rgb(${this._colorUpdater.toString()})`;
         result += `)`;
         return result;
     }
 
     get key():string {
         return this._key;
+    }
+
+    get isUpdate():boolean {
+        return this._isUpdate;
     }
 }
 
@@ -162,11 +224,14 @@ class StyleParam4 {
     unit2 :string = "";
     unit3 :string = "";
 
+    private _spliter:string = " ";
+
     constructor() {}
 
-    init = (param:string, numParams:number) => {
+    init = (param:string, numParams:number, spliter:string = " ") => {
         let p0, p1, p2, p3;
-        const params = param.trim().split(" ");
+        const params = param.trim().split(spliter);
+        this._spliter = spliter;
 
         p0 = params[0] || "0";
         this.value0 = parseFloat(p0);
@@ -196,8 +261,8 @@ class StyleParam4 {
         if (isNaN(this.value0)) result = "none";
         else {
             result += this.value0 + this.unit0 + " ";
-            result += isNaN(this.value1) ? "none " : this.value1 + this.unit1 + " ";
-            result += isNaN(this.value2) ? "none " : this.value2 + this.unit2 + " ";
+            result += isNaN(this.value1) ? "none " : this.value1 + this.unit1 + this._spliter;
+            result += isNaN(this.value2) ? "none " : this.value2 + this.unit2 + this._spliter;
             result += isNaN(this.value3) ? "none"  : this.value3 + this.unit3;
         }
         return result;
@@ -220,11 +285,11 @@ class StyleParam4 {
     }
 
     get param():string {
-        let result = this.value0 + this.unit0 + " ";
-        if (!isNaN(this.value1)) result += this.value1 + this.unit1 + " ";
-        if (!isNaN(this.value2)) result += this.value2 + this.unit2 + " ";
-        if (!isNaN(this.value3)) result += this.value3 + this.unit3;
-        return result.trim();
+        let result = this.value0 + this.unit0;
+        if (!isNaN(this.value1)) result += this._spliter + this.value1 + this.unit1;
+        if (!isNaN(this.value2)) result += this._spliter + this.value2 + this.unit2;
+        if (!isNaN(this.value3)) result += this._spliter + this.value3 + this.unit3;
+        return result;
     }
 }
 
@@ -269,10 +334,10 @@ class ParamUpdater4 {
     }
 
     update = (param4:StyleParam4, progress:number) => {
-        if (this._u0) { param4.value0 = this._u0.update(progress); param4.unit0 = this._u0.unit; }
-        if (this._u1) { param4.value1 = this._u1.update(progress); param4.unit1 = this._u1.unit; }
-        if (this._u2) { param4.value2 = this._u2.update(progress); param4.unit2 = this._u2.unit; }
-        if (this._u3) { param4.value3 = this._u3.update(progress); param4.unit3 = this._u3.unit; }
+        if (this._u0?.isActive) { param4.value0 = this._u0.update(progress); param4.unit0 = this._u0.unit; }
+        if (this._u1?.isActive) { param4.value1 = this._u1.update(progress); param4.unit1 = this._u1.unit; }
+        if (this._u2?.isActive) { param4.value2 = this._u2.update(progress); param4.unit2 = this._u2.unit; }
+        if (this._u3?.isActive) { param4.value3 = this._u3.update(progress); param4.unit3 = this._u3.unit; }
     }
 
     overwrite = (updater:ParamUpdater4) => {

@@ -29,7 +29,7 @@ export class StringUtil {
     }
 
     static getUnit = (value:string):string => {
-        const unit = value.match(StringUtil.UNIT_REG);
+        const unit = value.trim().match(StringUtil.UNIT_REG);
         return unit ? unit[0] : "";
     }
 }

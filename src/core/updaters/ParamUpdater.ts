@@ -57,6 +57,7 @@ export class ParamUpdater {
             this._value = this.getBezier(this._start, this._target, progress, this._bezier);
         }
         else this._value = this._start + this._delta * progress;
+        this._value = Math.trunc(this._value * 10000) / 10000;
         return this._value;
     }
 
@@ -123,6 +124,10 @@ export class ParamUpdater {
             }
             return p1 + it * (2 * (1 - it) * (p[ip] - p1) + it * (p2 - p1));
         }
+    }
+
+    get key():string {
+        return this._key;
     }
 
     get target():number {

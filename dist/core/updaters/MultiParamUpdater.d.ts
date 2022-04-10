@@ -11,15 +11,21 @@ export declare class MultiParamUpdater {
     private _numParams2;
     private _params2;
     private _updater2;
-    constructor(target: HTMLElement, key: string, type: string, numParam: number, separator?: string | null, numParam2?: number);
+    private _useColor;
+    private _colorParams;
+    private _colorUpdater;
+    private _isUpdate;
+    constructor(target: HTMLElement, key: string, type: string, numParam: number, useColor?: boolean, separator?: string | null, numParam2?: number);
     init: (start: string) => void;
     private _setParams;
     addPropStr: (index: number, value: string) => void;
     addPropStr2: (index: number, value: string) => void;
+    addPropColor: (colorCode: string) => void;
     update: (progress: number) => string;
     overwrite: (updater: MultiParamUpdater) => void;
     getDelta: () => number;
     clone: (target: HTMLElement) => MultiParamUpdater;
     toString: () => string;
     get key(): string;
+    get isUpdate(): boolean;
 }

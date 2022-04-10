@@ -19,7 +19,7 @@ import { ParamUpdater }     from "./core/updaters/ParamUpdater";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "1.2.0";
+    static readonly VERSION:string = "1.3.0";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";

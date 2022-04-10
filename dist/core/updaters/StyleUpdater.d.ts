@@ -10,6 +10,7 @@ export declare class StyleUpdater implements Updater {
     private _unit;
     private _tweenKey;
     private _clipUpdater;
+    private _filterUpdater;
     private _onceParam;
     private _isUpdatedOnce;
     private _pseudo;

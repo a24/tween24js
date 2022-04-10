@@ -32,6 +32,7 @@ export declare class ParamUpdater {
      * @return	number
      */
     getBezier(b: number, e: number, t: number, p: number[]): number;
+    get key(): string;
     get target(): number;
     get unit(): string;
     get bezier(): number[] | null;

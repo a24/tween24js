@@ -261,11 +261,11 @@ function finish() {
 - backgroundPosition()
 - pointerEvents()
 
-### Add v1.1.0
+### Add v1.1.0 (Time scale)
 - timeScale()
 - delayScale()
 
-### Add v1.2.0
+### Add v1.2.0 (Clip)
 - clipTop()
 - clipRight()
 - clipBottom()
@@ -288,6 +288,22 @@ function finish() {
 - clipEllipseX()
 - clipEllipseY()
 - clipEllipseXY()
+
+### Add v1.3.0 (Filters)
+- blur()
+- brightness()
+- contrast()
+- grayscale()
+- hue()
+- invert()
+- opacityFilter()
+- saturate()
+- sepia()
+- shadow()
+- shadowX()
+- shadowY()
+- shadowBlur()
+- shadowColor()
 
 # Tween & Action method
 - Tween24.tween()

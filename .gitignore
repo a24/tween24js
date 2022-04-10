@@ -5,3 +5,4 @@ node_modules
 /sample/tweenmax
 /.idea
 src/**/*.js
+/sample/benchmark.html

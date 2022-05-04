@@ -7,7 +7,6 @@ import { TransformUpdater } from "./core/updaters/TransformUpdater";
 import { FunctionExecuter } from "./core/FunctionExecuter";
 import { StyleUpdater }     from "./core/updaters/StyleUpdater";
 import { MultiUpdater }     from "./core/updaters/MultiUpdater";
-import { ArrayUtil }        from "./utils/ArrayUtil";
 import { ClassUtil }        from "./utils/ClassUtil";
 import { HTMLUtil }         from "./utils/HTMLUtil";
 import { StringUtil }       from "./utils/StringUtil";
@@ -15,6 +14,8 @@ import { Sort24 }           from "./index";
 import { Text24 }           from "./utils/Text24";
 import { Event24 }          from "./Event24";
 import { ParamUpdater }     from "./core/updaters/ParamUpdater";
+import { LinkedList }       from "./core/data/LinkedList";
+import { LinkedListItem }   from "./core/data/LinkedListItem";
 
 export class Tween24 {
 
@@ -37,13 +38,19 @@ export class Tween24 {
     private static readonly _TYPE_FUNC               :string = "func";
     private static readonly _TYPE_IF_CASE            :string = "if_case";
     private static readonly _TYPE_IF_CASE_BY_FUNC    :string = "if_case_by_func";
+    
+    private static readonly _STATUS_PLAYING:string = "playing";
+    private static readonly _STATUS_PAUSING:string = "pausing";
+    private static readonly _STATUS_SKIPING:string = "skiping";
+    private static readonly _STATUS_STOPING:string = "stoping";
+    private static readonly _STATUS_WAITING:string = "waiting";
 
     static ticker:Ticker24;
     static ease  :Ease24;
 
-    private static _playingTweens        :Tween24[];
-    private static _manualPlayingTweens  :Tween24[];
-    private static _playingTweensByTarget:Map<any, Tween24[]>;
+    private static _playingTweens        :LinkedList;
+    private static _manualPlayingTweens  :LinkedList;
+    private static _playingTweensByTarget:Map<any, LinkedList>;
 
     private static _tweensById     :Map<string, Tween24>;
     private static _tweensByGroupId:Map<string, Tween24[]>;
@@ -54,10 +61,14 @@ export class Tween24 {
     private static _globalTimeScale:number   = 1;
     private static _isSkipHello    :boolean  = false;
 
+    private _playingTweensItem:LinkedListItem|undefined;
+    private _playingTweensByTargetItem:LinkedListItem|undefined;
+    private _playingTweensByTargetList:LinkedList|undefined;
+
     // Tween param
     private _singleTarget:any      |null = null;
     private _multiTarget :any[]    |null = null;
-    private _easing      :Function |null = null;
+    private _easing      :Function       = Tween24._defaultEasing;;
     private _type        :string         = "";
 
     private _time     :number  = NaN;
@@ -87,12 +98,14 @@ export class Tween24 {
     private _transformMultiUpdater:MultiUpdater    |null = null;
     private _styleUpdater         :StyleUpdater    |null = null;
     private _styleMultiUpdater    :MultiUpdater    |null = null;
-    private _allUpdaters          :Updater[]       |null = null;
+    private _allUpdaters          :LinkedList      |null = null;
 
     // Refer
     private _root  :Tween24|null = null;
     private _parent:Tween24|null = null;
     private _next  :Tween24|null = null;
+    __next  :Tween24|null = null;
+    __prev  :Tween24|null = null;
 
     // Status
     private _isDOM    :boolean = false;
@@ -100,10 +113,7 @@ export class Tween24 {
     private _isManual :boolean = false;
     private _isTrigger:boolean = false;
     private _inited   :boolean = false;
-    private _played   :boolean = false;
-    private _paused   :boolean = false;
-    private _skiped   :boolean = false;
-    private _eventWaiting       :boolean = false;
+    private _status   :string  = Tween24._STATUS_STOPING;
     private _firstUpdated       :boolean = false;
     private _isContainerTween   :boolean = false;
     private _createdBasicUpdater:boolean = false;
@@ -114,15 +124,13 @@ export class Tween24 {
     // Container Tween
     private _firstTween        :Tween24  |null = null;
     private _childTween        :Tween24[]|null = null;
-    private _playingChildTween :Tween24[]|null = null;
+    private _playingChildTween :LinkedList|null = null;
     private _originalChildTween:Tween24[]|null = null;
-
-    private _numChildren        :number  = 0;
-    private _numCompleteChildren:number  = 0;
+    private _numCompleteChildren:number = 0;
 
     // Lag
-    private _lagTime     :number = NaN;
-    private _totalLagTime:number = NaN;
+    private _lagTime     :number        = NaN;
+    private _totalLagTime:number        = NaN;
     private _lagSort     :Function|null = null;
     private _lagEasing   :Function|null = null;
 
@@ -140,9 +148,10 @@ export class Tween24 {
     private _dispatchEventType  :string|null = null;
 
     // Trigger & Jump
+    private _useJump   :boolean = false;
     private _triggered :boolean = false;
     private _jumped    :boolean = false;
-    private _jumpProg  :number = NaN;
+    private _jumpProg  :number  = NaN;
     
     // Tween FPS
     __fps:number = 0;
@@ -168,9 +177,9 @@ export class Tween24 {
             }
             Tween24.ease   = new Ease24();
             Tween24.ticker = new Ticker24();
-    
-            Tween24._playingTweens         = [];
-            Tween24._playingTweensByTarget = new Map<any, Tween24[]>();
+
+            Tween24._playingTweens         = new LinkedList();
+            Tween24._playingTweensByTarget = new Map<any, LinkedList>();
         }
     }
 
@@ -186,6 +195,7 @@ export class Tween24 {
      * @memberof Tween24
      */
     play = () => {
+        this._isManual = false;
         this._commonRootPlay();
     }
 
@@ -195,14 +205,20 @@ export class Tween24 {
      * @memberof Tween24
      */
     manualPlay = () => {
-        Tween24._manualPlayingTweens ||= [];
+        Tween24._manualPlayingTweens ||= new LinkedList();
         this._isManual = true;
         this._commonRootPlay();
     }
 
-    private _commonRootPlay() {
-        if (!this._paused) {
-            if (!this._played) {
+    private _commonRootPlay = () => {
+        if (this._status == Tween24._STATUS_PAUSING) {
+            this._resume();
+            if (!this._isManual) Tween24.ticker.add(this);
+            else Tween24._manualPlayingTweens.push(this);
+            this._functionExecute(Tween24Event.RESUME);
+        }
+        else {
+            if (this._status != Tween24._STATUS_PLAYING && this._status != Tween24._STATUS_WAITING) {
                 this._root   = this;
                 this._isRoot = true;
                 this._inited = false;
@@ -213,16 +229,9 @@ export class Tween24 {
                 this._functionExecute(Tween24Event.PLAY);
             }
         }
-        else {
-            this._resume();
-            this._paused = false;
-            if (!this._isManual) Tween24.ticker.add(this);
-            else Tween24._manualPlayingTweens.push(this);
-            this._functionExecute(Tween24Event.RESUME);
-        }
     }
 
-    private _play() {
+    private _play = () => {
         if (this._isRoot) {
             this._numLayers = 0;
         }
@@ -230,7 +239,7 @@ export class Tween24 {
             this._root = this._parent?._root || this._parent;
             this._numLayers = this._parent ? this._parent._numLayers + 1 : 1;
         }
-        this._played = true;
+        this._status = Tween24._STATUS_PLAYING;
 
         // Time scale
         if (this._parent) {
@@ -242,47 +251,52 @@ export class Tween24 {
             this._totalDelayTimeScale = this._delayTimeScale;
         }
 
-        // Start time
-        this._startTime = Ticker24.getTime() + this._delayTime * this._totalDelayTimeScale * this._totalTimeScale * 1000;
-
         // Velocity
         if (this._type == Tween24._TYPE_TWEEN_VELOCITY || this._type == Tween24._TYPE_TWEEN_TEXT_VELOCITY) {
-            const deltas:number[] = [0];
-            if (this._allUpdaters?.length) {
-                for (const updater of this._allUpdaters) {
-                    updater.init(false);
-                    deltas.push(updater.getMaxAbsDelta());
-                }
-            }
+            const deltas = [0];
+            this._allUpdaters?.map((updater:Updater) => {
+                updater.init(false);
+                deltas.push(updater.getMaxAbsDelta());
+            });
             this._time = Math.max(...deltas) / this._velocity;
         }
         
-        Tween24._playingTweens.push(this);
+        this._playingTweensItem = Tween24._playingTweens.push(this);
         
         // Skip
-        if (this._root?._skiped || this._parent?._skiped) this._skip();
+        if (this._root?._status == Tween24._STATUS_SKIPING || this._parent?._status == Tween24._STATUS_SKIPING) {
+            this._skip();
+        }
         
         this._debugLog("play");
+
+        // Init
+        if (!this._delayTime || this._delayTime < 1 / 60) this._init();
+
+        // Start time
+        if (this._isManual) this._setStartTime(Ticker24.getTime());
+        else Tween24.ticker.setPlayTIme();
     }
 
-    private _resume() {
-        this._played = true;
+    private _resume = () => {
+        this._status = Tween24._STATUS_PLAYING;
 
-        const nowTime:number = Ticker24.getTime();
-        
+        const nowTime = Ticker24.getTime();
         if (this._progress > 0) this._startTime = nowTime - this._time      * this._progress * this._totalTimeScale * 1000;
         else                    this._startTime = nowTime - this._delayTime * this._progress * this._totalTimeScale * this._totalDelayTimeScale * 1000;
         
+        console.log((nowTime - this._startTime) / (this._time * 1000))
+        
         if (this._playingChildTween) {
-            for (const tween of this._playingChildTween) {
+            this._playingChildTween.map((tween) => {
                 if (tween._playingChildTween) tween._resume();
                 else {
                     if (tween._progress > 0) tween._startTime = nowTime - tween._time      * tween._progress * tween._totalTimeScale * 1000;
                     else                     tween._startTime = nowTime - tween._delayTime * tween._progress * tween._totalTimeScale * tween._totalDelayTimeScale * 1000;
                 }
-            }
+            });
         }
-        Tween24._playingTweens.push(this);
+        this._playingTweensItem = Tween24._playingTweens.push(this);
     }
 
     /**
@@ -291,11 +305,10 @@ export class Tween24 {
      */
     pause = () => {
         if (this._isRoot) {
-            this._played = false;
-            this._paused = true;
-            if (this._isManual) ArrayUtil.removeItemFromArray(Tween24._manualPlayingTweens, this);
+            this._status = Tween24._STATUS_PAUSING;
+            if (this._isManual) Tween24._manualPlayingTweens.delete(this);
             else Tween24.ticker.remove(this);
-            ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
+            if (this._playingTweensItem) Tween24._playingTweens.remove(this._playingTweensItem);
             this._functionExecute(Tween24Event.PAUSE);
         }
     }
@@ -307,12 +320,12 @@ export class Tween24 {
         this._skip();
     }
 
-    private _skip() {
-        this._skiped = true;
+    private _skip = () => {
+        this._status = Tween24._STATUS_SKIPING;
         if (this._playingChildTween) {
-            for (const tween of this._playingChildTween.concat()) {
-                tween._skip();
-            }
+            this._playingChildTween.map((tween) => {
+                tween.skip();
+            });
         }
         this.__update(0);
     }
@@ -326,7 +339,7 @@ export class Tween24 {
         this._functionExecute(Tween24Event.STOP);
     }
 
-    private _stop() {
+    private _stop = () => {
         this._tweenStop();
         if (this._childTween) {
             for (const tween of this._childTween) {
@@ -343,16 +356,23 @@ export class Tween24 {
     //
     // ------------------------------------------
 
-    private _initParam() {
+    private _init = () => {
+        this._inited = true;
+        this._initParam();
+        this._functionExecute(Tween24Event.INIT);
+    }
+
+    private _initParam = () => {
         // Pseudo element setting
         if (this._isDOM && this._targetQuery && HTMLUtil.isPseudoQuery(this._targetQuery))
             HTMLUtil.setTweenElementQuery(this._singleTarget || this._multiTarget, this._targetQuery);
 
         // Updater init
-        if (this._allUpdaters?.length) {
-            for (const updater of this._allUpdaters) {
-                updater.init(this._root?._useWillChange || this._parent?._useWillChange || this._useWillChange);
-            }
+        if (this._allUpdaters) {
+            const useWillChange = this._root?._useWillChange || this._parent?._useWillChange || this._useWillChange;
+            this._allUpdaters.map((updater:Updater) => {
+                updater.init(useWillChange);
+            });
         }
         
         // Overwrite
@@ -365,10 +385,10 @@ export class Tween24 {
         }
     }
 
-    private _overwrite(target:any) {
-        let tweens:Tween24[]|undefined = Tween24._playingTweensByTarget.get(target);
-        if (tweens) {
-            for (const tween of tweens) {
+    private _overwrite = (target:any) => {
+        this._playingTweensByTargetList = Tween24._playingTweensByTarget.get(target);
+        if (this._playingTweensByTargetList) {
+                this._playingTweensByTargetList.map((tween, index) => {
                 if (this !== tween) {
                     if (this._singleTarget) {
                         if (this._objectUpdater   ) (tween._objectMultiUpdater   ||tween._objectUpdater   )?.overwrite(this._objectUpdater);
@@ -384,15 +404,15 @@ export class Tween24 {
                         else if (tween._styleUpdater         ) this._styleMultiUpdater    ?.overwriteTo     (tween._styleUpdater);
                     }
                 }
-            }
-            tweens.push(this);
+            });
+            this._playingTweensByTargetList.push(this);
         }
         else {
-            Tween24._playingTweensByTarget.set(target, [this]);
+            Tween24._playingTweensByTarget.set(target, new LinkedList(this));
         }
     }
 
-    private _setIfCaseTween(flag:boolean) {
+    private _setIfCaseTween = (flag:boolean) => {
         if (this._childTween) this._childTween.length = 0;
         else this._childTween = [];
 
@@ -402,25 +422,42 @@ export class Tween24 {
             this._childTween = [this._falseTween];
         else
             this._childTween = [];
-        
-        this._numChildren = this._childTween.length;
+    }
+
+    private _setStartTime = (lastPlayTime:number) => {
+        this._startTime = lastPlayTime + this._delayTime * this._totalDelayTimeScale * this._totalTimeScale * 1000;
     }
 
     manualUpdate = () => {
         this.__update(Ticker24.getTime());
     }
 
-    public __update(nowTime:number) {
-        this._updateProgress(this._time * this._totalTimeScale, this._startTime, nowTime);
-        
-        // Delay
-        if (this._progress < 0) return;
+    public __update = (nowTime:number) => {
+        // Set start time
+        if (!this._startTime) this._setStartTime(Tween24.ticker.getLastPLayTime());
 
+        // Delay
+        if (this._delayTime) { 
+            if (nowTime < this._startTime) {
+                this._progress = (nowTime - this._startTime) / (this._delayTime * 1000);
+                return;
+            }
+        }
+
+        const time = this._time * this._totalTimeScale;
+        // Skip
+        if (this._status == Tween24._STATUS_SKIPING || time == 0) {
+            this._progress = 1;
+        }
+        // Else
+        else {
+            this._progress = (nowTime - this._startTime) / (time * 1000);
+            this._progress = (this._progress > 1) ? 1 : this._progress;
+        }
+        
         // Init
         if (!this._inited) {
-            this._inited = true;
-            this._initParam();
-            this._functionExecute(Tween24Event.INIT);
+            this._init();
         }
 
         // Container Tween
@@ -435,6 +472,7 @@ export class Tween24 {
 
                 switch (this._type) {
                     case Tween24._TYPE_SERIAL:
+                    case Tween24._TYPE_LOOP  :
                         if (this._firstTween) {
                             this._playingChildTween?.push(this._firstTween);
                             this._firstTween._play();
@@ -442,7 +480,6 @@ export class Tween24 {
                         break;
                     case Tween24._TYPE_PARALLEL:
                     case Tween24._TYPE_LAG     :
-                    case Tween24._TYPE_LOOP    :
                     case Tween24._TYPE_IF_CASE :
                     case Tween24._TYPE_IF_CASE_BY_FUNC :
                         if (this._childTween) {
@@ -456,25 +493,25 @@ export class Tween24 {
             }
             // Update
             if (this._playingChildTween) {
-                for (const tween of this._playingChildTween) {
+                this._playingChildTween.map((tween) => {
                     tween.__update(nowTime);
-                }
+                });
             }
             this._functionExecute(Tween24Event.UPDATE);
-            if (this._numChildren == this._numCompleteChildren) this._complete();
+            if (this._childTween?.length == this._numCompleteChildren) this._complete();
         }
 
         // Child Tween
         else {
-            this._firstUpdated = true;
-            if (this._singleTarget || this._multiTarget) {
+            if (!this._firstUpdated)
+                this._firstUpdated = true;
+
+            if (this._allUpdaters) {
                 // Update propety
-                var prog = this._easing ? this._easing(this._progress, 0, 1, 1) : this._progress;
-                if (this._allUpdaters?.length) {
-                    for (const updater of this._allUpdaters) {
-                        updater.update(prog);
-                    }
-                }
+                const prog = this._easing(this._progress, 0, 1, 1);
+                this._allUpdaters.map((updater:Updater) => {
+                    updater.update(prog);
+                });
                 this._functionExecute(Tween24Event.UPDATE);
             }
             else {
@@ -482,7 +519,7 @@ export class Tween24 {
             }
 
             // Jump
-            if (!Number.isNaN(this._jumpProg) && !this._jumped && this._progress >= this._jumpProg) {
+            if (this._useJump && !this._jumped && this._progress >= this._jumpProg) {
                 this._jumped = true;
                 this._parent?._playNextTween(this);
             }
@@ -491,11 +528,10 @@ export class Tween24 {
             if (this._progress >= 1) {
                 // Wait event
                 if ((this._type == Tween24._TYPE_WAIT_EVENT || this._type == Tween24._TYPE_WAIT_EVENT_AND_FUNC) && this._dispatchEventTarget && this._dispatchEventType) {
-                    if (this._eventWaiting == false) {
-                        this._eventWaiting = true;
+                    if (this._status != Tween24._STATUS_WAITING) {
+                        this._status = Tween24._STATUS_WAITING;
                         
                         const waitHandler = () => {
-                            this._eventWaiting = false;
                             if (this._dispatchEventType) Event24.remove(this._dispatchEventTarget, this._dispatchEventType);
     
                             // End
@@ -520,14 +556,14 @@ export class Tween24 {
         }
     }
 
-    private _complete() {
+    private _complete = () => {
         this._debugLog("complete");
 
         if (this._type == Tween24._TYPE_LOOP) {
             this._currentLoops ++;
             if (this._numLoops == 0 || this._numLoops > this._currentLoops) {
                 this._numCompleteChildren = 0;
-                this._play();
+                this._firstTween?._play();
                 return;
             }
         }
@@ -537,26 +573,25 @@ export class Tween24 {
         this._tweenStop();
     }
 
-    private _tweenStop() {
+    private _tweenStop = () => {
         if (this._isRoot) Tween24.ticker.remove(this);
-        if (this._playingChildTween) this._playingChildTween.length = 0;
+        if (this._playingChildTween) this._playingChildTween.dispose();
         this._numCompleteChildren = 0;
-        this._currentLoops = 0;
-        this._played = false;
-        this._paused = false;
-        this._inited = false;
-        this._jumped = false;
-        this._skiped = false;
-        this._triggered = false;
-        this._firstUpdated = false;
+        this._currentLoops        = 0;
+        this._startTime           = 0;
+        this._inited              = false;
+        this._jumped              = false;
+        this._triggered           = false;
+        this._firstUpdated        = false;
+        this._status              = Tween24._STATUS_STOPING;
         
-        ArrayUtil.removeItemFromArray(Tween24._playingTweensByTarget.get(this._singleTarget), this);
-        ArrayUtil.removeItemFromArray(Tween24._playingTweens, this);
+        if (this._playingTweensByTargetItem) this._playingTweensByTargetList?.remove(this._playingTweensByTargetItem);
+        if (this._playingTweensItem) Tween24._playingTweens.remove(this._playingTweensItem);
 
-        if (this._isManual) ArrayUtil.removeItemFromArray(Tween24._manualPlayingTweens, this);
+        if (this._isManual) Tween24._manualPlayingTweens.delete(this);
     }
 
-    private _completeChildTween(tween:Tween24) {
+    private _completeChildTween = (tween:Tween24) => {
         // this._debugLog("completeChildTween");
         this._numCompleteChildren ++;
         
@@ -567,35 +602,23 @@ export class Tween24 {
             }
         }
 
-        if (this._numChildren == this._numCompleteChildren) {
+        if (this._childTween?.length == this._numCompleteChildren) {
             this._complete();
         }
         else if (this._playingChildTween) {
-            ArrayUtil.removeItemFromArray(this._playingChildTween, tween);
+            this._playingChildTween.delete(tween);
             if (!tween._triggered && !tween._jumped) {
                 this._playNextTween(tween);
             }
         }
     }
 
-    private _playNextTween(childTween:Tween24) {
+    private _playNextTween = (childTween:Tween24) => {
         var next:Tween24|null = childTween._next;
         if (this._playingChildTween && next) {
             this._playingChildTween.push(next);
             next._play();
         }
-    }
-
-    private _updateProgress(time:number, startTime:number, nowTime:number): number {
-        if (this._skiped) this._progress = 1;
-        // else if (nowTime < startTime) this._progress = -1;
-        else if (nowTime < startTime) this._progress = (nowTime - startTime) / (this._delayTime * 1000);
-        else if (time == 0) this._progress = 1;
-        else {
-            this._progress = (nowTime - startTime) / (time * 1000);
-            this._progress = (this._progress > 1) ? 1 : this._progress;
-        }
-        return this._progress;
     }
 
 
@@ -1732,7 +1755,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    trigger():Tween24  { this._isTrigger = true; return this; }
+    trigger ():Tween24  { this._isTrigger = true; return this; }
 
     /**
      * トゥイーンの途中で、次のトゥイーンへ移行します。
@@ -1740,7 +1763,7 @@ export class Tween24 {
      * @return {Tween24} Tween24インスタンス
      * @memberof Tween24
      */
-    jump(progress:number):Tween24  { this._jumpProg = progress; return this; }
+    jump (progress:number):Tween24  { this._useJump = true; this._jumpProg = progress; return this; }
 
     /**
      * トゥイーン毎のFPS（1秒間の更新回数）を設定します。
@@ -1938,7 +1961,7 @@ export class Tween24 {
      * @memberof Tween24
      */
     static tween(target: any, time: number, easing: Function|null = null, params: { [key: string]: number } | null = null): Tween24 {
-        return new Tween24()._createChildTween(Tween24._TYPE_TWEEN, target, time, easing, params);
+        return Tween24._createChildTween(Tween24._TYPE_TWEEN, target, time, easing, params);
     }
 
     /**
@@ -1956,7 +1979,7 @@ export class Tween24 {
      * @memberof Tween24
      */
     static tweenVelocity(target: any, velocity: number, easing: Function|null = null, params: { [key: string]: number } | null = null): Tween24 {
-        return new Tween24()._createChildTween(Tween24._TYPE_TWEEN_VELOCITY, target, velocity, easing, params);
+        return Tween24._createChildTween(Tween24._TYPE_TWEEN_VELOCITY, target, velocity, easing, params);
     }
 
     /**
@@ -1968,7 +1991,7 @@ export class Tween24 {
      * @memberof Tween24
     */
     static prop(target: any, params: { [key: string]: number } | null = null): Tween24 {
-        return new Tween24()._createChildTween(Tween24._TYPE_PROP, target, 0, null, params);
+        return Tween24._createChildTween(Tween24._TYPE_PROP, target, 0, null, params);
     }
 
     /**
@@ -2036,7 +2059,7 @@ export class Tween24 {
                 textElements.push(...text.targets);
             }
         }
-        const tween:Tween24 = new Tween24()._createChildTween(type, textElements, timeOrVelocity, easing, null);
+        const tween:Tween24 = Tween24._createChildTween(type, textElements, timeOrVelocity, easing, null);
         tween._targetQuery = targetQuery + " span";
         return tween;
     }
@@ -2049,7 +2072,7 @@ export class Tween24 {
      * @memberof Tween24
      */
     static wait(time: number): Tween24 {
-        return new Tween24()._createChildTween(Tween24._TYPE_WAIT, null, time, null, null);
+        return Tween24._createChildTween(Tween24._TYPE_WAIT, null, time, null, null);
     }
 
     /**
@@ -2061,7 +2084,7 @@ export class Tween24 {
      * @memberof Tween24
      */
     static func(func: Function, ...args: any[]): Tween24 {
-        return new Tween24()._createActionTween(Tween24._TYPE_FUNC)._setFunctionExecute(Tween24._TYPE_FUNC, func, func, args);
+        return Tween24._createActionTween(Tween24._TYPE_FUNC)._setFunctionExecute(Tween24._TYPE_FUNC, func, func, args);
     }
 
     /**
@@ -2073,7 +2096,7 @@ export class Tween24 {
      * @memberof Tween24
      */
     static waitEvent(target:any, type:string): Tween24 {
-        return new Tween24()._createActionTween(Tween24._TYPE_WAIT_EVENT)._setWaitEvent(target, type);
+        return Tween24._createActionTween(Tween24._TYPE_WAIT_EVENT)._setWaitEvent(target, type);
     }
 
     /**
@@ -2087,7 +2110,7 @@ export class Tween24 {
      * @memberof Tween24
      */
     static waitEventAndFunc(target:any, type:string, func:Function, ...args:any[]): Tween24 {
-        return new Tween24()._createActionTween(Tween24._TYPE_WAIT_EVENT_AND_FUNC)._setWaitEvent(target, type)._setFunctionExecute(Tween24._TYPE_WAIT_EVENT_AND_FUNC, func, func, args);
+        return Tween24._createActionTween(Tween24._TYPE_WAIT_EVENT_AND_FUNC)._setWaitEvent(target, type)._setFunctionExecute(Tween24._TYPE_WAIT_EVENT_AND_FUNC, func, func, args);
     }
 
     private _setWaitEvent(target:any, type:string):Tween24 {
@@ -2104,7 +2127,7 @@ export class Tween24 {
      * @memberof Tween24
      */
     static log(...message:any[]): Tween24 {
-        return new Tween24()._createActionTween(Tween24._TYPE_FUNC)._setFunctionExecute(Tween24._TYPE_FUNC, window, window.console.log, message);
+        return Tween24._createActionTween(Tween24._TYPE_FUNC)._setFunctionExecute(Tween24._TYPE_FUNC, window, window.console.log, message);
     }
 
     /**
@@ -2115,7 +2138,7 @@ export class Tween24 {
      * @memberof Tween24
      */
     static serial(...childTween: Tween24[]): Tween24 {
-        return new Tween24()._createContainerTween(Tween24._TYPE_SERIAL, childTween);
+        return Tween24._createContainerTween(Tween24._TYPE_SERIAL, childTween);
     }
 
     /**
@@ -2126,7 +2149,7 @@ export class Tween24 {
      * @memberof Tween24
      */
     static parallel(...childTween: Tween24[]): Tween24 {
-        return new Tween24()._createContainerTween(Tween24._TYPE_PARALLEL, childTween);
+        return Tween24._createContainerTween(Tween24._TYPE_PARALLEL, childTween);
     }
 
     /**
@@ -2164,7 +2187,7 @@ export class Tween24 {
                 tweens.push(tween);
             }
         }
-        const tween:Tween24 = new Tween24()._createContainerTween(Tween24._TYPE_LAG, tweens);
+        const tween:Tween24 = Tween24._createContainerTween(Tween24._TYPE_LAG, tweens);
         tween._lagTime = lagTime;
         tween._lagSort = sort;
         tween._originalChildTween = childTween;
@@ -2234,7 +2257,7 @@ export class Tween24 {
                 tweens.push(tween);
             }
         }
-        const tween:Tween24 = new Tween24()._createContainerTween(Tween24._TYPE_LAG, tweens);
+        const tween:Tween24 = Tween24._createContainerTween(Tween24._TYPE_LAG, tweens);
         tween._totalLagTime = totalLagTime;
         tween._lagSort = sort;
         tween._lagEasing = easing;
@@ -2252,7 +2275,7 @@ export class Tween24 {
      * @memberof Tween24
      */
     static loop(numLoops:number, tween:Tween24):Tween24 {
-        const loopTween:Tween24 = new Tween24()._createContainerTween(Tween24._TYPE_LOOP, [tween]);
+        const loopTween:Tween24 = Tween24._createContainerTween(Tween24._TYPE_LOOP, [tween]);
         loopTween._numLoops = numLoops;
         loopTween._currentLoops = 0;
         return loopTween;
@@ -2271,85 +2294,68 @@ export class Tween24 {
     static ifCase(flag:boolean|(()=>boolean), trueTween:Tween24, falseTween:Tween24|null = null):Tween24 {
         let tween;
         if (typeof(flag) == "function") {
-            tween = new Tween24()._createContainerTween(Tween24._TYPE_IF_CASE_BY_FUNC, falseTween ? [trueTween, falseTween] : [trueTween]);
+            tween = Tween24._createContainerTween(Tween24._TYPE_IF_CASE_BY_FUNC, falseTween ? [trueTween, falseTween] : [trueTween]);
             tween._ifFunc = flag;
         }
         else {
-            tween = new Tween24()._createContainerTween(Tween24._TYPE_IF_CASE, flag ? [trueTween]: falseTween ? [falseTween]: []);
+            tween = Tween24._createContainerTween(Tween24._TYPE_IF_CASE, flag ? [trueTween]: falseTween ? [falseTween]: []);
         }
         tween._trueTween  = trueTween;
         tween._falseTween = falseTween;
         return tween;
     }
-
-    /**
-     * トゥイーン実行時に boolean 値を返す関数を実行し、再生するトゥイーンを設定します。
-     * @static
-     * @param {()=>boolean} func boolean値を返す関数
-     * @param {Tween24} trueTween フラグが true の時に再生するトゥイーン
-     * @param {(Tween24|null)} [falseTween=null] フラグが false の時に再生するトゥイーン
-     * @return {Tween24} Tween24インスタンス
-     * @memberof Tween24
-     */
-    // static ifCaseByFunc(func:()=>boolean, trueTween:Tween24, falseTween:Tween24|null = null):Tween24 {
-    //     const childTween  = falseTween ? [trueTween, falseTween] : [trueTween]; 
-    //     const tween       = new Tween24()._createContainerTween(Tween24._TYPE_IF_CASE_BY_FUNC, childTween);
-    //     tween._ifFunc     = func;
-    //     tween._trueTween  = trueTween;
-    //     tween._falseTween = falseTween;
-    //     return tween;
-    // }
     
-    private _createChildTween(type:string, target:any, timeOrVelocity:number, easing:Function|null, params:{[key:string]:number}|null): Tween24 {
-        this._type        = type;
-        this._easing      = easing || Tween24._defaultEasing;
-        this._delayTime   = 0;
-        this._startTime   = 0;
-        this._allUpdaters = [];
-        this._isContainerTween = false;
+    private static _createChildTween(type:string, target:any, timeOrVelocity:number, easing:Function|null, params:{[key:string]:number}|null): Tween24 {
+        const tween = Tween24._getInstance();
+        tween._type        = type;
+        tween._easing      = easing || Tween24._defaultEasing;
+        tween._delayTime   = 0;
+        tween._startTime   = 0;
+        tween._allUpdaters = new LinkedList();
+        tween._isContainerTween = false;
 
         if (type == Tween24._TYPE_TWEEN_VELOCITY || type == Tween24._TYPE_TWEEN_TEXT_VELOCITY) {
-            this._time = 0;
-            this._velocity = timeOrVelocity;
+            tween._time = 0;
+            tween._velocity = timeOrVelocity;
         }
         else {
-            this._time = timeOrVelocity;
+            tween._time = timeOrVelocity;
         }
 
-        this._commonProcess();
+        tween._commonProcess();
 
         if (Array.isArray(target)) {
             if (ClassUtil.isString(target[0])) {
-                this._targetString = `[${target.toString()}]`;
-                this._warningLog("Does not support array type queries.");
+                tween._targetString = `[${target.toString()}]`;
+                tween._warningLog("Does not support array type queries.");
             }
             else if (target[0] instanceof HTMLElement) {
-                this._isDOM = true;
-                this._targetString = `[HTMLElements]`;
-                this._multiTarget = target;
+                tween._isDOM = true;
+                tween._targetString = `[HTMLElements]`;
+                tween._multiTarget = target;
             }
             else {
-                this._multiTarget = target;
+                tween._multiTarget = target;
             }
         }
         else if (ClassUtil.isString(target)) {
-            this._isDOM = true;
-            this._targetString = `${target}`;
-            this._targetQuery = target;
+            tween._isDOM = true;
+            tween._targetString = `${target}`;
+            tween._targetQuery = target;
             const t = HTMLUtil.querySelectorAll(target);
             if (t.length <= 1) {
-                this._singleTarget = t[0];
+                tween._singleTarget = t[0];
             }
             else {
-                this._multiTarget = t;
+                tween._multiTarget = t;
             }
         }
         else if (target instanceof HTMLElement) {
-            this._isDOM = true;
-            this._singleTarget = target;
+            tween._isDOM = true;
+            tween._singleTarget = target;
         }
         else {
-            this._singleTarget = target;
+            tween._singleTarget = target;
         }
 
         if (params) {
@@ -2357,59 +2363,64 @@ export class Tween24 {
                 // count $ length
                 const key2 = key.replace(/[$]{1,2}$/, "");
                 switch(key.length - key2.length) {
-                    case 0: this._setPropety  (key2, params[key]); break;
-                    case 1: this._set$Propety (key2, params[key]); break;
-                    case 2: this._set$$Propety(key2, params[key]); break;
+                    case 0: tween._setPropety  (key2, params[key]); break;
+                    case 1: tween._set$Propety (key2, params[key]); break;
+                    case 2: tween._set$$Propety(key2, params[key]); break;
                 }
             }
         }
 
-        return this;
+        return tween;
     }
 
-    private _createContainerTween(type:string, childTween:Tween24[]): Tween24 {
-        this._type       = type;
-        this._time       = 0;
-        this._delayTime  = 0;
-        this._childTween = childTween;
-        this._firstTween = this._childTween[0];
-        this._playingChildTween   = [];
-        this._numChildren         = childTween.length;
-        this._numCompleteChildren = 0;
-        this._isContainerTween    = true;
+    private static _createContainerTween(type:string, childTween:Tween24[]): Tween24 {
+        const tween = Tween24._getInstance();
+        tween._type       = type;
+        tween._time       = 0;
+        tween._delayTime  = 0;
+        tween._childTween = childTween;
+        tween._firstTween = tween._childTween[0];
+        tween._playingChildTween   = new LinkedList();
+        tween._numCompleteChildren = 0;
+        tween._isContainerTween    = true;
 
-        this._commonProcess();
+        tween._commonProcess();
 
-        var prev = this._firstTween;
+        var prev = tween._firstTween;
         var next;
         if (type == Tween24._TYPE_SERIAL) {
-            for (var i = 0; i < this._numChildren; i++) {
-                next = this._childTween[i + 1];
+            for (var i = 0; i < tween._childTween.length; i++) {
+                next = tween._childTween[i + 1];
                 prev._next = next;
-                prev._parent = this;
+                prev._parent = tween;
                 prev = next;
             }
         }
         else {
-            for (const tween of this._childTween) {
-                tween._parent = this;
+            for (const child of tween._childTween) {
+                child._parent = tween;
             }
         }
-        return this;
+        return tween;
     }
 
-    private _createActionTween(type:string) {
-        this._type      = type;
-        this._time      = 0;
-        this._delayTime = 0;
-        this._startTime = 0;
-        this._isContainerTween = false;
-        this._commonProcess();
-        return this;
+    private static _createActionTween(type:string) {
+        const tween = Tween24._getInstance();
+        tween._type      = type;
+        tween._time      = 0;
+        tween._delayTime = 0;
+        tween._startTime = 0;
+        tween._isContainerTween = false;
+        tween._commonProcess();
+        return tween;
     }
 
     private _commonProcess() {
         this._serialNumber = ++ Tween24._numCreateTween;
+    }
+
+    private static _getInstance():Tween24 {
+        return new Tween24();
     }
     
 
@@ -2613,13 +2624,15 @@ export class Tween24 {
      */
     static manualAllUpdate = () => {
         const nowTime = Ticker24.getTime();
-        for (const tween of Tween24._manualPlayingTweens) {
+        Tween24._manualPlayingTweens.map((tween) => {
             tween.__update(nowTime);
-        }
+        });
     }
 
+
+
     __clone(base:any, baseQuery:string|null):Tween24 {
-        let copy:Tween24 = new Tween24();
+        let copy;
         let target:any;
         if (this._targetQuery && baseQuery) {
             for (const query of this._targetQuery.split(",")) {
@@ -2640,6 +2653,7 @@ export class Tween24 {
         else {
             target = base;
         }
+        
         switch (this._type) {
             case Tween24._TYPE_TWEEN :
             case Tween24._TYPE_TWEEN_VELOCITY :
@@ -2647,23 +2661,40 @@ export class Tween24 {
             case Tween24._TYPE_TWEEN_TEXT_VELOCITY :
             case Tween24._TYPE_PROP :
             case Tween24._TYPE_PROP_TEXT :
-                copy._createChildTween(this._type, target, this._velocity || this._time, this._easing, null);
+                copy = Tween24._createChildTween(this._type, target, this._velocity || this._time, this._easing, null);
                 copy._targetQuery = this._targetQuery;
                 if (this._allUpdaters?.length) {
                     if (this._singleTarget && copy._multiTarget) {
-                        for (const updater of this._allUpdaters) {
-                            copy._allUpdaters?.push(new MultiUpdater(copy._multiTarget, this._targetQuery).setupByUpdater(updater));
-                        }
+                        if (this._transformUpdater) copy._allUpdaters?.push(copy._transformMultiUpdater = this._getCloneMultiUpdater(this._transformUpdater, copy._multiTarget));
+                        if (this._styleUpdater    ) copy._allUpdaters?.push(copy._styleMultiUpdater     = this._getCloneMultiUpdater(this._styleUpdater    , copy._multiTarget));
+                        if (this._objectUpdater   ) copy._allUpdaters?.push(copy._objectMultiUpdater    = this._getCloneMultiUpdater(this._objectUpdater   , copy._multiTarget));
                     }
                     else {
-                        for (const updater of this._allUpdaters) {
-                            copy._allUpdaters?.push(updater.clone(copy._singleTarget || copy._multiTarget, this._targetQuery));
+                        if (copy._singleTarget) {
+                            if (this._transformUpdater) copy._allUpdaters?.push(copy._transformUpdater = this._transformUpdater.clone(copy._singleTarget, this._targetQuery));
+                            if (this._styleUpdater    ) copy._allUpdaters?.push(copy._styleUpdater     = this._styleUpdater    .clone(copy._singleTarget, this._targetQuery));
+                            if (this._objectUpdater   ) copy._allUpdaters?.push(copy._objectUpdater    = this._objectUpdater   .clone(copy._singleTarget));
+
+                            if (this._transformMultiUpdater) 
+                                copy._allUpdaters?.push(copy._transformUpdater = this._transformMultiUpdater.clone(copy._singleTarget, this._targetQuery) as TransformUpdater);
+                            if (this._styleMultiUpdater    ) 
+                                copy._allUpdaters?.push(copy._styleUpdater     = this._styleMultiUpdater    .clone(copy._singleTarget, this._targetQuery) as StyleUpdater    );
+                            if (this._objectMultiUpdater   ) 
+                                copy._allUpdaters?.push(copy._objectUpdater    = this._objectMultiUpdater   .clone(copy._singleTarget) as ObjectUpdater);
+                        }
+                        if (copy._multiTarget) {
+                            if (this._transformMultiUpdater)
+                                copy._allUpdaters?.push(copy._transformMultiUpdater = this._transformMultiUpdater.clone(copy._multiTarget, this._targetQuery) as MultiUpdater);
+                            if (this._styleMultiUpdater    )
+                                copy._allUpdaters?.push(copy._styleMultiUpdater     = this._styleMultiUpdater    .clone(copy._multiTarget, this._targetQuery) as MultiUpdater);
+                            if (this._objectMultiUpdater   )
+                                copy._allUpdaters?.push(copy._objectMultiUpdater    = this._objectMultiUpdater   .clone(copy._multiTarget) as MultiUpdater);
                         }
                     }
                 }
                 break;
             case Tween24._TYPE_WAIT :
-                copy._createChildTween(this._type, target, this._time, this._easing, null);
+                copy = Tween24._createChildTween(this._type, target, this._time, this._easing, null);
                 break;
             case Tween24._TYPE_SERIAL   :
             case Tween24._TYPE_PARALLEL :
@@ -2674,7 +2705,7 @@ export class Tween24 {
                         tweens.push(tween.__clone(base, baseQuery));
                     }
                 }
-                copy._createContainerTween(this._type, tweens);
+                copy = Tween24._createContainerTween(this._type, tweens);
                 copy._numLoops = this._numLoops;
                 break;
             case Tween24._TYPE_LAG:
@@ -2691,10 +2722,8 @@ export class Tween24 {
                     copy = Tween24.lagTotalSortEase(this._totalLagTime, this._lagSort || Sort24._Normal, this._lagEasing || Ease24._Linear, ...lagTweens);
                 }
                 break;
-            case Tween24._TYPE_FUNC :
-                copy._type = this._type;
-                copy._time = copy._delayTime = copy._startTime = 0;
-                copy._isContainerTween = false;
+            default :
+                copy = Tween24._createActionTween(this._type);
                 break;
         }
         if (this._functionExecuters) {
@@ -2706,6 +2735,10 @@ export class Tween24 {
         copy.willChange(this._useWillChange);
         copy.delay(this._delayTime).fps(this.__fps).debug(this._debugMode).timeScale(this._timeScale).delayScale(this._delayTimeScale);
         return copy;
+    }
+
+    private _getCloneMultiUpdater(updater:Updater, multiTarget:any):MultiUpdater {
+        return new MultiUpdater(multiTarget, this._targetQuery).setupByUpdater(updater);
     }
 
     toString():string {
@@ -2751,19 +2784,19 @@ export class Tween24 {
         if (this._timeScale != 1) {
             param += " timeScale:" + this._timeScale + " ";
         }
-        if (this._allUpdaters) {
-            for (const updater of this._allUpdaters) {
-                param += updater.toString() + " ";
-            }
-        }
+        this._allUpdaters?.map((updater:Updater) => {
+            param += updater.toString() + " ";
+        });
         return `{${param.replace(/\s+/g," ").trim()}}`;
     }
 
     get isPlaying():boolean {
-        return this._played;
+        // return this._played;
+        return (this._status == Tween24._STATUS_PLAYING || this._status == Tween24._STATUS_WAITING);
     }
 
     get isPausing():boolean {
-        return this._paused;
+        // return this._paused;
+        return this._status == Tween24._STATUS_PAUSING;
     }
 }

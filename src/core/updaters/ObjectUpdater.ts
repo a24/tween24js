@@ -57,14 +57,22 @@ export class ObjectUpdater implements Updater {
     init(useWillChange:boolean) {
         this._tweenKeys = this._keys.concat();
         for (const key of this._tweenKeys) {
-            this._paramUpdaters[key].init(this._target[key]);
+            if      (key == "x") this._paramUpdaters.x.init(this._target.x);
+            else if (key == "y") this._paramUpdaters.y.init(this._target.y);
+            else if (key == "z") this._paramUpdaters.z.init(this._target.z);
+            else
+                this._paramUpdaters[key].init(this._target[key]);
         }
     }
 
     update(progress:number) {
         if (this._tweenKeys) {
             for (const key of this._tweenKeys) {
-                this._target[key] = this._paramUpdaters[key].update(progress);
+                if      (key == "x") this._target.x = this._paramUpdaters.x.update(progress);
+                else if (key == "y") this._target.y = this._paramUpdaters.y.update(progress);
+                else if (key == "z") this._target.z = this._paramUpdaters.z.update(progress);
+                else 
+                    this._target[key] = this._paramUpdaters[key].update(progress);
             }
         }
     }
@@ -85,13 +93,15 @@ export class ObjectUpdater implements Updater {
         const deltas:number[] = [];
         let dx:number = 0;
         let dy:number = 0;
+        let dz:number = 0;
         for (const key in this._paramUpdaters) {
-            if      (key == "x") dx = this._paramUpdaters[key].getDelta();
-            else if (key == "y") dy = this._paramUpdaters[key].getDelta();
+            if      (key == "x") dx = this._paramUpdaters.x.getDelta();
+            else if (key == "y") dy = this._paramUpdaters.y.getDelta();
+            else if (key == "z") dz = this._paramUpdaters.z.getDelta();
             else 
                 deltas.push(Math.abs(this._paramUpdaters[key].getDelta()));
         }
-        deltas.push(Math.sqrt(dx * dx + dy * dy));
+        deltas.push(Math.sqrt(dx * dx + dy * dy + dz * dz));
         return Math.max(...deltas);
     }
 

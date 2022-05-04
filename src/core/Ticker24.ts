@@ -1,25 +1,27 @@
 import { Tween24 }   from "../Tween24";
-import { ArrayUtil } from "../utils/ArrayUtil";
 
 export class Ticker24 {
-    private _fps       :number;
-    private _timer     :number;
-    private _beforeTime:number;
-    private _running   :boolean;
-    private _allTweens :Tween24[];
+    private _fps         :number;
+    private _timer       :number;
+    private _beforeTime  :number;
+    private _running     :boolean;
+    private _firstTween  :Tween24|null;
+    private _lastTween   :Tween24|null;
+    private _lastPlayTime:number;
 
     constructor() {
-        this._fps        = 0;
-        this._timer      = 0;
-        this._beforeTime = 0;
-        this._running    = false;
-        this._allTweens  = [];
+        this._fps          = 0;
+        this._timer        = 0;
+        this._beforeTime   = 0;
+        this._lastPlayTime = 0;
+        this._running      = false;
+        this._firstTween   = null;
+        this._lastTween    = null;
     }
 
     start() {
         this._running = true;
-        var self = this;
-        this._timer = window.requestAnimationFrame(function () { self.update() });
+        this._timer = window.requestAnimationFrame(() => { this.update() });
     }
 
     stop() {
@@ -28,38 +30,71 @@ export class Ticker24 {
     }
 
     add(tween:Tween24) {
-        this._allTweens.push(tween);
+        if (this._lastTween) {
+            tween.__prev = this._lastTween;
+            this._lastTween.__next = tween;
+        }
+        else {
+            this._firstTween = tween;
+
+        }
+        this._lastTween = tween;
+
         if (!this._running) this.start();
     }
 
     remove(tween:Tween24) {
-        ArrayUtil.removeItemFromArray(this._allTweens, tween);
-        if (this._allTweens.length == 0) {
-            this.stop();
+        if (tween.__prev) tween.__prev.__next = tween.__next;
+        if (tween.__next) tween.__next.__prev = tween.__prev;
+
+        if (this._firstTween == tween) {
+            this._firstTween = tween.__next;
+        }
+        if (this._lastTween == tween) {
+            this._lastTween = tween.__prev;
+        }
+
+        tween.__prev = tween.__next = null;
+
+        if (!this._firstTween) this.stop();
+    }
+
+    update = () => {
+        const nowTime = Ticker24.getTime();
+
+        let tickerCheck = true;
+        if (this._fps) {
+            tickerCheck = this._checkInterval(this._fps, this._beforeTime, nowTime);
+            this._beforeTime = nowTime;
+        }
+
+        let tween = this._firstTween;
+        while (tween) {
+            const next = tween.__next;
+            if (!tween.__fps) {
+                if (tickerCheck) {
+                    tween.__update(nowTime);
+                }
+            }
+            else if (this._checkInterval(tween.__fps, tween.__beforeTime, nowTime)) {
+                tween.__update(nowTime);
+                tween.__beforeTime = nowTime;
+            }
+            tween = next;
+        }
+
+        if (this._running) {
+            this._timer = window.requestAnimationFrame(this.update);
         }
     }
 
-    update() {
-        const nowTime:number = Ticker24.getTime();
-        const tickerCheck:boolean = this._fps ? this._checkInterval(this._fps, this._beforeTime, nowTime) : true;
-        for (const tween of this._allTweens) {
-            if (tween.__fps) {
-                if (this._checkInterval(tween.__fps, tween.__beforeTime, nowTime)) {
-                    tween.__update(nowTime);
-                    tween.__beforeTime = nowTime;
-                }
-            }
-            else if (tickerCheck) {
-                tween.__update(nowTime);
-            }
-        }
-        if (tickerCheck) {
-            this._beforeTime = nowTime;
-        }
-        if (this._running) {
-            var self = this;
-            this._timer = window.requestAnimationFrame(function () { self.update() });
-        }
+    setPlayTIme():number {
+        this._lastPlayTime = Ticker24.getTime();
+        return this._lastPlayTime;
+    }
+
+    getLastPLayTime = ():number => {
+        return this._lastPlayTime;
     }
 
     set fps(value:number) {
@@ -72,7 +107,7 @@ export class Ticker24 {
         else return false;
     }
     
-    static getTime(): number {
+    static getTime():number {
         return Date.now() || new Date().getTime();
     }
 }

@@ -57,7 +57,7 @@ export class ParamUpdater {
             this._value = this.getBezier(this._start, this._target, progress, this._bezier);
         }
         else this._value = this._start + this._delta * progress;
-        this._value = Math.trunc(this._value * 10000) / 10000;
+        this._value = Math.round(this._value * 100000) / 100000;
         return this._value;
     }
 

@@ -9,7 +9,7 @@ import { StyleFilterUpdater } from "./StyleFilterUpdater";
 export class StyleUpdater implements Updater {
     static className:string = "StyleUpdater";
 
-    static readonly PARAM_REG:RegExp = new RegExp(/^[0-9.]*/);
+    static readonly PARAM_REG:RegExp = new RegExp(/^[-0-9.]*/);
     static readonly UNIT_REG :RegExp = new RegExp(/[^-0-9.].*/);
 
     private _target       :HTMLElement;
@@ -68,12 +68,21 @@ export class StyleUpdater implements Updater {
             }
             // 数値を持っているスタイルの場合
             else if (val && val[0]?.length) {
-                const original = this._target.style.getPropertyValue(key);
-                this._target.style.setProperty(key, value);
-                const targetValue = HTMLUtil.getComputedStyle(this._target).getPropertyValue(key);
-                this._target.style.setProperty(key, original);
-                const targetUnit = targetValue.match(StyleUpdater.UNIT_REG);
-    
+                const original = HTMLUtil.getComputedStyle(this._target).getPropertyValue(key);
+                const originalUnit = original.match(StyleUpdater.UNIT_REG);
+                let targetUnit;
+                let targetValue;
+                if (unit && originalUnit && originalUnit[0].length && unit[0] != originalUnit[0]) {
+                    this._target.style.setProperty(key, value);
+                    targetValue = HTMLUtil.getComputedStyle(this._target).getPropertyValue(key);
+                    this._target.style.setProperty(key, original);
+                    targetUnit = targetValue.match(StyleUpdater.UNIT_REG);
+                }
+                else {
+                    targetValue = value;
+                    targetUnit = value.match(StyleUpdater.UNIT_REG);
+                }
+
                 let updater:ParamUpdater;
                 // 相対値の場合
                 if (option) {

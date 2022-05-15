@@ -18,6 +18,11 @@ export declare class Tween24 {
     private static readonly _TYPE_FUNC;
     private static readonly _TYPE_IF_CASE;
     private static readonly _TYPE_IF_CASE_BY_FUNC;
+    private static readonly _STATUS_PLAYING;
+    private static readonly _STATUS_PAUSING;
+    private static readonly _STATUS_SKIPING;
+    private static readonly _STATUS_STOPING;
+    private static readonly _STATUS_WAITING;
     static ticker: Ticker24;
     static ease: Ease24;
     private static _playingTweens;
@@ -30,6 +35,9 @@ export declare class Tween24 {
     private static _numCreateTween;
     private static _globalTimeScale;
     private static _isSkipHello;
+    private _playingTweensItem;
+    private _playingTweensByTargetItem;
+    private _playingTweensByTargetList;
     private _singleTarget;
     private _multiTarget;
     private _easing;
@@ -61,15 +69,14 @@ export declare class Tween24 {
     private _root;
     private _parent;
     private _next;
+    __next: Tween24 | null;
+    __prev: Tween24 | null;
     private _isDOM;
     private _isRoot;
     private _isManual;
     private _isTrigger;
     private _inited;
-    private _played;
-    private _paused;
-    private _skiped;
-    private _eventWaiting;
+    private _status;
     private _firstUpdated;
     private _isContainerTween;
     private _createdBasicUpdater;
@@ -78,19 +85,19 @@ export declare class Tween24 {
     private _childTween;
     private _playingChildTween;
     private _originalChildTween;
-    private _numChildren;
     private _numCompleteChildren;
     private _lagTime;
     private _totalLagTime;
     private _lagSort;
     private _lagEasing;
-    private _numLoops;
-    private _currentLoops;
+    private _numIterations;
+    private _currentIterations;
     private _ifFunc;
     private _trueTween;
     private _falseTween;
     private _dispatchEventTarget;
     private _dispatchEventType;
+    private _useJump;
     private _triggered;
     private _jumped;
     private _jumpProg;
@@ -128,16 +135,17 @@ export declare class Tween24 {
      */
     stop: () => void;
     private _stop;
+    private _init;
     private _initParam;
     private _overwrite;
     private _setIfCaseTween;
+    private _setStartTime;
     manualUpdate: () => void;
-    __update(nowTime: number): void;
+    __update: (nowTime: number) => void;
     private _complete;
     private _tweenStop;
     private _completeChildTween;
     private _playNextTween;
-    private _updateProgress;
     /**
      * 目標とするX座標を設定します。
      * 対象が HTMLElement の場合は、CSS:Transform が適用されます。
@@ -1007,6 +1015,12 @@ export declare class Tween24 {
      */
     shadowY: (value: number) => Tween24;
     /**
+     * CSS:filter(drop-shadow)で、ドロップシャドウのX、Y軸のオフセットを設定します。
+     * @param {number} value Y軸のオフセット値（px）
+     * @memberof Tween24
+     */
+    shadowXY: (x: number, y: number) => Tween24;
+    /**
      * CSS:filter(drop-shadow)で、ドロップシャドウのぼかしを設定します。
      * @param {number} value ぼかしのガウス値（px）
      * @memberof Tween24
@@ -1106,6 +1120,14 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     jump(progress: number): Tween24;
+    /**
+     * アニメーションの繰り返し回数を設定します。
+     * 「0」を指定すると、無制限に繰り返します。
+     * @param {number} value リピート回数
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    repeat(value: number): Tween24;
     /**
      * トゥイーン毎のFPS（1秒間の更新回数）を設定します。
      * デフォルトでは0が設定され、ブラウザのリフレッシュレートに合わせて描画更新されます。
@@ -1413,19 +1435,11 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     static ifCase(flag: boolean | (() => boolean), trueTween: Tween24, falseTween?: Tween24 | null): Tween24;
-    /**
-     * トゥイーン実行時に boolean 値を返す関数を実行し、再生するトゥイーンを設定します。
-     * @static
-     * @param {()=>boolean} func boolean値を返す関数
-     * @param {Tween24} trueTween フラグが true の時に再生するトゥイーン
-     * @param {(Tween24|null)} [falseTween=null] フラグが false の時に再生するトゥイーン
-     * @return {Tween24} Tween24インスタンス
-     * @memberof Tween24
-     */
-    private _createChildTween;
-    private _createContainerTween;
-    private _createActionTween;
+    private static _createChildTween;
+    private static _createContainerTween;
+    private static _createActionTween;
     private _commonProcess;
+    private static _getInstance;
     /**
      * トゥイーンのIDを設定します。
      * @param {string} id トゥイーンのID
@@ -1558,6 +1572,7 @@ export declare class Tween24 {
      */
     static manualAllUpdate: () => void;
     __clone(base: any, baseQuery: string | null): Tween24;
+    private _getCloneMultiUpdater;
     toString(): string;
     private _debugLog;
     private _warningLog;

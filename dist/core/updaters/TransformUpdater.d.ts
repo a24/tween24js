@@ -17,13 +17,6 @@ export declare class TransformUpdater implements Updater {
     private _skewX;
     private _skewY;
     private _rotation;
-    private _updateX;
-    private _updateY;
-    private _updateScaleX;
-    private _updateScaleY;
-    private _updateSkewX;
-    private _updateSkewY;
-    private _updateRotation;
     private _percentX;
     private _percentY;
     constructor(target: HTMLElement, query: string | null);

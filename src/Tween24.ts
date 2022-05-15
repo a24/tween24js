@@ -134,9 +134,9 @@ export class Tween24 {
     private _lagSort     :Function|null = null;
     private _lagEasing   :Function|null = null;
 
-    // Loop
-    private _numLoops    :number = NaN;
-    private _currentLoops:number = NaN;
+    // Loop & Repeat
+    private _numIterations    :number = 1;
+    private _currentIterations:number = 0;
 
     // If Case
     private _ifFunc    :Function|null = null;
@@ -285,8 +285,6 @@ export class Tween24 {
         if (this._progress > 0) this._startTime = nowTime - this._time      * this._progress * this._totalTimeScale * 1000;
         else                    this._startTime = nowTime - this._delayTime * this._progress * this._totalTimeScale * this._totalDelayTimeScale * 1000;
         
-        console.log((nowTime - this._startTime) / (this._time * 1000))
-        
         if (this._playingChildTween) {
             this._playingChildTween.map((tween) => {
                 if (tween._playingChildTween) tween._resume();
@@ -424,8 +422,8 @@ export class Tween24 {
             this._childTween = [];
     }
 
-    private _setStartTime = (lastPlayTime:number) => {
-        this._startTime = lastPlayTime + this._delayTime * this._totalDelayTimeScale * this._totalTimeScale * 1000;
+    private _setStartTime = (playTime:number) => {
+        this._startTime = playTime + this._delayTime * this._totalDelayTimeScale * this._totalTimeScale * 1000;
     }
 
     manualUpdate = () => {
@@ -557,17 +555,27 @@ export class Tween24 {
     }
 
     private _complete = () => {
-        this._debugLog("complete");
-
-        if (this._type == Tween24._TYPE_LOOP) {
-            this._currentLoops ++;
-            if (this._numLoops == 0 || this._numLoops > this._currentLoops) {
-                this._numCompleteChildren = 0;
-                this._firstTween?._play();
+        this._currentIterations ++;
+        if (this._numIterations != this._currentIterations) {
+            if (this._isContainerTween) {
+                if (this._type == Tween24._TYPE_LOOP) {
+                    this._debugLog("loop");
+                    this._numCompleteChildren = 0;
+                    this._firstTween?._play();
+                    return;
+                }
+            }
+            else {
+                this._debugLog("repeat");
+                this._setStartTime(this._startTime + (this._time + this._delayTime) * 1000);
+                this._allUpdaters?.map((updater:Updater) => {
+                    updater.update(0);
+                });
                 return;
             }
         }
-
+        
+        this._debugLog("complete");
         if (this._parent) this._parent._completeChildTween(this);
         this._functionExecute(Tween24Event.COMPLATE);
         this._tweenStop();
@@ -577,7 +585,7 @@ export class Tween24 {
         if (this._isRoot) Tween24.ticker.remove(this);
         if (this._playingChildTween) this._playingChildTween.dispose();
         this._numCompleteChildren = 0;
-        this._currentLoops        = 0;
+        this._currentIterations   = 0;
         this._startTime           = 0;
         this._inited              = false;
         this._jumped              = false;
@@ -1645,6 +1653,13 @@ export class Tween24 {
     shadowY = (value:number):Tween24 => { return this._setStyle("filter::drop-shadow-y", value + "px"); }
     
     /**
+     * CSS:filter(drop-shadow)で、ドロップシャドウのX、Y軸のオフセットを設定します。
+     * @param {number} value Y軸のオフセット値（px）
+     * @memberof Tween24
+     */
+    shadowXY = (x:number, y:number):Tween24 => { return this.shadowX(x).shadowY(y); }
+
+    /**
      * CSS:filter(drop-shadow)で、ドロップシャドウのぼかしを設定します。
      * @param {number} value ぼかしのガウス値（px）
      * @memberof Tween24
@@ -1764,6 +1779,15 @@ export class Tween24 {
      * @memberof Tween24
      */
     jump (progress:number):Tween24  { this._useJump = true; this._jumpProg = progress; return this; }
+
+    /**
+     * アニメーションの繰り返し回数を設定します。
+     * 「0」を指定すると、無制限に繰り返します。
+     * @param {number} value リピート回数
+     * @return {Tween24} Tween24インスタンス
+     * @memberof Tween24
+     */
+    repeat (value:number):Tween24 { this._numIterations = value; return this; }
 
     /**
      * トゥイーン毎のFPS（1秒間の更新回数）を設定します。
@@ -2180,7 +2204,9 @@ export class Tween24 {
                 const targets:any[] = sort == Sort24._Normal ? tween._multiTarget : sort(tween._multiTarget);
                 for (let i = 0; i < targets.length; i++) {
                     const t = targets[i];
-                    tweens.push(tween.__clone(t, tween._targetQuery).delay(lagTime * i));
+                    let delay = lagTime * i;
+                    delay = Math.round(delay * 100000) / 100000;
+                    tweens.push(tween.__clone(t, tween._targetQuery).delay(delay));
                 }
             }
             else {
@@ -2249,7 +2275,8 @@ export class Tween24 {
                 const targets:any[] = sort == Sort24._Normal ? tween._multiTarget : sort(tween._multiTarget);
                 const numTarget:number = targets.length;
                 for (let i = 0; i < numTarget; i++) {
-                    const delay:number = easing((i + 1) / numTarget, 0, totalLagTime, 1);
+                    let delay:number = easing((i + 1) / numTarget, 0, totalLagTime, 1);
+                    delay = Math.round(delay * 100000) / 100000;
                     tweens.push(tween.__clone(targets[i], tween._targetQuery).delay(delay));
                 }
             }
@@ -2276,8 +2303,7 @@ export class Tween24 {
      */
     static loop(numLoops:number, tween:Tween24):Tween24 {
         const loopTween:Tween24 = Tween24._createContainerTween(Tween24._TYPE_LOOP, [tween]);
-        loopTween._numLoops = numLoops;
-        loopTween._currentLoops = 0;
+        loopTween._numIterations = numLoops;
         return loopTween;
     }
 
@@ -2706,7 +2732,7 @@ export class Tween24 {
                     }
                 }
                 copy = Tween24._createContainerTween(this._type, tweens);
-                copy._numLoops = this._numLoops;
+                copy._numIterations = this._numIterations;
                 break;
             case Tween24._TYPE_LAG:
                 const lagTweens:Tween24[] = [];
@@ -2731,6 +2757,9 @@ export class Tween24 {
             for (const key in this._functionExecuters) {
                 copy._functionExecuters[key] = this._functionExecuters[key].clone();
             }
+        }
+        if (!this._isContainerTween) {
+            copy.repeat(this._numIterations);
         }
         copy.willChange(this._useWillChange);
         copy.delay(this._delayTime).fps(this.__fps).debug(this._debugMode).timeScale(this._timeScale).delayScale(this._delayTimeScale);
@@ -2783,6 +2812,12 @@ export class Tween24 {
         }
         if (this._timeScale != 1) {
             param += " timeScale:" + this._timeScale + " ";
+        }
+        if (this._timeScale != 1) {
+            param += " timeScale:" + this._timeScale + " ";
+        }
+        if (this._numIterations != 1 && !this._isContainerTween) {
+            param += " repeat:" + this._numIterations + " ";
         }
         this._allUpdaters?.map((updater:Updater) => {
             param += updater.toString() + " ";

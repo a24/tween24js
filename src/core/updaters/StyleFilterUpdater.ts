@@ -49,11 +49,11 @@ export class StyleFilterUpdater {
         this._hue       ?.init(start);
         this._invert    ?.init(start);
         this._sepia     ?.init(start);
-        this._shadow    ?.init(start);
-        this._brightness?.init(start.indexOf("brightness") > -1 ? start : "brightness(1)");
-        this._contrast  ?.init(start.indexOf("contrast"  ) > -1 ? start : "contrast(1)"  );
-        this._opacity   ?.init(start.indexOf("opacity"   ) > -1 ? start : "opacity(1)"   );
-        this._saturate  ?.init(start.indexOf("saturate"  ) > -1 ? start : "saturate(1)"  );
+        this._shadow    ?.init(start.indexOf("drop-shadow") > -1 ? start : "drop-shadow(rgb(0,0,0,) 0 0 0)");
+        this._brightness?.init(start.indexOf("brightness" ) > -1 ? start : "brightness(1)");
+        this._contrast  ?.init(start.indexOf("contrast"   ) > -1 ? start : "contrast(1)"  );
+        this._opacity   ?.init(start.indexOf("opacity"    ) > -1 ? start : "opacity(1)"   );
+        this._saturate  ?.init(start.indexOf("saturate"   ) > -1 ? start : "saturate(1)"  );
     }
 
     addPropStr = (key:string, value:string) => {

@@ -60,17 +60,17 @@
         }
         div.code {
             border-radius: 10px;
-            width: 800px;
+            width: fit-content;
             margin: auto;
             background-color: #fff;
         }
         div.code p {
-            margin: 0;
-            padding: 20px;
+            margin: 0 0 20px 0;
+            padding: 20px 40px 20px 30px;
             font-size: 14px;
             line-height: 1.4;
+            letter-spacing: 0.5px;
             text-align: left;
-            color: #247570;
         }
     </style>
 </head>
@@ -755,6 +755,126 @@
                 Tween24.wait(1),
                 // 背景のX座標を0%までトゥイーンします
                 Tween24.tween("#backgroundPosition", 3).backgroundPosition("0%", "0%"),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+    <!------------ Repeat Tween ----------->
+
+    <section id="repeat">
+        <div class="box"></div>
+    </section>
+    <p>- Repeat Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                // トゥイーンを3回繰り返します
+                Tween24.tween("#repeat .box", 1).x(860).repeat(3),
+                // ループ対応処理
+                Tween24.wait(1),
+                Tween24.prop("#repeat .box", 1).x(0)
+            )
+        ).play();
+    </script>
+
+    <!------------ Time Scale Tween ----------->
+
+    <section id="timeScale">
+        <div class="box"></div>
+    </section>
+    <p>- Time Scale Tween -</p>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.tween("#timeScale .box", 1).x(860),
+                Tween24.tween("#timeScale .box", 1).x(0)
+            ).timeScale(0.5) // タイムスケールを半分にします
+        ).play();
+    </script>
+
+    <!------------ Clip Tween ----------->
+
+    <section id="clip">
+        <img src="img/photo_960.jpg">
+    </section>
+    <p>- Clip Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.prop("img").clipVertical("99%").clipHorizontal("100%").clipRound("600px"),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 0.8, Ease24._6_ExpoInOut).clipHorizontal("0%").jump(0.5),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 0.8, Ease24._6_ExpoInOut).clipVertical("0%").clipRound("0px")<br>
+        ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.prop("#clip img").clipVertical("99%").clipHorizontal("100%").clipRound("600px"),
+                Tween24.tween("#clip img", 0.8, Ease24._6_ExpoInOut).clipHorizontal("0%").jump(0.5),
+                Tween24.tween("#clip img", 0.8, Ease24._6_ExpoInOut).clipVertical("0%").clipRound("0px"),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+    <!------------ Clip Tween ----------->
+
+    <section id="clipCircle">
+        <img src="img/photo_960.jpg">
+    </section>
+    <p>- Clip Circle Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.prop("img").clipCircle("0%").clipCircleXY("20%", "60%"),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 0.8, Ease24._6_ExpoInOut).clipCircle("20%"),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1, Ease24._6_ExpoInOut).clipCircle("10%").clipCircleXY("90%", "20%"),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.parallel(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 0.8, Ease24._Liner).clipCircleX("50%"),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 0.8, Ease24._BackOut).clipCircleY("50%"),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1, Ease24._6_ExpoInOut).clipCircle("100%").delay(0.2)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;)<br>
+            ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.prop("#clipCircle img").clipCircle("0%").clipCircleXY("20%", "60%"),
+                Tween24.tween("#clipCircle img", 0.8, Ease24._6_ExpoInOut).clipCircle("20%"),
+                Tween24.tween("#clipCircle img", 1, Ease24._6_ExpoInOut).clipCircle("10%").clipCircleXY("90%", "20%"),
+                Tween24.parallel(
+                    Tween24.tween("#clipCircle img", 0.8, Ease24._Liner).clipCircleX("50%"),
+                    Tween24.tween("#clipCircle img", 0.8, Ease24._BackOut).clipCircleY("50%"),
+                    Tween24.tween("#clipCircle img", 1, Ease24._6_ExpoInOut).clipCircle("100%").delay(0.2)
+                ),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+    <!------------ Clip Tween ----------->
+
+    <section id="clipEllipse">
+        <img src="img/photo_960.jpg">
+    </section>
+    <p>- Clip Ellipse Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.prop("img").clipEllipse("0px", "30px"),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 0.4, Ease24._BackOutWith(3)).clipEllipseWidth("200px").jump(0.3),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 0.4, Ease24._BackOutWith(2)).clipEllipseHeight("200px")<br>
+            ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.prop("#clipEllipse img").clipEllipse("0px", "30px"),
+                Tween24.tween("#clipEllipse img", 0.4, Ease24._BackOutWith(3)).clipEllipseWidth("200px").jump(0.3),
+                Tween24.tween("#clipEllipse img", 0.4, Ease24._BackOutWith(2)).clipEllipseHeight("200px"),
                 Tween24.wait(1)
             )
         ).play();

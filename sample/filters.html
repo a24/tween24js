@@ -1,0 +1,311 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Tween24 Filters Tween</title>
+    <script src="../dist/tween24.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+            background-color: #e6e6e6;
+            font-family: "Helvetica Neue",
+                Arial,
+                "Hiragino Kaku Gothic ProN",
+                "Hiragino Sans",
+                Meiryo,
+                sans-serif;
+        }
+        section {
+            display:flex;
+            flex-flow: column;
+            justify-content:space-around;
+            margin: 100px auto 0 auto;
+            width: 960px;
+            height: 480px;
+            background-color: rgb(207, 207, 201);
+        }
+        img {
+            width: 40%;
+            margin: auto;
+        }
+        p {
+            margin: 0;
+            padding: 20px;
+            font-size: 20px;
+            letter-spacing: 0.5px;
+            text-align: center;
+            color: #247570;
+        }
+        div.code {
+            border-radius: 10px;
+            width: fit-content;
+            margin: auto;
+            background-color: #fff;
+        }
+        div.code p {
+            margin: 0 0 20px 0;
+            padding: 20px 40px 20px 30px;
+            font-size: 14px;
+            line-height: 1.4;
+            letter-spacing: 0.5px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <!----------- Blur Filter Tween ----------->
+
+    <section id="blur">
+        <img src="img/photo.jpg">
+    </section>
+    <p>- Blur Filter Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).blur(8),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).blur(0)<br>
+        ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.tween("#blur img", 1).blur(8),
+                Tween24.wait(1),
+                Tween24.tween("#blur img", 1).blur(0),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+    <!----------- Brightness Filter Tween ----------->
+
+    <section id="brightness">
+        <img src="img/photo.jpg">
+    </section>
+    <p>- Brightness Filter Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).brightness(1.5),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).brightness(1),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).brightness(0),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).brightness(1)<br>
+        ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.tween("#brightness img", 1).brightness(1.5),
+                Tween24.tween("#brightness img", 1).brightness(1),
+                Tween24.tween("#brightness img", 1).brightness(0),
+                Tween24.tween("#brightness img", 1).brightness(1),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+    <!----------- Contrast Filter Tween ----------->
+
+    <section id="contrast">
+        <img src="img/photo.jpg">
+    </section>
+    <p>- Contrast Filter Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).contrast(2),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).contrast(1),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).contrast(0),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).contrast(1)<br>
+        ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.tween("#contrast img", 1).contrast(2),
+                Tween24.tween("#contrast img", 1).contrast(1),
+                Tween24.tween("#contrast img", 1).contrast(0),
+                Tween24.tween("#contrast img", 1).contrast(1),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+    <!----------- Grayscale Filter Tween ----------->
+
+    <section id="grayscale">
+        <img src="img/photo.jpg">
+    </section>
+    <p>- Grayscale Filter Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).grayscale(1),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).grayscale(0)<br>
+        ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.tween("#grayscale img", 1).grayscale(1),
+                Tween24.wait(1),
+                Tween24.tween("#grayscale img", 1).grayscale(0),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+    <!----------- Hue Filter Tween ----------->
+
+    <section id="hue">
+        <img src="img/photo.jpg">
+    </section>
+    <p>- Hue Filter Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 5).hue(360),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 5).hue(0)<br>
+        ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.tween("#hue img", 5).hue(360),
+                Tween24.wait(1),
+                Tween24.tween("#hue img", 5).hue(0),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+    <!----------- Invert Filter Tween ----------->
+
+    <section id="invert">
+        <img src="img/photo.jpg">
+    </section>
+    <p>- Invert Filter Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 2).invert(1),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 2).invert(0)<br>
+        ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.tween("#invert img", 2).invert(1),
+                Tween24.wait(1),
+                Tween24.tween("#invert img", 2).invert(0),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+    <!----------- Opacity Filter Tween ----------->
+
+    <section id="opacity">
+        <img src="img/photo.jpg">
+    </section>
+    <p>- Opacity Filter Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).opacityFilter(0),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).opacityFilter(1)<br>
+        ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.tween("#opacity img", 1).opacityFilter(0),
+                Tween24.wait(1),
+                Tween24.tween("#opacity img", 1).opacityFilter(1),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+    <!----------- Saturate Filter Tween ----------->
+
+    <section id="saturate">
+        <img src="img/photo.jpg">
+    </section>
+    <p>- Saturate Filter Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).saturate(2),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).saturate(1),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).saturate(0),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).saturate(1)<br>
+        ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.tween("#saturate img", 1).saturate(5),
+                Tween24.tween("#saturate img", 1).saturate(1),
+                Tween24.tween("#saturate img", 1).saturate(0),
+                Tween24.wait(1),
+                Tween24.tween("#saturate img", 1).saturate(1),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+    <!----------- Sepia Filter Tween ----------->
+
+    <section id="sepia">
+        <img src="img/photo.jpg">
+    </section>
+    <p>- Sepia Filter Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).sepia(1),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).sepia(0)<br>
+        ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.tween("#sepia img", 1).sepia(1),
+                Tween24.wait(1),
+                Tween24.tween("#sepia img", 1).sepia(0),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+    <!----------- Shadow Filter Tween ----------->
+
+    <section id="shadow">
+        <img src="img/photo.jpg">
+    </section>
+    <p>- Shadow Filter Tween -</p>
+    <div class="code">
+        <p>Tween24.serial(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.prop("img").shadow(8, 8, 0, "#777"),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).shadowXY(16, 16).shadowBlur(32),<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Tween24.tween("img", 1).shadowXY(8, 8).shadowBlur(0)<br>
+        ).play();</p>
+    </div>
+
+    <script>
+        Tween24.loop(0,
+            Tween24.serial(
+                Tween24.prop("#shadow img").shadow(8, 8, 0, "#777"),
+                Tween24.tween("#shadow img", 1).shadowXY(16, 16).shadowBlur(32),
+                Tween24.wait(1),
+                Tween24.tween("#shadow img", 1).shadowXY(8, 8).shadowBlur(0),
+                Tween24.wait(1)
+            )
+        ).play();
+    </script>
+
+
+</body>
+</html>

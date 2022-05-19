@@ -2813,9 +2813,6 @@ export class Tween24 {
         if (this._timeScale != 1) {
             param += " timeScale:" + this._timeScale + " ";
         }
-        if (this._timeScale != 1) {
-            param += " timeScale:" + this._timeScale + " ";
-        }
         if (this._numIterations != 1 && !this._isContainerTween) {
             param += " repeat:" + this._numIterations + " ";
         }

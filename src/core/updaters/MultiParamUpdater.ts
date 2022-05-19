@@ -64,27 +64,29 @@ export class MultiParamUpdater {
             const colorMatch = paramValue.match(String.raw`(rgb\().*?(\))`);
             if (colorMatch) {
                 const color = colorMatch[0];
-                const rgb = color.match(String.raw`(?<=rgb\().*?(?=\))`);
+                const rgb = color.split("rgb(")[1].split(")")[0];
                 this._colorParams ||= new StyleParam4();
-                this._colorParams.init(rgb ? rgb[0] : "0,0,0", 3, ",");
+                this._colorParams.init(rgb.length ? rgb : "0,0,0", 3, ",");
                 paramValue = paramValue.replace(color, "");
             }
         }
         
         let p1 = "";
         let p2 = undefined;
-        const match = paramValue.match(String.raw`(?<=${this._type}\().*?(?=\))`);
-        if (match) {
-    
-            let matchValue = match[0];
-            
-            if (this._separator && matchValue.indexOf(this._separator) > -1) {
-                const matchList = matchValue.split(this._separator);
-                p1 = matchList[0];
-                p2 = matchList[1];
-            }
-            else {
-                p1 = matchValue;
+        if (paramValue.indexOf(this._type) > -1) {
+            const match = paramValue.split(`${this._type}(`)[1].split(")")[0];
+
+            if (match) {
+                let matchValue = match;
+                
+                if (this._separator && matchValue.indexOf(this._separator) > -1) {
+                    const matchList = matchValue.split(this._separator);
+                    p1 = matchList[0];
+                    p2 = matchList[1];
+                }
+                else {
+                    p1 = matchValue;
+                }
             }
         }
 

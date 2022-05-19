@@ -7,3 +7,4 @@ node_modules
 src/**/*.js
 /sample/benchmark.html
 /sample/performance_check
+/sample/button24.html

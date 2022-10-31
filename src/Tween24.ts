@@ -20,7 +20,7 @@ import { LinkedListItem }   from "./core/data/LinkedListItem";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "1.4.0";
+    static readonly VERSION:string = "1.4.1";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";

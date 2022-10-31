@@ -10,7 +10,8 @@ module.exports = {
     output: {
         path: `${__dirname}/dist`,
         filename: 'tween24.js',
-        libraryTarget: 'umd'
+        libraryTarget: 'umd',
+        globalObject: 'this'
     },
     module: {
         rules: [

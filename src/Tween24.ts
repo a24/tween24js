@@ -20,7 +20,7 @@ import { LinkedListItem }   from "./core/data/LinkedListItem";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "1.4.1";
+    static readonly VERSION:string = "1.4.2";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -64,6 +64,7 @@ export class Tween24 {
     private _playingTweensItem:LinkedListItem|undefined;
     private _playingTweensByTargetItem:LinkedListItem|undefined;
     private _playingTweensByTargetList:LinkedList|undefined;
+    private _playingTweensByMultiTargetItem:Map<any, LinkedListItem>|undefined;
 
     // Tween param
     private _singleTarget:any      |null = null;
@@ -403,10 +404,18 @@ export class Tween24 {
                     }
                 }
             });
-            this._playingTweensByTargetList.push(this);
         }
         else {
-            Tween24._playingTweensByTarget.set(target, new LinkedList(this));
+            this._playingTweensByTargetList = new LinkedList();
+            Tween24._playingTweensByTarget.set(target, this._playingTweensByTargetList);
+        }
+
+        if (this._singleTarget) {
+            this._playingTweensByTargetItem = this._playingTweensByTargetList.push(this);
+        }
+        else {
+            this._playingTweensByMultiTargetItem ||= new Map();
+            this._playingTweensByMultiTargetItem.set(target, this._playingTweensByTargetList.push(this));
         }
     }
 
@@ -593,10 +602,26 @@ export class Tween24 {
         this._firstUpdated        = false;
         this._status              = Tween24._STATUS_STOPING;
         
-        if (this._playingTweensByTargetItem) this._playingTweensByTargetList?.remove(this._playingTweensByTargetItem);
+        if (this._singleTarget) {
+            this._removePlayingTweenLinkedList(this._singleTarget, this._playingTweensByTargetList, this._playingTweensByTargetItem);
+        }
+        else {
+            this._playingTweensByMultiTargetItem?.forEach((item, target) => {
+                this._removePlayingTweenLinkedList(target, Tween24._playingTweensByTarget.get(target), item);
+            });
+        }
         if (this._playingTweensItem) Tween24._playingTweens.remove(this._playingTweensItem);
 
         if (this._isManual) Tween24._manualPlayingTweens.delete(this);
+    }
+
+    private _removePlayingTweenLinkedList(target:any, list:LinkedList|undefined, item:LinkedListItem|undefined) {
+        if (list && item) {
+            list.remove(item);
+            if (list.length == 0) {
+                Tween24._playingTweensByTarget.delete(target);
+            }
+        }
     }
 
     private _completeChildTween = (tween:Tween24) => {

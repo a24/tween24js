@@ -38,6 +38,7 @@ export declare class Tween24 {
     private _playingTweensItem;
     private _playingTweensByTargetItem;
     private _playingTweensByTargetList;
+    private _playingTweensByMultiTargetItem;
     private _singleTarget;
     private _multiTarget;
     private _easing;
@@ -144,6 +145,7 @@ export declare class Tween24 {
     __update: (nowTime: number) => void;
     private _complete;
     private _tweenStop;
+    private _removePlayingTweenLinkedList;
     private _completeChildTween;
     private _playNextTween;
     /**

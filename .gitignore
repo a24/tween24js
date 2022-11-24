@@ -8,3 +8,5 @@ src/**/*.js
 /sample/benchmark.html
 /sample/performance_check
 /sample/button24.html
+/sample/test_memory.html
+/sample/test_memory.js

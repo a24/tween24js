@@ -10,7 +10,7 @@ module.exports = {
     output: {
         path: `${__dirname}/dist`,
         filename: 'tween24.js',
-        libraryTarget: 'umd',
+        libraryTarget: "umd",
         globalObject: 'this'
     },
     module: {
@@ -20,6 +20,9 @@ module.exports = {
                 loader: 'ts-loader'
             }
         ]
+    },
+    experiments: {
+        outputModule: true
     },
     resolve: {
       extensions: ['.js', '.ts']

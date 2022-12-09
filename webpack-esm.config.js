@@ -5,13 +5,13 @@ module.exports = {
     mode: "production",
     output: {
         path: `${__dirname}/dist`,
-        filename: 'tween24.esm.js',
+        filename: "tween24.esm.js",
         library: {
             type: "module",
         },
         module: true,
     },
     experiments: {
-        outputModule: true
+        outputModule: true,
     },
-}
+};

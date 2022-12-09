@@ -1,30 +1,30 @@
 module.exports = {
-    target: ['web'],
+    target: ["web"],
     devServer: {
         contentBase: "./",
         publicPath: "/dist/",
         open: true,
-        openPage: "sample/index.html"
+        openPage: "sample/index.html",
     },
-    entry: './src/index.ts',
+    entry: "./src/index.ts",
     output: {
         path: `${__dirname}/dist`,
-        filename: 'tween24.js',
+        filename: "tween24.js",
         libraryTarget: "umd",
-        globalObject: 'this'
+        globalObject: "this",
     },
     module: {
         rules: [
             {
                 test: /\.ts$/,
-                loader: 'ts-loader'
-            }
-        ]
+                loader: "ts-loader",
+            },
+        ],
     },
     experiments: {
-        outputModule: true
+        outputModule: true,
     },
     resolve: {
-      extensions: ['.js', '.ts']
-    }
-}
+        extensions: [".js", ".ts"],
+    },
+};

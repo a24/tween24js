@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Tween24 Sample</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #e6e6e6;
+            font-family: "Helvetica Neue",
+                Arial,
+                "Hiragino Kaku Gothic ProN",
+                "Hiragino Sans",
+                Meiryo,
+                sans-serif;
+        }
+        section {
+            display:flex;
+            flex-flow: column;
+            justify-content:space-around;
+            margin: 100px auto 0 auto;
+            width: 960px;
+            height: 480px;
+            background-color: #F0F0F0;
+        }
+        section div {
+            width: 100px;
+            height: 100px;
+            background-color: #3CC2B9;
+        }
+        p {
+            margin: 0;
+            padding: 20px;
+            font-size: 20px;
+            text-align: center;
+            color: #247570;
+        }
+        input {
+            margin: 10px;
+        }
+        label {
+            font-size: 20px;
+            color: #247570;
+            text-align: center;
+            cursor: pointer;
+        }
+        section.lag div {
+            width: 30px;
+            height: 30px;
+        }
+        section p {
+            font-size: 80px;
+        }
+        .no-flex {
+            display: block;
+        }
+        .pointer {
+            cursor: pointer;
+        }
+        div.code {
+            border-radius: 10px;
+            width: fit-content;
+            margin: auto;
+            background-color: #fff;
+        }
+        div.code p {
+            margin: 0 0 20px 0;
+            padding: 20px 40px 20px 30px;
+            font-size: 14px;
+            line-height: 1.4;
+            letter-spacing: 0.5px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <!----------- Single Tween ----------->
+
+    <section id="single">
+        <div id="box"></div>
+    </section>
+    <p>- Single Tween -</p>
+
+    <script type="module">
+      import {Tween24} from '../dist/tween24.esm.js';
+        Tween24.loop(0,
+            Tween24.serial(
+                // boxを、1秒かけてX座標860にトゥイーンします
+                Tween24.tween("#box", 1).x(860),
+
+                // ループ対応処理
+                Tween24.wait(1), // 1秒待機
+                Tween24.prop("#box").x(0) // 座標をリセット
+            )
+        ).play();
+    </script>
+
+</body>
+</html>

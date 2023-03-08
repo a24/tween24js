@@ -116,9 +116,9 @@ export class ObjectUpdater implements Updater {
         let str:string = "";
         for (const key of this._keys)
             str += this._paramUpdaters[key].toString() + " ";
-            
-        const bx = this._paramUpdaters["x"].bezier;
-        const by = this._paramUpdaters["y"].bezier;
+        
+        const bx = this._paramUpdaters["x"]?.bezier;
+        const by = this._paramUpdaters["y"]?.bezier;
         if (bx && by) {
             str += `bezier:`;
             for (let i = 0; i < bx.length; i++) {

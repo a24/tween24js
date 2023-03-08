@@ -119,6 +119,8 @@ export declare class Tween24 {
     private _commonRootPlay;
     private _play;
     private _resume;
+    private _updateTimeScale;
+    private _updateStartTime;
     /**
      * トゥイーンを一時停止します。
      * @memberof Tween24
@@ -1554,6 +1556,14 @@ export declare class Tween24 {
      * @memberof Tween24
      */
     static debugMode: (flag: boolean) => void;
+    /**
+     * トゥイーンを早送りするデバッグキーを設定します。
+     * @static
+     * @param {number} [timeScale=0.1] 早送り中のタイムスケール
+     * @param {string} [key="shift"] 設定するキーボードのキー
+     * @memberof Tween24
+     */
+    static setDebugKey: (timeScale?: number, key?: string) => void;
     /**
      * すべてのトゥイーンの、時間（delayの遅延時間を含む）の尺度（割合）を設定します。
      * @static

@@ -20,7 +20,7 @@ import { LinkedListItem }   from "./core/data/LinkedListItem";
 export class Tween24 {
 
     // Static
-    static readonly VERSION:string = "1.4.2";
+    static readonly VERSION:string = "1.5.0";
 
     private static readonly _TYPE_TWEEN              :string = "tween";
     private static readonly _TYPE_TWEEN_VELOCITY     :string = "tween_velocity";
@@ -67,21 +67,21 @@ export class Tween24 {
     private _playingTweensByMultiTargetItem:Map<any, LinkedListItem>|undefined;
 
     // Tween param
-    private _singleTarget:any      |null = null;
-    private _multiTarget :any[]    |null = null;
-    private _easing      :Function       = Tween24._defaultEasing;;
-    private _type        :string         = "";
+    private _singleTarget:any  |null = null;
+    private _multiTarget :any[]|null = null;
+    private _easing      :Function   = Tween24._defaultEasing;;
+    private _type        :string     = "";
 
-    private _time     :number  = NaN;
-    private _velocity :number  = NaN;
-    private _delayTime:number  = NaN;
-    private _startTime:number  = NaN;
-    private _progress :number  = 0;
+    private _time     :number = NaN;
+    private _velocity :number = NaN;
+    private _delayTime:number = NaN;
+    private _startTime:number = NaN;
+    private _progress :number = 0;
 
-    private _timeScale          :number  = 1;
-    private _delayTimeScale     :number  = 1;
-    private _totalTimeScale     :number  = 1;
-    private _totalDelayTimeScale:number  = 1;
+    private _timeScale          :number = 1;
+    private _delayTimeScale     :number = 1;
+    private _totalTimeScale     :number = 1;
+    private _totalDelayTimeScale:number = 1;
 
     private _debugMode    :boolean     = false;
     private _numLayers    :number      = 0;
@@ -123,10 +123,10 @@ export class Tween24 {
     private _functionExecuters:{[key:string]:FunctionExecuter}|null = null;
 
     // Container Tween
-    private _firstTween        :Tween24  |null = null;
-    private _childTween        :Tween24[]|null = null;
-    private _playingChildTween :LinkedList|null = null;
-    private _originalChildTween:Tween24[]|null = null;
+    private _firstTween         :Tween24   |null = null;
+    private _childTween         :Tween24[] |null = null;
+    private _playingChildTween  :LinkedList|null = null;
+    private _originalChildTween :Tween24[] |null = null;
     private _numCompleteChildren:number = 0;
 
     // Lag
@@ -243,14 +243,7 @@ export class Tween24 {
         this._status = Tween24._STATUS_PLAYING;
 
         // Time scale
-        if (this._parent) {
-            this._totalTimeScale      = this._timeScale      * this._parent._totalTimeScale;
-            this._totalDelayTimeScale = this._delayTimeScale * this._parent._totalDelayTimeScale;
-        }
-        else {
-            this._totalTimeScale      = this._timeScale * Tween24._globalTimeScale;
-            this._totalDelayTimeScale = this._delayTimeScale;
-        }
+        this._updateTimeScale();
 
         // Velocity
         if (this._type == Tween24._TYPE_TWEEN_VELOCITY || this._type == Tween24._TYPE_TWEEN_TEXT_VELOCITY) {
@@ -281,7 +274,22 @@ export class Tween24 {
 
     private _resume = () => {
         this._status = Tween24._STATUS_PLAYING;
+        this._updateStartTime();
+        this._playingTweensItem = Tween24._playingTweens.push(this);
+    }
 
+    private _updateTimeScale = () => {
+        if (this._parent) {
+            this._totalTimeScale      = this._timeScale      * this._parent._totalTimeScale;
+            this._totalDelayTimeScale = this._delayTimeScale * this._parent._totalDelayTimeScale;
+        }
+        else {
+            this._totalTimeScale      = this._timeScale * Tween24._globalTimeScale;
+            this._totalDelayTimeScale = this._delayTimeScale;
+        }
+    }
+
+    private _updateStartTime = () => {
         const nowTime = Ticker24.getTime();
         if (this._progress > 0) this._startTime = nowTime - this._time      * this._progress * this._totalTimeScale * 1000;
         else                    this._startTime = nowTime - this._delayTime * this._progress * this._totalTimeScale * this._totalDelayTimeScale * 1000;
@@ -295,7 +303,6 @@ export class Tween24 {
                 }
             });
         }
-        this._playingTweensItem = Tween24._playingTweens.push(this);
     }
 
     /**
@@ -311,6 +318,7 @@ export class Tween24 {
             this._functionExecute(Tween24Event.PAUSE);
         }
     }
+
     /**
      * トゥイーンを終点までスキップします。
      * @memberof Tween24
@@ -387,7 +395,7 @@ export class Tween24 {
     private _overwrite = (target:any) => {
         this._playingTweensByTargetList = Tween24._playingTweensByTarget.get(target);
         if (this._playingTweensByTargetList) {
-                this._playingTweensByTargetList.map((tween, index) => {
+            this._playingTweensByTargetList.map((tween, index) => {
                 if (this !== tween) {
                     if (this._singleTarget) {
                         if (this._objectUpdater   ) (tween._objectMultiUpdater   ||tween._objectUpdater   )?.overwrite(this._objectUpdater);
@@ -2650,6 +2658,33 @@ export class Tween24 {
     }
 
     /**
+     * トゥイーンを早送りするデバッグキーを設定します。
+     * @static
+     * @param {number} [timeScale=0.1] 早送り中のタイムスケール
+     * @param {string} [key="shift"] 設定するキーボードのキー
+     * @memberof Tween24
+     */
+    static setDebugKey = (timeScale:number = 0.1, key:string = "Shift") => {
+        let originTimeScale = Tween24._globalTimeScale;
+        const debugKeyDown = (event:KeyboardEvent) => {
+            if (event.key == key) {
+                originTimeScale = Tween24._globalTimeScale;
+                Tween24.setGlobalTimeScale(timeScale);
+                document.addEventListener("keyup", debugKeyUp);
+                document.removeEventListener("keydown", debugKeyDown);
+            }
+        }
+        const debugKeyUp = (event:KeyboardEvent) => {
+            if (event.key == key) {
+                Tween24.setGlobalTimeScale(originTimeScale);
+                document.addEventListener("keydown", debugKeyDown);
+                document.removeEventListener("keyup", debugKeyUp);
+            }
+        }
+        document.addEventListener("keydown", debugKeyDown);
+    }
+
+    /**
      * すべてのトゥイーンの、時間（delayの遅延時間を含む）の尺度（割合）を設定します。
      * @static
      * @param {number} timeScale 時間の尺度
@@ -2657,6 +2692,10 @@ export class Tween24 {
      */
     static setGlobalTimeScale = (timeScale:number) => {
         Tween24._globalTimeScale = timeScale;
+        Tween24._playingTweens.map((tween:Tween24) => {
+            tween._updateTimeScale();
+            tween._updateStartTime();
+        });
     }
 
     /**

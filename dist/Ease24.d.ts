@@ -307,6 +307,7 @@ export declare class Ease24 {
     static _ElasticOutIn: Function;
     /**
      * 2つのイージングをミックスして、新しいイージングを生成します。
+     * ※この関数は blend() に移行しました。将来的に削除される可能性があります。
      * @static
      * @param {Function} easeA 元になるイージング
      * @param {Function} easeB 混合されるイージング
@@ -316,4 +317,75 @@ export declare class Ease24 {
      * @memberof Ease24
      */
     static _Blend(easeA: Function, easeB: Function, mixing: Function, start?: number, end?: number): Function;
+    /**
+     * 2つのイージングをミックスして、新しいイージングを生成します。
+     * @static
+     * @param {Function} easeA 元になるイージング
+     * @param {Function} easeB 混合されるイージング
+     * @param {Function} mixing 混合率を指定するイージング
+     * @param {number} start 開始時の混合率
+     * @param {number} end 終点時の混合率
+     * @memberof Ease24
+     */
+    static blend(easeA: Function, easeB: Function, mixing: Function, start?: number, end?: number): Function;
+    private static _customEasingById;
+    private static _set;
+    /**
+     * 登録したカスタムイージングを取得します。
+     * @static
+     * @param {string} id カスタムイージングのID
+     * @memberof Ease24
+     */
+    static get: (id: string) => Function | undefined;
+    /**
+     * 登録したカスタムイージングをクリアします。
+     * @static
+     * @param {string} id カスタムイージングのID
+     * @memberof Ease24
+     */
+    static clear: (id: string) => void;
+    /**
+     * カスタムイージングを作成します。
+     * 作成時にIDを指定すると、get()関数でイージングを呼び出せるようになります。
+     * 指定するパラメータのフォーマットは GreenSockの Ease Visualizer に準じています。
+     * Ease Visualizer: https://greensock.com/ease-visualizer/
+     * @static
+     * @param {(string|null)} id 登録するカスタムイージングのID。登録しない場合は null を指定します
+     * @param {string} svgPathData カスタムイージングのSVGパスデータ
+     * @memberof Ease24
+     */
+    static create: (id: string | null, svgPathData: string) => Function;
+    private static _custom;
+    private static _getYForX;
+    /**
+     * @param a The first value of the Bezier equation.
+     * @param b The second value of the Bezier equation.
+     * @param c The third value of the Bezier equation.
+     * @param d The fourth value of the Bezier equation.
+     * @return An array containing four number values,
+     */
+    private static _getCubicCoefficients;
+    /**
+     * @param a The first coefficient of the cubic equation, which is multiplied by the cubed variable (t^3).
+     * @param b The second coefficient of the cubic equation, which is multiplied by the squared variable (t^2).
+     * @param c The third coefficient of the cubic equation, which is multiplied by the linear variable (t).
+     * @param d The fourth coefficient of the cubic equation, which is the constant.
+     * @return An array of number values, indicating the real roots of the equation.
+     */
+    private static _getCubicRoots;
+    /**
+     * @param a The first value of the Bezier equation.
+     * @param b The second value of the Bezier equation.
+     * @param c The third value of the Bezier equation.
+     * @param d The fourth value of the Bezier equation.
+     * @return The value of the Bezier equation at the specified time.
+     */
+    private static _getSingleValue;
+    /**
+     * @param a The first coefficient of the quadratic equation, which is multiplied by the squared variable (t^2).
+     * @param b The second coefficient of the quadratic equation, which is multiplied by the linear variable (t).
+     * @param c The third coefficient of the quadratic equation, which is the constant.
+     * @return An array of number values, indicating the real roots of the equation.
+     */
+    private static _getQuadraticRoots;
 }

@@ -1,10 +1,10 @@
 module.exports = {
     target: ["web"],
     devServer: {
-        contentBase: "./",
-        publicPath: "/dist/",
-        open: true,
-        openPage: "sample/index.html",
+        static: {
+            directory: "./"
+        },
+        open: "sample/index.html",
     },
     entry: "./src/index.ts",
     output: {
@@ -21,10 +21,7 @@ module.exports = {
             },
         ],
     },
-    experiments: {
-        outputModule: true,
-    },
     resolve: {
         extensions: [".js", ".ts"],
-    },
+    }
 };
